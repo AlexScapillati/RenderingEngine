@@ -1,0 +1,347 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>15.0</VCProjectVersion>
+    <ProjectGuid>{662AC157-C8CC-48F7-BE24-855B289DED02}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>SoftParticles</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>GameEngine</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\hlsl.props" />
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>true</LinkIncremental>
+    <OutDir>$(SolutionDir)\</OutDir>
+    <IncludePath>$(IncludePath)</IncludePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>true</LinkIncremental>
+    <OutDir>$(SolutionDir)\</OutDir>
+    <IncludePath>$(IncludePath)</IncludePath>
+    <LibraryPath>$(ProjectDir)Source\External\DirectXTK12\Bin\Desktop_2019\$(Platform)\$(Configuration);$(ProjectDir)Source\External\DirectXTex-master\DirectXTex\Bin\Desktop_2019\$(Platform)\$(Configuration)\;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <VcpkgUseStatic>true</VcpkgUseStatic>
+  </PropertyGroup>
+  <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <VcpkgUseStatic>true</VcpkgUseStatic>
+  </PropertyGroup>
+  <PropertyGroup Label="Vcpkg">
+    <VcpkgEnableManifest>false</VcpkgEnableManifest>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>Source\External\imgui\FileBrowser;Source\External\tinyxml2;Source\External\imgui;Utility;Math;Source\External\DirectXTex-master\DirectXTex;Source\External\assimp\include;Source\External\DirectXTK12\Inc</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>DirectXTK12.lib;DirectXTK.lib;assimp-vc142-mt.lib;d3d11.lib;d3d12.lib;DirectXTex.lib;dxgi.lib;dxguid.lib;d3dcompiler.lib;winmm.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>Source\External\DirectXTex-master\DirectXTex\Bin\Desktop_2019\$(Platform)\$(Configuration);Source\External\DirectXTK\$(Configuration);Source\External\assimp\lib\$(Platform)\;Source\External\DirectXTK12\Bin\Desktop_2019_Win10\$(Platform)\$(Configuration);%(AdditionalDependencies)</AdditionalLibraryDirectories>
+    </Link>
+    <FxCompile>
+      <DisableOptimizations>false</DisableOptimizations>
+    </FxCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>Source\External\imgui\FileBrowser;Source\External\tinyxml2;Source\External\imgui;Utility;Math;Source\External\DirectXTex-master\DirectXTex;Source\External\assimp\include;Source\External\DirectXTK12\Inc</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <DebugInformationFormat>OldStyle</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>DirectXTK12.lib;DirectXTK.lib;assimp-vc142-mt.lib;d3d11.lib;d3d12.lib;DirectXTex.lib;dxgi.lib;dxguid.lib;d3dcompiler.lib;winmm.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>Source\External\DirectXTex-master\DirectXTex\Bin\Desktop_2019\$(Platform)\$(Configuration);Source\External\DirectXTK\$(Configuration);Source\External\assimp\lib\$(Platform)\;Source\External\DirectXTK12\Bin\Desktop_2019_Win10\$(Platform)\$(Configuration);%(AdditionalDependencies)</AdditionalLibraryDirectories>
+    </Link>
+    <FxCompile>
+      <EnableDebuggingInformation>true</EnableDebuggingInformation>
+    </FxCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="Source\DX12\DX12Texture.cpp" />
+    <ClCompile Include="Source\DX12\Objects\DX12Light.cpp" />
+    <ClCompile Include="Source\DX12\DX12Importer.cpp" />
+    <ClCompile Include="Source\DX11\Objects\DirLight.cpp" />
+    <ClCompile Include="Source\DX12\CDX12Common.h" />
+    <ClCompile Include="Source\DX12\CDX12Material.cpp" />
+    <ClCompile Include="Source\DX12\D3D12Helpers.h" />
+    <ClCompile Include="Source\DX12\D3D12Init.h" />
+    <ClCompile Include="Source\DX12\DX12Mesh.cpp" />
+    <ClCompile Include="Source\DX12\Objects\CDX12Sky.cpp" />
+    <ClCompile Include="Source\DX12\DX12GameObjectManager.cpp" />
+    <ClCompile Include="Source\DX12\Objects\DX12GameObject.cpp" />
+    <ClCompile Include="Main.cpp" />
+    <ClCompile Include="Source\DX12\DX12Scene.cpp" />
+    <ClCompile Include="Source\Common\Camera.cpp" />
+    <ClCompile Include="Source\DX11\DX11Engine.cpp" />
+    <ClCompile Include="Source\DX11\DX11Gui.cpp" />
+    <ClCompile Include="Source\DX11\GraphicsHelpers.cpp" />
+    <ClCompile Include="Source\DX11\LevelImporter.cpp" />
+    <ClCompile Include="Source\DX11\Material.cpp" />
+    <ClCompile Include="Source\DX11\Mesh.cpp" />
+    <ClCompile Include="Source\DX11\Objects\GameObject.cpp" />
+    <ClCompile Include="Source\DX11\Objects\GameObjectManager.cpp" />
+    <ClCompile Include="Source\DX11\Objects\Light.cpp" />
+    <ClCompile Include="Source\DX11\Objects\Plant.cpp" />
+    <ClCompile Include="Source\DX11\Objects\PointLight.cpp" />
+    <ClCompile Include="Source\DX11\Objects\SpotLight.cpp" />
+    <ClCompile Include="Source\DX11\PostProcessing.cpp" />
+    <ClCompile Include="Source\DX11\DX11Scene.cpp" />
+    <ClCompile Include="Source\DX11\Shader.cpp" />
+    <ClCompile Include="Source\DX11\State.cpp" />
+    <ClCompile Include="Source\DX12\DX12Engine.cpp" />
+    <ClCompile Include="Source\DX12\DX12Gui.cpp" />
+    <ClCompile Include="Source\External\imgui\backends\imgui_impl_dx11.cpp" />
+    <ClCompile Include="Source\External\imgui\backends\imgui_impl_dx12.cpp" />
+    <ClCompile Include="Source\External\imgui\backends\imgui_impl_win32.cpp" />
+    <ClCompile Include="Source\External\imgui\FileBrowser\ImGuiFileBrowser.cpp" />
+    <ClCompile Include="Source\External\imgui\imgui.cpp" />
+    <ClCompile Include="Source\External\imgui\ImGuizmo.cpp" />
+    <ClCompile Include="Source\External\imgui\imgui_draw.cpp" />
+    <ClCompile Include="Source\External\imgui\imgui_impl_win32.cpp" />
+    <ClCompile Include="Source\External\imgui\imgui_tables.cpp" />
+    <ClCompile Include="Source\External\imgui\imgui_widgets.cpp" />
+    <ClCompile Include="Source\External\imgui\misc\cpp\imgui_stdlib.cpp" />
+    <ClCompile Include="Source\External\tinyxml2\tinyxml2.cpp" />
+    <ClCompile Include="Source\Math\CMatrix4x4.cpp" />
+    <ClCompile Include="Source\Math\CVector2.cpp" />
+    <ClCompile Include="Source\Math\CVector3.cpp" />
+    <ClCompile Include="Source\Math\CVector4.cpp" />
+    <ClCompile Include="Source\Utility\Input.cpp" />
+    <ClCompile Include="Source\Utility\Timer.cpp" />
+    <ClCompile Include="Source\Window.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="Scene1.xml" />
+    <Xml Include="Scene2.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Source\DX12\DX12Texture.h" />
+    <ClInclude Include="Source\DX12\Objects\DX12Light.h" />
+    <ClInclude Include="Source\DX12\DX12Importer.h" />
+    <ClInclude Include="Source\Utility\HelperFunctions.h" />
+    <ClInclude Include="Source\DX12\CDX12Material.h" />
+    <ClInclude Include="Source\DX12\DX12Mesh.h" />
+    <ClInclude Include="Source\DX12\Objects\CDX12Sky.h" />
+    <ClInclude Include="Source\DX12\DX12GameObjectManager.h" />
+    <ClInclude Include="Source\DX12\Objects\DX12GameObject.h" />
+    <ClInclude Include="Source\DX12\DX12Scene.h" />
+    <ClInclude Include="Source\Common\Camera.h" />
+    <ClInclude Include="Source\DX11\CDX11Common.h" />
+    <ClInclude Include="Source\DX11\DX11Engine.h" />
+    <ClInclude Include="Source\DX11\DX11Gui.h" />
+    <ClInclude Include="Source\DX11\GraphicsHelpers.h" />
+    <ClInclude Include="Source\DX11\LevelImporter.h" />
+    <ClInclude Include="Source\DX11\Material.h" />
+    <ClInclude Include="Source\DX11\Mesh.h" />
+    <ClInclude Include="Source\DX11\Objects\DirLight.h" />
+    <ClInclude Include="Source\DX11\Objects\GameObject.h" />
+    <ClInclude Include="Source\DX11\Objects\GameObjectManager.h" />
+    <ClInclude Include="Source\DX11\Objects\Light.h" />
+    <ClInclude Include="Source\DX11\Objects\Plant.h" />
+    <ClInclude Include="Source\DX11\Objects\PointLight.h" />
+    <ClInclude Include="Source\DX11\Objects\Sky.h" />
+    <ClInclude Include="Source\DX11\Objects\SpotLight.h" />
+    <ClInclude Include="Source\DX11\DX11Scene.h" />
+    <ClInclude Include="Source\DX12\DX12Engine.h" />
+    <ClInclude Include="Source\DX12\DX12Gui.h" />
+    <ClInclude Include="Source\Engine.h" />
+    <ClInclude Include="Source\External\imgui\backends\imgui_impl_dx11.h" />
+    <ClInclude Include="Source\External\imgui\backends\imgui_impl_dx12.h" />
+    <ClInclude Include="Source\External\imgui\backends\imgui_impl_win32.h" />
+    <ClInclude Include="Source\External\imgui\FileBrowser\ImGuiFileBrowser.h" />
+    <ClInclude Include="Source\External\imgui\imconfig.h" />
+    <ClInclude Include="Source\External\imgui\imgui.h" />
+    <ClInclude Include="Source\External\imgui\ImGuizmo.h" />
+    <ClInclude Include="Source\External\imgui\imgui_impl_win32.h" />
+    <ClInclude Include="Source\External\imgui\imgui_internal.h" />
+    <ClInclude Include="Source\External\imgui\imstb_rectpack.h" />
+    <ClInclude Include="Source\External\imgui\imstb_textedit.h" />
+    <ClInclude Include="Source\External\imgui\imstb_truetype.h" />
+    <ClInclude Include="Source\External\imgui\misc\cpp\imgui_stdlib.h" />
+    <ClInclude Include="Source\External\imgui\stb_image.h" />
+    <ClInclude Include="Source\External\tinyxml2\tinyxml2.h" />
+    <ClInclude Include="Source\FactoryEngine.h" />
+    <ClInclude Include="Source\Math\CMatrix4x4.h" />
+    <ClInclude Include="Source\Math\CVector2.h" />
+    <ClInclude Include="Source\Math\CVector3.h" />
+    <ClInclude Include="Source\Math\CVector4.h" />
+    <ClInclude Include="Source\Math\MathHelpers.h" />
+    <ClInclude Include="Source\Utility\ColourRGBA.h" />
+    <ClInclude Include="Source\Utility\Input.h" />
+    <ClInclude Include="Source\Utility\Timer.h" />
+    <ClInclude Include="Source\Window.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+    <None Include="Source\Shaders\Common.hlsli">
+      <FileType>Document</FileType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="Source\Shaders\BasicTransform_vs.hlsl">
+      <TargetProfile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">vs_4_1</TargetProfile>
+      <FileType>Document</FileType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(OutDir)/Source/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+    </FxCompile>
+    <FxCompile Include="Source\Shaders\DepthOnlyNormal_ps.hlsl">
+      <TargetProfile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">ps_4_0</TargetProfile>
+      <FileType>Document</FileType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(OutDir)/Source/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+    </FxCompile>
+    <FxCompile Include="Source\Shaders\DepthOnly_ps.hlsl">
+      <TargetProfile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">ps_4_0</TargetProfile>
+      <FileType>Document</FileType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(OutDir)/Source/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+    </FxCompile>
+    <FxCompile Include="Source\Shaders\PBRNoNormals_ps.hlsl">
+      <TargetProfile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">ps_4_0</TargetProfile>
+      <FileType>Document</FileType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(OutDir)/Source/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+    </FxCompile>
+    <FxCompile Include="Source\Shaders\PBRNoNormals_vs.hlsl">
+      <TargetProfile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">vs_4_1</TargetProfile>
+      <FileType>Document</FileType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(OutDir)/Source/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+    </FxCompile>
+    <FxCompile Include="Source\Shaders\PBR_ps.hlsl">
+      <TargetProfile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">ps_4_0</TargetProfile>
+      <FileType>Document</FileType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(OutDir)/Source/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+    </FxCompile>
+    <FxCompile Include="Source\Shaders\PBR_vs.hlsl">
+      <TargetProfile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">vs_4_1</TargetProfile>
+      <FileType>Document</FileType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(OutDir)/Source/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+    </FxCompile>
+    <FxCompile Include="Source\Shaders\Sky_ps.hlsl">
+      <TargetProfile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">ps_4_0</TargetProfile>
+      <FileType>Document</FileType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(OutDir)/Source/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+    </FxCompile>
+    <FxCompile Include="Source\Shaders\Sky_vs.hlsl">
+      <TargetProfile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">vs_4_1</TargetProfile>
+      <FileType>Document</FileType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(OutDir)/Source/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+    </FxCompile>
+    <FxCompile Include="Source\Shaders\TintedTexture_ps.hlsl">
+      <TargetProfile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">ps_4_0</TargetProfile>
+      <FileType>Document</FileType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(OutDir)/Source/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+    </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Source\Shaders\SimpleShader.hlsl">
+      <FileType>Document</FileType>
+    </None>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+    <Import Project="packages\directxtk_desktop_win10.2021.1.10.1\build\native\directxtk_desktop_win10.targets" Condition="Exists('packages\directxtk_desktop_win10.2021.1.10.1\build\native\directxtk_desktop_win10.targets')" />
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\hlsl.targets" />
+    <Import Project="packages\WinPixEventRuntime.1.0.210818001\build\WinPixEventRuntime.targets" Condition="Exists('packages\WinPixEventRuntime.1.0.210818001\build\WinPixEventRuntime.targets')" />
+  </ImportGroup>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('packages\directxtk_desktop_win10.2021.1.10.1\build\native\directxtk_desktop_win10.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\directxtk_desktop_win10.2021.1.10.1\build\native\directxtk_desktop_win10.targets'))" />
+    <Error Condition="!Exists('packages\WinPixEventRuntime.1.0.210818001\build\WinPixEventRuntime.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\WinPixEventRuntime.1.0.210818001\build\WinPixEventRuntime.targets'))" />
+  </Target>
+</Project>
