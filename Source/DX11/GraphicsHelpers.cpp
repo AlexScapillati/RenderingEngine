@@ -2,11 +2,10 @@
 // Helper functions to unclutter and simplify code elsewhere
 //--------------------------------------------------------------------------------------
 
-#pragma once
-
 #include "GraphicsHelpers.h"
-#include "DDSTextureLoader.h"
-#include "WICTextureLoader.h"
+#include "../External/DirectXTK/DDSTextureLoader.h"
+#include "../External/DirectXTK/WICTextureLoader.h"
+#include "../External/DirectXTex-master/DirectXTex/DirectXTex.h"
 #include "ScreenGrab.h"
 
 //--------------------------------------------------------------------------------------
@@ -100,7 +99,5 @@ CMatrix4x4 MakeOrthogonalMatrix(float width, float height, float nearClip, float
 
 bool CDX11Engine::SaveTextureToFile(ID3D11Resource* tex, std::string& fileName)
 {
-	std::wstring name(fileName.begin(), fileName.end());
-
-	return SUCCEEDED(DirectX::SaveDDSTextureToFile(mD3DContext.Get(), tex, name.c_str()));
+	return 1;
 }

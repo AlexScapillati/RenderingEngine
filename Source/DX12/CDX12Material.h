@@ -1,6 +1,8 @@
 #pragma once
+
 #include "DX12Engine.h"
-#include "DX12Texture.h"
+
+class CDX12Texture;
 
 class CDX12Material
 {
@@ -10,6 +12,11 @@ public:
 	//-------------------------------------
 	// Construction / Usage
 	//-------------------------------------
+
+	CDX12Material() = delete;
+	CDX12Material(const CDX12Material&&) = delete;
+	CDX12Material& operator=(const CDX12Material&) = delete;
+	CDX12Material& operator=(const CDX12Material&&) = delete;
 
 	// Main Constructor
 	// Requires a vector of filemaps
@@ -22,7 +29,7 @@ public:
 	// Deep Copy
 	CDX12Material(CDX12Material& m);
 
-	~CDX12Material() = default;
+	~CDX12Material();
 
 	// Return if the material has a normal map
 	bool HasNormals() const { return mHasNormals; }
@@ -30,7 +37,8 @@ public:
 	// Set the shaders
 	// Set the maps to the shader
 	// Optionally decide to set depth only shaders
-	void RenderMaterial() const;
+	void                RenderMaterial() const;
+	std::vector<void*>& GetTextureSRV() const ;
 
 	auto& TextureFileNames() { return mMapsStr; }
 

@@ -2,6 +2,7 @@
 
 #include <atlconv.h>
 #include <filesystem>
+#include <chrono>
 
 #include <d3d12.h>
 #include <d3dcompiler.h>
@@ -10,15 +11,18 @@
 #include <dxgi1_6.h>
 #include "d3dx12.h"
 
+#include "pix3.h"
+
 #include <stdexcept>
 #include <string>
 #include <wrl/client.h>
+#include <sstream>
 
-#include <DirectXMath.h>
 #include "..\Math/CVector2.h"
 #include "..\Math/CVector3.h"
 #include "..\Math/CVector4.h"
 #include "..\Math/CMatrix4x4.h"
+#include "..\..\Utility/ColourRGBA.h"
 
 #include <stdexcept>
 
@@ -26,6 +30,18 @@
 #include <stb_image.h>
 
 #include "../External/DirectXTK12/Inc/CommonStates.h"
+
+
+// The min/max macros conflict with like-named member functions.
+// Only use std::min and std::max defined in <algorithm>.
+
+#if defined(min)
+#undef min
+#endif
+
+#if defined(max)
+#undef max
+#endif
 
 namespace DX12Common
 {
@@ -91,6 +107,13 @@ namespace DX12Common
 	};
 
 
+	struct SHandle
+	{
+		CD3DX12_CPU_DESCRIPTOR_HANDLE mCpu;
+		CD3DX12_GPU_DESCRIPTOR_HANDLE mGpu;
+	};
+
+
 	//--------------------------------------------------------------------------------------
 	// Buffers
 	//--------------------------------------------------------------------------------------
@@ -125,27 +148,23 @@ namespace DX12Common
 	struct PerFrameConstants
 	{
 		// These are the matrices used to position the camera
-		CMatrix4x4 cameraMatrix{};
-		CMatrix4x4 viewMatrix{};
-		CMatrix4x4 projectionMatrix{};
-		CMatrix4x4 viewProjectionMatrix{}; // The above two matrices multiplied together to combine their effects
+		CMatrix4x4 cameraMatrix;
+		CMatrix4x4 viewMatrix;
+		CMatrix4x4 projectionMatrix;
+		CMatrix4x4 viewProjectionMatrix; // The above two matrices multiplied together to combine their effects
 		// 256 bytes 
 
 		CVector3 ambient;
-		float specularPower;
-
-		// 16 bytes
-
 		float roughness;
 		float metalness;
-		bool customValues;
-		bool pad[7];
-
-		// 16 bytes
-
-		BYTE padding1[(256  - 32) % 256];
-
-		SLight lights[MAX_LIGHTS]{}; // todo: do a separate buffer
-
+		float customValues;
+		float padding1[58];
+		//256 bytes
 	};
+
+	struct PerFrameLights
+	{
+		SLight lights[MAX_LIGHTS];
+	};
+
 }

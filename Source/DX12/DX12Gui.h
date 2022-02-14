@@ -16,10 +16,12 @@ class CDX12Gui
 
 		// Disable copy/assignment/default constructors
 
-		CDX12Gui()                           = delete;
-		CDX12Gui(CDX12Gui const&)            = delete;
-		CDX12Gui& operator=(CDX12Gui const&) = delete;
-	
+		CDX12Gui() = delete;
+		CDX12Gui(const CDX12Gui&) = delete;
+		CDX12Gui(const CDX12Gui&&) = delete;
+		CDX12Gui& operator=(const CDX12Gui&) = delete;
+		CDX12Gui& operator=(const CDX12Gui&&) = delete;
+
 		void Begin(float& frameTime);
 
 		void Show(float& frameTime);
@@ -44,10 +46,8 @@ class CDX12Gui
 
 	private:
 		CDX12Engine*     mEngine             = nullptr;
-		CDX12Scene*      mScene              = nullptr;
 		CDX12GameObject* mSelectedObj        = nullptr;
 		bool             mViewportFullscreen = false;
 		CVector2         mViewportWindowPos;
-
-		Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> mSRVDescriptorHeap;
+		
 };

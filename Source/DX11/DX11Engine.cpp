@@ -183,7 +183,7 @@ bool CDX11Engine::Update()
 
 			// When drawing to the off-screen back buffer is complete, we "present" the image to the front buffer (the screen)
 			// Set first parameter to 1 to lock to vsync
-			if (mSwapChain->Present(mMainScene->mLockFPS ? 1 : 0, 0) == DXGI_ERROR_DEVICE_REMOVED)
+			if (mSwapChain->Present(mMainScene->mLockFPS, 0) == DXGI_ERROR_DEVICE_REMOVED)
 			{
 				const auto reason = mD3DDevice->GetDeviceRemovedReason();
 

@@ -1,5 +1,7 @@
 #include "CDX12Material.h"
 
+#include "DX12DescriptorHeap.h"
+#include "DX12Mesh.h"
 #include "DX12Texture.h"
 
 
@@ -40,27 +42,39 @@ CDX12Material::CDX12Material(CDX12Material& m)
 	}
 }
 
+CDX12Material::~CDX12Material()
+{
+}
+
 void CDX12Material::RenderMaterial() const
 {
-	// Set texture to the pixel shader
+	// Set textures to the pixel shader
 	{
-		const auto prevState = mEngine->mCurrentResourceState;
-		mEngine->Barrier(D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
-		
-		ID3D12DescriptorHeap* ppHeaps[] = { mEngine->mSRVDescriptorHeap.Get() };
-		mEngine->mCommandList->SetDescriptorHeaps(_countof(ppHeaps), ppHeaps);
+		mEngine->mSRVDescriptorHeap->Set();
 
-		if(mAlbedo)			mEngine->mCommandList->SetGraphicsRootDescriptorTable(2, mAlbedo->mGpuSRVDescriptorHandle);
-		if(mRoughness)		mEngine->mCommandList->SetGraphicsRootDescriptorTable(3, mRoughness->mGpuSRVDescriptorHandle);
-		if(mAo)				mEngine->mCommandList->SetGraphicsRootDescriptorTable(4, mAo->mGpuSRVDescriptorHandle);
-		if(mDisplacement)	mEngine->mCommandList->SetGraphicsRootDescriptorTable(5, mDisplacement->mGpuSRVDescriptorHandle);
-		if(mHasNormals)		mEngine->mCommandList->SetGraphicsRootDescriptorTable(6, mNormal->mGpuSRVDescriptorHandle);
-		if(mMetalness)		mEngine->mCommandList->SetGraphicsRootDescriptorTable(7, mMetalness->mGpuSRVDescriptorHandle);
-
-		mEngine->Barrier(prevState);
+		if (mAlbedo)		mAlbedo->Set(CDX12Mesh::Albedo);
+		if (mRoughness)		mRoughness->Set(CDX12Mesh::Roughness);
+		if (mAo)			mAo->Set(CDX12Mesh::AO);
+		if (mDisplacement)	mDisplacement->Set(CDX12Mesh::Displacement);
+		if (mHasNormals)	mNormal->Set(CDX12Mesh::Normal);
+		if (mMetalness)		mMetalness->Set(CDX12Mesh::Metalness);
 	}
 }
 
+std::vector<void*>& CDX12Material::GetTextureSRV() const
+{
+	std::vector<void*> r;
+
+	if (mAlbedo)		r.push_back((void*)mAlbedo->mHandle.mGpu.ptr);
+	if (mRoughness)		r.push_back((void*)mRoughness->mHandle.mGpu.ptr);
+	if (mAo)			r.push_back((void*)mAo->mHandle.mGpu.ptr);
+	if (mDisplacement)	r.push_back((void*)mDisplacement->mHandle.mGpu.ptr);
+	if (mNormal)		r.push_back((void*)mNormal->mHandle.mGpu.ptr);
+	if (mMetalness)		r.push_back((void*)mMetalness->mHandle.mGpu.ptr);
+
+	return r;
+
+}
 
 void CDX12Material::LoadMaps(std::vector<std::string>& fileMaps)
 {

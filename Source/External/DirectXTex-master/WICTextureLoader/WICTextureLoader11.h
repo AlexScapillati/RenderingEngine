@@ -36,7 +36,7 @@ namespace DirectX
 #ifndef WIC_LOADER_FLAGS_DEFINED
 #define WIC_LOADER_FLAGS_DEFINED
     enum WIC_LOADER_FLAGS : uint32_t
-    {
+    { 
         WIC_LOADER_DEFAULT      = 0,
         WIC_LOADER_FORCE_SRGB   = 0x1,
         WIC_LOADER_IGNORE_SRGB  = 0x2,

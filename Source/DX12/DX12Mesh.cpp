@@ -7,6 +7,11 @@
 #include <assimp/postprocess.h>
 #include <assimp/DefaultLogger.hpp>
 
+#include "DX12DescriptorHeap.h"
+#include "DX12ConstantBuffer.h"
+
+#include "CDX12Material.h"
+
 CDX12Mesh::CDX12Mesh(const CDX12Mesh& other) : CDX12Mesh(other.mEngine, other.mFileName, other.Material()->TextureFileNames()) {}
 
 
@@ -231,11 +236,12 @@ CDX12Mesh::CDX12Mesh(CDX12Engine* engine, std::string fileName, std::vector<std:
 			D3D12_ROOT_SIGNATURE_FLAG_DENY_GEOMETRY_SHADER_ROOT_ACCESS;
 
 		// constant root parameters that are used by the vertex shader.
-		CD3DX12_DESCRIPTOR_RANGE1 ranges[8] = {};
-		CD3DX12_ROOT_PARAMETER1 rootParameters[8] = {};
+		CD3DX12_DESCRIPTOR_RANGE1 ranges[9] = {};
+		CD3DX12_ROOT_PARAMETER1 rootParameters[9] = {};
 
 		ranges[ModelCB].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 0); // per model constant buffer
 		ranges[FrameCB].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 1); // per frame constant buffer
+		ranges[LightsCB].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 2); // per lights constant buffer
 
 		ranges[Albedo]		.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV,1, 0); // texture
 		ranges[Roughness]	.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV,1, 1); // texture
@@ -247,13 +253,15 @@ CDX12Mesh::CDX12Mesh(CDX12Engine* engine, std::string fileName, std::vector<std:
 
 		rootParameters[ModelCB].InitAsDescriptorTable(1, &ranges[0], D3D12_SHADER_VISIBILITY_ALL);
 		rootParameters[FrameCB].InitAsDescriptorTable(1, &ranges[1], D3D12_SHADER_VISIBILITY_ALL);
+		rootParameters[LightsCB].InitAsDescriptorTable(1, &ranges[2], D3D12_SHADER_VISIBILITY_ALL);
 
-		rootParameters[Albedo]		.InitAsDescriptorTable(1, &ranges[2], D3D12_SHADER_VISIBILITY_PIXEL);
-		rootParameters[Roughness]	.InitAsDescriptorTable(1, &ranges[3], D3D12_SHADER_VISIBILITY_PIXEL);
-		rootParameters[AO]			.InitAsDescriptorTable(1, &ranges[4], D3D12_SHADER_VISIBILITY_PIXEL);
-		rootParameters[Displacement].InitAsDescriptorTable(1, &ranges[5], D3D12_SHADER_VISIBILITY_PIXEL);
-		rootParameters[Normal]		.InitAsDescriptorTable(1, &ranges[6], D3D12_SHADER_VISIBILITY_PIXEL);
-		rootParameters[Metalness]	.InitAsDescriptorTable(1, &ranges[7], D3D12_SHADER_VISIBILITY_PIXEL);
+
+		rootParameters[Albedo]		.InitAsDescriptorTable(1, &ranges[3], D3D12_SHADER_VISIBILITY_PIXEL);
+		rootParameters[Roughness]	.InitAsDescriptorTable(1, &ranges[4], D3D12_SHADER_VISIBILITY_PIXEL);
+		rootParameters[AO]			.InitAsDescriptorTable(1, &ranges[5], D3D12_SHADER_VISIBILITY_PIXEL);
+		rootParameters[Displacement].InitAsDescriptorTable(1, &ranges[6], D3D12_SHADER_VISIBILITY_PIXEL);
+		rootParameters[Normal]		.InitAsDescriptorTable(1, &ranges[7], D3D12_SHADER_VISIBILITY_PIXEL);
+		rootParameters[Metalness]	.InitAsDescriptorTable(1, &ranges[8], D3D12_SHADER_VISIBILITY_PIXEL);
 
 		auto samplerDesc = DirectX::CommonStates::StaticAnisotropicWrap(0);
 
@@ -271,7 +279,6 @@ CDX12Mesh::CDX12Mesh(CDX12Engine* engine, std::string fileName, std::vector<std:
 			OutputDebugStringA((char*)errorBlob->GetBufferPointer());
 			errorBlob->Release();
 		}
-
 
 		// Create the root signature.
 		ThrowIfFailed(engine->mDevice->CreateRootSignature(0, rootSignatureBlob->GetBufferPointer(),
@@ -430,7 +437,7 @@ CDX12Mesh::CDX12Mesh(CDX12Engine* engine, std::string fileName, std::vector<std:
 	{
 		std::vector<std::string> textures(scene->mNumTextures);
 
-		for (auto i = 0; i < scene->mNumTextures; ++i)
+		for (auto i = 0u; i < scene->mNumTextures; ++i)
 		{
 			textures.push_back(scene->mTextures[i]->mFilename.C_Str());
 		}
@@ -474,9 +481,9 @@ void CDX12Mesh::Render(std::vector<CMatrix4x4>& modelMatrices)
 		// Set the frame constant buffer heap and set the correct root parameter to pass to the vertex shader
 		// TODO: move it to scene.cpp
 		{
-			ppHeaps[0] = mEngine->mCBVDescriptorHeap.Get();
-			commandList->SetDescriptorHeaps(_countof(ppHeaps), ppHeaps);
-			commandList->SetGraphicsRootDescriptorTable(FrameCB, mEngine->mCBVDescriptorHeap->GetGPUDescriptorHandleForHeapStart());
+			mEngine->mCBVDescriptorHeap->Set();
+			mEngine->mPerFrameConstantBuffer->Set(FrameCB);
+			mEngine->mPerFrameLightsConstantBuffer->Set(LightsCB);
 		}
 
 		// TODO: move to gameobject.cpp
@@ -555,7 +562,7 @@ void CDX12Mesh::RenderSubMesh(const SubMesh& subMesh) const
 	mEngine->mCommandList->IASetIndexBuffer(&subMesh.indexBufferView);
 
 	// Using triangle lists only in this class
-	mEngine->mCommandList->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	mEngine->mCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	// Render mesh
 	mEngine->mCommandList->DrawIndexedInstanced(subMesh.numIndices, 1, 0, 0, 0);

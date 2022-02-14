@@ -8,6 +8,65 @@
 extern float ROTATION_SPEED;
 extern float MOVEMENT_SPEED;
 
+CCamera::CCamera(CVector3 position,
+	CVector3 rotation,
+	float fov,
+	float aspectRatio,
+	float nearClip,
+	float farClip) :
+	mPosition(position),
+	mRotation(rotation),
+	mFOVx(fov),
+	mAspectRatio(aspectRatio),
+	mNearClip(nearClip),
+	mFarClip(farClip)
+{
+}
+
+CVector3 CCamera::Position() const { return mPosition; }
+
+CVector3 CCamera::Rotation() const { return mRotation; }
+
+void CCamera::SetPosition(CVector3 position) { mPosition = position; }
+
+void CCamera::SetRotation(CVector3 rotation) { mRotation = rotation; }
+
+float CCamera::FOV() const { return mFOVx; }
+
+float CCamera::NearClip() const { return mNearClip; }
+
+float CCamera::FarClip() const { return mFarClip; }
+
+void CCamera::SetFOV(float fov) { mFOVx = fov; }
+
+void CCamera::SetNearClip(float nearClip) { mNearClip = nearClip; }
+
+void CCamera::SetFarClip(float farClip) { mFarClip = farClip; }
+
+CMatrix4x4& CCamera::WorldMatrix()
+{
+	UpdateMatrices();
+	return mWorldMatrix;
+}
+
+CMatrix4x4& CCamera::ViewMatrix()
+{
+	UpdateMatrices();
+	return mViewMatrix;
+}
+
+CMatrix4x4& CCamera::ProjectionMatrix()
+{
+	UpdateMatrices();
+	return mProjectionMatrix;
+}
+
+CMatrix4x4& CCamera::ViewProjectionMatrix()
+{
+	UpdateMatrices();
+	return mViewProjectionMatrix;
+}
+
 // Control the camera's position and rotation using keys provided
 void CCamera::Control(float frameTime, KeyCode turnUp, KeyCode turnDown, KeyCode turnLeft, KeyCode turnRight,
 	KeyCode moveForward, KeyCode moveBackward, KeyCode moveLeft, KeyCode moveRight)

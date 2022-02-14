@@ -76,9 +76,6 @@
     <ClCompile Include="Source\External\imgui\imgui_draw.cpp">
       <Filter>External\Imgui</Filter>
     </ClCompile>
-    <ClCompile Include="Source\External\imgui\imgui_impl_win32.cpp">
-      <Filter>External\Imgui</Filter>
-    </ClCompile>
     <ClCompile Include="Source\External\imgui\imgui_tables.cpp">
       <Filter>External\Imgui</Filter>
     </ClCompile>
@@ -127,9 +124,6 @@
     <ClCompile Include="Source\DX12\DX12Mesh.cpp">
       <Filter>Engine\DX12</Filter>
     </ClCompile>
-    <ClCompile Include="Source\DX12\D3D12Init.h">
-      <Filter>Engine\DX12</Filter>
-    </ClCompile>
     <ClCompile Include="Source\DX12\D3D12Helpers.h">
       <Filter>Engine\DX12</Filter>
     </ClCompile>
@@ -153,6 +147,12 @@
       <Filter>Engine\DX11\Objects</Filter>
     </ClCompile>
     <ClCompile Include="Source\DX12\DX12Texture.cpp">
+      <Filter>Engine\DX12</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\DX12\DX12ConstantBuffer.cpp">
+      <Filter>Engine\DX12</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\DX12\DX12DescriptorHeap.cpp">
       <Filter>Engine\DX12</Filter>
     </ClCompile>
   </ItemGroup>
@@ -206,9 +206,6 @@
       <Filter>External\Imgui</Filter>
     </ClInclude>
     <ClInclude Include="Source\External\imgui\imgui.h">
-      <Filter>External\Imgui</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\External\imgui\imgui_impl_win32.h">
       <Filter>External\Imgui</Filter>
     </ClInclude>
     <ClInclude Include="Source\External\imgui\imgui_internal.h">
@@ -359,6 +356,12 @@
       <Filter>Engine\DX12\Objects</Filter>
     </ClInclude>
     <ClInclude Include="Source\DX12\DX12Texture.h">
+      <Filter>Engine\DX12</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\DX12\DX12ConstantBuffer.h">
+      <Filter>Engine\DX12</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\DX12\DX12DescriptorHeap.h">
       <Filter>Engine\DX12</Filter>
     </ClInclude>
   </ItemGroup>

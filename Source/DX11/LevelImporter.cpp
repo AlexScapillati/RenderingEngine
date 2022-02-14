@@ -405,7 +405,9 @@ void CLevelImporter::LoadObject(tinyxml2::XMLElement* currEntity,
 	}
 	catch (const std::exception& e)
 	{
-		throw std::runtime_error(std::string(e.what()) + " of object " + name);
+		//throw std::runtime_error(std::string(e.what()) + " of object " + name);
+
+		return;
 	}
 
 	// Set ambient map values

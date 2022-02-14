@@ -1,34 +1,33 @@
 #pragma once
 
-// The min/max macros conflict with like-named member functions.
-// Only use std::min and std::max defined in <algorithm>.
-
-
-#include <chrono>
-
 #include "..\Engine.h"
 
 #include "CDX12Common.h"
-
-#if defined(min)
-#undef min
-#endif
-
-#if defined(max)
-#undef max
-#endif
+#include "DX12Texture.h"
 
 // https://www.3dgep.com/learning-directx-12-1/#GPU_Synchronization
 
+class CDX12DescriptorHeap;
+class CDX12ConstantBuffer;
 class CDX12Scene;
 class CDX12Gui;
+
 using namespace DX12Common;
 
-class CDX12Engine : public IEngine
+class CDX12Engine final : public IEngine
 {
 public:
 
+	CDX12Engine() = delete;
+	CDX12Engine(const CDX12Engine&) = delete;
+	CDX12Engine(const CDX12Engine&&) = delete;
+	CDX12Engine& operator=(const CDX12Engine&) = delete;
+	CDX12Engine& operator=(const CDX12Engine&&) = delete;
+
+
 	CDX12Engine(HINSTANCE hInstance, int nCmdShow);
+
+	~CDX12Engine() override;
 
 	// Inherited via IEngine
 	bool Update() override;
@@ -43,22 +42,23 @@ public:
 	// Setters / Getters
 	//--------------------------
 
-	auto GetDevice() const { return mDevice.Get(); }
-	auto GetScene() const { return mMainScene.get(); }
-	auto GetSceneTex() const;
+	ID3D12Device2* GetDevice() const;
+	CDX12Scene*    GetScene() const;
+	ImTextureID    GetSceneTex() const;
 
 
 	//--------------------------
 	// DirectX 12 Variables
 	//--------------------------
 
-	static const uint32_t mNumFrames = 3;
+	static constexpr uint32_t mNumFrames = 3;
 
 	ComPtr<ID3D12Device2> mDevice;
 
 	ComPtr<IDXGISwapChain4> mSwapChain;
 
-	ComPtr<ID3D12Resource> mBackBuffers[mNumFrames];
+	std::unique_ptr<CDX12RenderTarget> mBackBuffers[mNumFrames];
+	ComPtr<ID3D12Resource> mDepthStencils[mNumFrames];
 
 	CD3DX12_VIEWPORT mViewport;
 	CD3DX12_RECT mScissorRect;
@@ -94,26 +94,11 @@ public:
 	 * The mRTVDescriptorHeap variable is used to store the descriptor heap that
 	 * contains the render target views for the swap chain back buffers.
 	*/
-	ComPtr<ID3D12DescriptorHeap> mRTVDescriptorHeap;
-	INT mRTVSize;
-
-	ComPtr<ID3D12DescriptorHeap> mSRVDescriptorHeap;
-	INT mSRVSize;
-
-	ComPtr<ID3D12DescriptorHeap> mDSVDescriptorHeap;
-	INT mDSVSize;
-
-	ComPtr<ID3D12DescriptorHeap> mSamplerDescriptorHeap;
-	INT mSDSize;
-
-	ComPtr<ID3D12DescriptorHeap> mCBVDescriptorHeap;
-	INT mCBVSize;
-
-	// Keep the number of used textures
-	// Used to offset the srvDescriptors
-	INT mNumTextures = 0;
-
-	INT mRTVTop = 0;
+	std::unique_ptr<CDX12DescriptorHeap> mRTVDescriptorHeap;
+	std::unique_ptr<CDX12DescriptorHeap> mSRVDescriptorHeap;
+	std::unique_ptr<CDX12DescriptorHeap> mDSVDescriptorHeap;
+	std::unique_ptr<CDX12DescriptorHeap> mCBVDescriptorHeap;
+	std::unique_ptr<CDX12DescriptorHeap> mSamplerDescriptorHeap;
 
 
 	/*
@@ -167,16 +152,18 @@ public:
 	//----------------------------------------
 	// Constant Buffers
 	//-----------------------------------------
-
-	ComPtr<ID3D12Resource>    mPerFrameConstantBuffer;
-	DX12Common::PerFrameConstants mPerFrameConstants;
 	
-	UINT8* mFrameCbvDataBegin = nullptr;
+	DX12Common::PerFrameConstants mPerFrameConstants;
+	DX12Common::PerFrameLights mPerFrameLights;
+
+	std::unique_ptr<CDX12ConstantBuffer> mPerFrameConstantBuffer;
+	std::unique_ptr<CDX12ConstantBuffer> mPerFrameLightsConstantBuffer;
+
+	void CopyBuffers();
 
 	//----------------------------------------
 	// Shaders
 	//-----------------------------------------
-
 
 	SShader mPbrPixelShader;
 	SShader mPbrVertexShader;
@@ -207,19 +194,14 @@ public:
 
 	uint64_t Signal();
 
+	void MidFrame();
+
 	void InitializeFrame();
 
-	// Copy the buffer to the gpu
-	void CopyBuffers() const;
 
 	// Execute a command list.
 	// Returns the fence value to wait for for this command list.
 	uint64_t ExecuteCommandList(ID3D12GraphicsCommandList2* commandList);
-
-	void Barrier(D3D12_RESOURCE_STATES after);
-
-	D3D12_RESOURCE_STATES mCurrentResourceState;
-
 
 	void WaitForFenceValue(ComPtr<ID3D12Fence>       fence,
 	                       uint64_t                  fenceValue,

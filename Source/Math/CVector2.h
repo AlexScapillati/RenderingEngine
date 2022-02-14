@@ -6,6 +6,9 @@
 
 #pragma once
 
+
+struct ImVec2;
+
 class CVector2
 {
 // Concrete class - public access
@@ -58,6 +61,7 @@ public:
 
 	// Divide vector by scalar (scales vector);
     CVector2& operator/= (float s);
+    
 };
 
 

@@ -41,15 +41,17 @@ cbuffer PerFrameConstants : register(b1) // The b0 gives this constant buffer th
     float4x4 gViewMatrix;
     float4x4 gProjectionMatrix;
     float4x4 gViewProjectionMatrix; // The above two matrices multiplied together to combine their effects
-    float3   gAmbient;
-    float    gSpecularPower;
-	SLight   gLights[MAX_LIGHTS];
-    
+
+	float3   gAmbient;
     float   gRoughness;
     float   gMetalness;
-    bool gUseCustomValues;
-    
-    float padding1[58];
+    float   gUseCustomValues;
+    float   padding1[58];
+}
+
+cbuffer PerFrameLights : register(b2)
+{
+	SLight  gLights[MAX_LIGHTS];
 }
 
 PSInput VSMain(VSInput input)
@@ -113,7 +115,6 @@ float3 SampleNormal(float3 position, float3 normal, float3 tangent, inout float2
 	// Parallax mapping. Comment out for plain normal mapping
     if (parallax)
     {
-
 		// no need to pass another variable through the constant buffer
 		// just get the last row of the camera matrix to get its position
         float3 cameraPosition = gCameraMatrix._m33_m33_m33;
@@ -148,25 +149,31 @@ float4 PSMain(PSInput input) : SV_TARGET
     input.worldNormal = normalize(input.worldNormal);
     input.worldTangent = normalize(input.worldTangent);
 
-	float3 v = SampleNormal(input.worldPosition,input.worldNormal,input.worldTangent,input.uv,true);
-
     //-----------------------------
     // Sample Textures
     //-----------------------------
     
     // Get the texture colour
     const float3 albedo = AlbedoMap.Sample(TexSampler, input.uv).rgb;
+    
+    const bool normal = NormalMap.Sample(TexSampler, input.uv).rgb != float3(0.0f,0.0f,0.0f);
 
     const float alpha1 = AlbedoMap.Sample(TexSampler, input.uv).a;
     const float roughness = gUseCustomValues ? gRoughness : RoughnessMap.Sample(TexSampler, input.uv).r;
     const float ao = AoMap.Sample(TexSampler, input.uv).r;
     const float metalness = gUseCustomValues ? gMetalness : MetalnessMap.Sample(TexSampler, input.uv).r;
     
+    float3 v = normalize(gCameraMatrix._m33_m33_m33 - input.worldPosition);
+
+    if (normal)
+    {
+        v = SampleNormal(input.worldPosition, input.worldNormal, input.worldTangent, input.uv, true);
+    }
 
     if (AlbedoMap.Sample(TexSampler, input.uv).a == 0.0f)
         discard;
 
-    float3 specular = lerp(float3(0.04f, 0.04f, 0.04f), albedo, metalness);
+    const float3 specular = max(lerp(float3(0.04f, 0.04f, 0.04f), albedo, metalness),0.001f);
 
     //-----------------------------
     // Calculate lighting

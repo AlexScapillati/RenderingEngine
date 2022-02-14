@@ -3,11 +3,13 @@
 #include <stdexcept>
 
 #include "CDX12Material.h"
+#include "DX12GameObjectManager.h"
 #include "DX12Mesh.h"
 #include "DX12Scene.h"
 #include "Objects/DX12GameObject.h"
 #include "../Math/CVector3.h"
 #include "Objects/DX12Light.h"
+#include "../Common/Camera.h"
 
 CVector3 CDX12Importer::LoadVector3(tinyxml2::XMLElement* el)
 {
@@ -182,22 +184,6 @@ bool CDX12Importer::ParseScene(tinyxml2::XMLElement* sceneEl, CDX12Scene* scene)
 				throw std::runtime_error(e.what());
 			}
 		}
-		else if (elementName == "Default")
-		{
-			const auto elementShaders = element->FirstChildElement("Shaders");
-			if (elementShaders)
-			{
-				auto child = elementShaders->FindAttribute("VS");
-				if (child) scene->mDefaultVs = child->Value();
-
-				child = elementShaders->FindAttribute("PS");
-				if (child) scene->mDefaultPs = child->Value();
-			}
-			else
-			{
-				throw std::runtime_error("Error loading default scene values");
-			}
-		}
 		else if (elementName == "PostProcessingEffects")
 		{
 			ParsePostProcessingEffects(element, scene);
@@ -361,8 +347,6 @@ void CDX12Importer::LoadCamera(tinyxml2::XMLElement* currEntity, CDX12Scene* sce
 {
 	std::string mesh;
 	std::string diffuse;
-	auto        vertexShader = scene->mDefaultVs;
-	auto        pixelShader = scene->mDefaultPs;
 	const auto  FOV = PI / 3;
 	const auto  aspectRatio = 1.333333373f;
 	const auto  nearClip = 0.100000015f;

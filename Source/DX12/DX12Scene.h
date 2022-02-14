@@ -1,131 +1,109 @@
 #pragma once
-#include <string>
 
 #include "DX12Engine.h"
-#include "DX12GameObjectManager.h"
-#include "imgui.h"
-
 #include "../Common/Camera.h"
+#include "DX12GameObjectManager.h"
 
-#include "../Utility/ColourRGBA.h"
-#include "../Math/CVector2.h"
-#include "../Math/CVector3.h"
+class CDX12GameObject;
 
+class CDX12Scene
+{
+public:
 
-	class CDX12Scene
-	{
-	public:
+	CDX12Scene() = delete;
+	CDX12Scene(const CDX12Scene&) = delete;
+	CDX12Scene(const CDX12Scene&&) = delete;
+	CDX12Scene& operator=(const CDX12Scene&) = delete;
+	CDX12Scene& operator=(const CDX12Scene&&) = delete;
 
-		//--------------------------------------------------------------------------------------
-		// Constructors
-		//--------------------------------------------------------------------------------------
+	//--------------------------------------------------------------------------------------
+	// Constructors
+	//--------------------------------------------------------------------------------------
 
-		CDX12Scene(CDX12Engine* engine);
-
-
-		CDX12Scene(CDX12Engine* engine,
-					std::string  fileName);
-
-		//--------------------------------------------------------------------------------------
-		// Initialization
-		//--------------------------------------------------------------------------------------
-
-		void InitFrameDependentStuff();
-
-		void InitScene();
-
-		//--------------------------------------------------------------------------------------
-		// Scene Render and Update
-		//--------------------------------------------------------------------------------------
-
-		// Returns the generated scene texture
-		void RenderScene(float& frameTime);
-
-		// frameTime is the time passed since the last frame
-		void UpdateScene(float& frameTime);
+	CDX12Scene(CDX12Engine* engine);
 
 
-		void        RenderSceneFromCamera(CCamera* camera) const;
-		ImTextureID GetTextureSRV();
+	CDX12Scene(CDX12Engine* engine,
+		std::string  fileName);
 
-		//--------------------------------------------------------------------------------------
-		// DirectX
-		//--------------------------------------------------------------------------------------
+	//--------------------------------------------------------------------------------------
+	// Initialization
+	//--------------------------------------------------------------------------------------
 
-		CD3DX12_VIEWPORT mViewport;
-		CD3DX12_RECT mScissorRect;
+	void InitFrameDependentStuff();
 
-		std::unique_ptr<CDX12RenderTarget> mSceneTexture;
+	void InitScene();
 
-		ComPtr<ID3D12Resource> mDepthStencils[CDX12Engine::mNumFrames];
+	//--------------------------------------------------------------------------------------
+	// Scene Render and Update
+	//--------------------------------------------------------------------------------------
 
-		//--------------------------------------------------------------------------------------
-		// Public Variables TODO REMOVE BIG NONO
-		//--------------------------------------------------------------------------------------
+	// Returns the generated scene texture
+	void RenderScene(float& frameTime);
 
-		std::string mDefaultVs;
-		std::string mDefaultPs;
+	// frameTime is the time passed since the last frame
+	void UpdateScene(float& frameTime);
 
-		std::unique_ptr<CDX12GameObjectManager> mObjManager;
+	ImTextureID GetTextureSrv() const;
 
-		std::unique_ptr<CCamera> mCamera;
+	void RenderSceneFromCamera(CCamera* camera) const;
 
-		ColourRGBA mBackgroundColor;
+	//--------------------------------------------------------------------------------------
+	// DirectX
+	//--------------------------------------------------------------------------------------
 
-		UINT mViewportX;
-		UINT mViewportY;
+	UINT mViewportX;
+	UINT mViewportY;
 
-		int mPcfSamples;
+	std::unique_ptr<CDX12RenderTarget> mSceneTexture;
 
+	//--------------------------------------------------------------------------------------
+	// Public Variables TODO REMOVE BIG NONO
+	//--------------------------------------------------------------------------------------
 
-		//--------------------------------------------------------------------------------------
-		// Public Functions
-		//--------------------------------------------------------------------------------------
+	std::unique_ptr<CDX12GameObjectManager> mObjManager;
+	std::unique_ptr<CCamera> mCamera;
 
-		void Save(std::string fileName = "");
-		void Resize(UINT newX,
-			UINT newY);
-		void PostProcessingPass();
-		void RenderToDepthMap();
-		void DisplayPostProcessingEffects(); // TODO: Remove
+	//--------------------------------------------------------------------------------------
+	// Public Functions
+	//--------------------------------------------------------------------------------------
 
-
-		//--------------------------------------------------------------------------------------
-		// Getters 
-		//--------------------------------------------------------------------------------------
-
-
-		auto  GetObjectManager() const { return mObjManager.get(); }
-		auto  GetViewportSize() const { return CVector2((float)mViewportX, (float)mViewportY); }
-		auto  GetViewportX() const { return mViewportX; }
-		auto  GetViewportY() const { return mViewportY; }
-		auto  GetCamera() const { return mCamera.get(); }
-		auto& GetLockFps() { return mLockFPS; }
+	void Save(std::string fileName = "");
+	void Resize(UINT newX, UINT newY);
+	void PostProcessingPass();
+	void RenderToDepthMap();
+	void DisplayPostProcessingEffects(); // TODO: Remove
 
 
-	private:
-		//--------------------------------------------------------------------------------------
-		// Scene Data
-		//--------------------------------------------------------------------------------------
+	//--------------------------------------------------------------------------------------
+	// Getters 
+	//--------------------------------------------------------------------------------------
 
 
-		CDX12Engine* mEngine = nullptr;
-		CWindow* mWindow = nullptr;
-
-		std::string mFileName;
-
-		// Lock FPS to monitor refresh rate, which will typically set it to 60fps. Press 'p' to toggle to full fps
-		bool mLockFPS = true;
-
-		// Variables controlling light1's orbiting of the particle emitter
-		float gCameraOrbitRadius;
-		float gCameraOrbitSpeed;
-
-		// Additional light information
-		CVector3 gAmbientColour;
-		// Background level of light (slightly bluish to match the far background, which is dark blue)
-		float gSpecularPower; // Specular power controls shininess - same for all models in this app
+	CDX12GameObjectManager* GetObjectManager() const;
+	CVector2 GetViewportSize() const;
+	UINT     GetViewportX() const;
+	UINT     GetViewportY() const;
+	CCamera* GetCamera() const;
+	bool&    GetLockFps();
 
 
-		CDX12GameObject* mSelectedObj;
-	};
+private:
+	//--------------------------------------------------------------------------------------
+	// Scene Data
+	//--------------------------------------------------------------------------------------
+
+
+	CDX12Engine* mEngine = nullptr;
+	CWindow* mWindow = nullptr;
+
+	std::string mFileName;
+
+	// Lock FPS to monitor refresh rate, which will typically set it to 60fps. Press 'p' to toggle to full fps
+	bool mLockFPS = true;
+
+	// Additional light information
+	CVector3 gAmbientColour;
+
+	CDX12GameObject* mSelectedObj;
+};

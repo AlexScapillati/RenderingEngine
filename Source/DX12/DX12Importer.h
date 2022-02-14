@@ -14,14 +14,25 @@ class CDX12Importer
 public:
 
 	//--------------------------------------------------------------------------------------
+	// Constructors
+	//--------------------------------------------------------------------------------------
+
+	CDX12Importer(CDX12Engine* engine);
+
+
+	CDX12Importer() = delete;
+	CDX12Importer(const CDX12Importer&) = delete;
+	CDX12Importer(const CDX12Importer&&) = delete;
+	CDX12Importer& operator=(const CDX12Importer&) = delete;
+	CDX12Importer& operator=(const CDX12Importer&&) = delete;
+
+	//--------------------------------------------------------------------------------------
 	// Scene Parser
 	//--------------------------------------------------------------------------------------
 
 	bool LoadScene(const std::string& level, CDX12Scene* scene);
 
 	void SaveScene(std::string& fileName, CDX12Scene* ptrScene);
-
-	CDX12Importer(CDX12Engine* engine);
 
 private:
 

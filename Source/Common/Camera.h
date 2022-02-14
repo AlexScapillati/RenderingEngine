@@ -16,16 +16,22 @@
 class CCamera
 {
 public:
+
+	CCamera(const CCamera&) = delete;
+	CCamera(const CCamera&&) = delete;
+	CCamera& operator=(const CCamera&) = delete;
+	CCamera& operator=(const CCamera&&) = delete;
+
+
 	//-------------------------------------
 	// Construction and Usage
 	//-------------------------------------
 
 	// Constructor - initialise all settings, sensible defaults provided for everything.
 	CCamera(CVector3 position = {0,0,0}, CVector3 rotation = {0,0,0}, 
-           float fov = PI/3, float aspectRatio = 16.0f / 9.0f, float nearClip = 0.1f, float farClip = 10000.0f)
-        : mPosition(position), mRotation(rotation), mFOVx(fov), mAspectRatio(aspectRatio), mNearClip(nearClip), mFarClip(farClip)
-    {
-    }
+           float fov = PI/3, float aspectRatio = 16.0f / 9.0f, float nearClip = 0.1f, float farClip = 10000.0f);
+
+	~CCamera(){};
 
 
 	// Control the camera's position and rotation using keys provided
@@ -42,25 +48,25 @@ public:
 	//-------------------------------------
 
 	// Getters / setters
-	CVector3 Position() const { return mPosition; }
-	CVector3 Rotation() const { return mRotation;	}
-	void SetPosition(CVector3 position)  { mPosition = position; }
-	void SetRotation(CVector3 rotation)  { mRotation = rotation; }
+	CVector3 Position() const;
+	CVector3 Rotation() const;
+	void     SetPosition(CVector3 position);
+	void     SetRotation(CVector3 rotation);
 
-	float FOV() const { return mFOVx;     }
-	float NearClip() const { return mNearClip; }
-	float FarClip() const { return mFarClip;  }
+	float FOV() const;
+	float NearClip() const;
+	float FarClip() const;
 
-	void SetFOV     (float fov     )  { mFOVx     = fov;      }
-	void SetNearClip(float nearClip)  { mNearClip = nearClip; }
-	void SetFarClip (float farClip )  { mFarClip  = farClip;  }
+	void SetFOV     (float fov     );
+	void SetNearClip(float nearClip);
+	void SetFarClip (float farClip );
 
 	// Read only access to camera matrices, updated on request from position, rotation and camera settings
-	CMatrix4x4& WorldMatrix()           { UpdateMatrices(); return mWorldMatrix; }
-	CMatrix4x4& ViewMatrix()            { UpdateMatrices(); return mViewMatrix;           }
-	CMatrix4x4& ProjectionMatrix()      { UpdateMatrices(); return mProjectionMatrix;     }
-	CMatrix4x4& ViewProjectionMatrix()  { UpdateMatrices(); return mViewProjectionMatrix; }
-	
+	CMatrix4x4& WorldMatrix();
+	CMatrix4x4& ViewMatrix();
+	CMatrix4x4& ProjectionMatrix();
+	CMatrix4x4& ViewProjectionMatrix();
+
 	//-------------------------------------
 	// Camera picking
 	//-------------------------------------
@@ -68,7 +74,6 @@ public:
 	CVector3 PixelFromWorldPt(CVector3 worldPoint, unsigned int viewportWidth, unsigned int viewportHeight);
 
 	CVector2 PixelSizeInWorldSpace(float Z, unsigned int viewportWidth, unsigned int viewportHeight);
-
 	
 //-------------------------------------
 // Private members

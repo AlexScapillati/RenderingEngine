@@ -10,12 +10,12 @@
 #include <string>
 #include <vector>
 
-#include "CDX12Material.h"
 #include "DX12Engine.h"
 
 #include "../Math/CMatrix4x4.h"
 
 struct aiNode;
+class CDX12Material;
 
 class CDX12Mesh
 {
@@ -68,6 +68,9 @@ private:
 public:
 
 	CDX12Mesh() = delete;
+	CDX12Mesh(const CDX12Mesh&&) = delete;
+	CDX12Mesh& operator=(const CDX12Mesh&) = delete;
+	CDX12Mesh& operator=(const CDX12Mesh&&) = delete;
 
 	virtual ~CDX12Mesh() = default;
 
@@ -125,7 +128,6 @@ protected:
 	ComPtr<ID3D12RootSignature>  mRootSignature;
 	ComPtr<ID3D12PipelineState>  mPipelineState;
 
-	PerModelConstants            mModelConstants;
 	ComPtr<ID3D12Resource>       mModelConstantBuffer;
 	ComPtr<ID3D12DescriptorHeap> mModelCBVDescriptorHeap;
 	UINT8*                       mModelCbvDataBegin = nullptr;
@@ -134,10 +136,16 @@ protected:
 	// It will hold all the textures and send them to the shader with RenderMaterial()
 	std::unique_ptr<CDX12Material> mMaterial;
 
+	public:
+
+	PerModelConstants  mModelConstants;
+
+
 	enum
 	{
 		ModelCB,
 		FrameCB,
+		LightsCB,
 		Albedo,
 		Roughness,
 		AO,

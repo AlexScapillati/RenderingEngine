@@ -4,7 +4,6 @@
 #include "..\Common/Camera.h"
 
 #include <imgui.h>
-#include <imgui_impl_win32.h>
 #include <ImGuizmo.h>
 #include <ImGuiFileBrowser.h>
 
@@ -24,6 +23,7 @@
 #include "../Utility/Input.h"
 
 #include "backends/imgui_impl_dx11.h"
+#include "backends/imgui_impl_win32.h"
 
 
 CDX11Gui::CDX11Gui(CDX11Engine* engine)

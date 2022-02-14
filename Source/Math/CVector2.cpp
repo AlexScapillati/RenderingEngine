@@ -6,6 +6,7 @@
 #include "CVector2.h"
 
 #include "MathHelpers.h"
+#include "imgui.h"
 
 /*-----------------------------------------------------------------------------------------
 	Operators
@@ -53,6 +54,7 @@ CVector2& CVector2::operator*= (float s)
 	y *= s;
 	return *this;
 }
+
 
 // Vector-vector addition
 CVector2 operator+ (const CVector2& v, const CVector2& w)
