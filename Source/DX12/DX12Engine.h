@@ -11,6 +11,7 @@ class CDX12DescriptorHeap;
 class CDX12ConstantBuffer;
 class CDX12Scene;
 class CDX12Gui;
+class CDX12Shader;
 
 using namespace DX12Common;
 
@@ -36,6 +37,7 @@ public:
 	void Resize(UINT x, UINT y) override;
 
 	void FinalizeFrame() override;
+	void Present();
 
 
 	//--------------------------
@@ -175,6 +177,9 @@ public:
 	SShader mTintedTexturePixelShader;
 	SShader mSkyPixelShader;
 	SShader mSkyVertexShader;
+
+	std::unique_ptr<CDX12Shader> vs;
+	std::unique_ptr<CDX12Shader> ps;
 
 	//----------------------------------------
 	// DirectX Functions

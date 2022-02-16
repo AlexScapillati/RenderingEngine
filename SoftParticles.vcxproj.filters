@@ -155,6 +155,15 @@
     <ClCompile Include="Source\DX12\DX12DescriptorHeap.cpp">
       <Filter>Engine\DX12</Filter>
     </ClCompile>
+    <ClCompile Include="Source\DX12\DX12PipelineObject.cpp">
+      <Filter>Engine\DX12</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\DX12\DX12RootSignature.cpp">
+      <Filter>Engine\DX12</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\DX12\DX12Shader.cpp">
+      <Filter>Engine\DX12</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="External">
@@ -362,6 +371,15 @@
       <Filter>Engine\DX12</Filter>
     </ClInclude>
     <ClInclude Include="Source\DX12\DX12DescriptorHeap.h">
+      <Filter>Engine\DX12</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\DX12\DX12PipelineObject.h">
+      <Filter>Engine\DX12</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\DX12\DX12RootSignature.h">
+      <Filter>Engine\DX12</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\DX12\DX12Shader.h">
       <Filter>Engine\DX12</Filter>
     </ClInclude>
   </ItemGroup>

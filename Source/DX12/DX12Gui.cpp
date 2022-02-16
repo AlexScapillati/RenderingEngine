@@ -38,9 +38,9 @@ CDX12Gui::CDX12Gui(CDX12Engine* engine)
 	//io.Fonts->AddFontFromFileTTF("External\\imgui\\misc\\fonts\\Roboto-Light.ttf", 15);
 
 	// Calculate offset on the srvdescriptorheap to store imgui font texture
-	
+
 	auto handle = mEngine->mSRVDescriptorHeap->Add();
-	
+
 	// Setup Platform/Renderer bindings
 	if (!ImGui_ImplDX12_Init(engine->GetDevice(),
 		engine->mNumFrames,
@@ -130,7 +130,7 @@ void CDX12Gui::Show(float& frameTime)
 		ImGui::EndMainMenuBar();
 	}
 
-	
+
 	ImGui::SetNextWindowPos({ 0,0 });
 	ImGui::SetNextWindowSize({ (float)mEngine->GetWindow()->GetWindowWidth(),(float)mEngine->GetWindow()->GetWindowHeight() });
 
@@ -173,12 +173,12 @@ void CDX12Gui::Show(float& frameTime)
 				ImGui::SetWindowSize(size);
 			}
 
-			////compare it with the scene viewport
-			//if ((size.x != mEngine->mMainScene->mViewportX || size.y != mEngine->mMainScene->mViewportY) && (size.x != 0 && size.y != 0))
-			//{
-			//	//if they are different, resize the scene viewport
-			//	mEngine->mMainScene->Resize(UINT(size.x), UINT(size.y));
-			//}
+			//compare it with the scene viewport
+			if ((size.x != mEngine->mMainScene->mViewportX || size.y != mEngine->mMainScene->mViewportY) && (size.x != 0 && size.y != 0))
+			{
+				//if they are different, resize the scene viewport
+				mEngine->mMainScene->Resize(UINT(size.x), UINT(size.y));
+			}
 
 			//render the scene image to ImGui
 			ImGui::Image(mEngine->mMainScene->GetTextureSrv(), size);
@@ -234,7 +234,7 @@ void CDX12Gui::DisplayPropertiesWindow() const
 		}
 
 		ImGui::Separator();
-		
+
 		//display the transform component
 		ImGui::NewLine();
 		ImGui::Separator();
@@ -301,7 +301,7 @@ void CDX12Gui::DisplayPropertiesWindow() const
 				if (ImGui::Begin("ColourPicker", &colourPickerOpen))
 				{
 					CVector3 col = light->Colour();
-					if(ImGui::ColorPicker3("Colour", col.GetValuesArray() ))
+					if (ImGui::ColorPicker3("Colour", col.GetValuesArray()))
 					{
 						light->SetColour(col);
 					}
@@ -313,7 +313,7 @@ void CDX12Gui::DisplayPropertiesWindow() const
 
 			auto strength = light->Strength();
 
-			if(ImGui::DragFloat("Strength",&strength, 0.1f, 0.0f, D3D12_FLOAT32_MAX))
+			if (ImGui::DragFloat("Strength", &strength, 0.1f, 0.0f, D3D12_FLOAT32_MAX))
 			{
 				light->SetStrength(strength);
 			}
@@ -322,7 +322,7 @@ void CDX12Gui::DisplayPropertiesWindow() const
 		if (mSelectedObj->GetMeshes().size() > 1)
 		{
 			// Show Variations (if any)
-			std::string previewValues = "";
+			std::string previewValues;
 
 			// Populate the string with the preview values separated with \0
 			for (auto mesh : mSelectedObj->GetVariations())
@@ -340,13 +340,13 @@ void CDX12Gui::DisplayPropertiesWindow() const
 
 		}
 
-		//display the texture
+		//display the textures
 		ImGui::NewLine();
-		ImGui::Text("Texture");
+		ImGui::Text("Textures");
 
-		const auto &v = mSelectedObj->Material()->GetTextureSRV();
+		const auto v = mSelectedObj->Material()->GetTextureSRV();
 
-		for (const auto & id : v)
+		for (const auto& id : v)
 		{
 			ImGui::Image(id, { 256,256 });
 		}
@@ -360,15 +360,9 @@ void CDX12Gui::DisplayPropertiesWindow() const
 	ImGuizmo::SetRect(pos.x, pos.y, mEngine->mMainScene->GetViewportSize().x, mEngine->mMainScene->GetViewportSize().y);
 
 	ImGuizmo::SetDrawlist(ImGui::GetForegroundDrawList());
-
-	static float bounds[] =
-	{
-		0.0f,0.0f,0.0f,
-		1.f, 1.f, 1.f
-	};
-
+	
 	ImGuizmo::Manipulate(mEngine->mMainScene->GetCamera()->ViewMatrix().GetArray(), mEngine->mMainScene->GetCamera()->ProjectionMatrix().GetArray(),
-		mCurrentGizmoOperation, ImGuizmo::WORLD, mSelectedObj->WorldMatrix().GetArray(), 0, 0, showBounds ? bounds : 0);
+		mCurrentGizmoOperation, ImGuizmo::WORLD, mSelectedObj->WorldMatrix().GetArray(), nullptr, nullptr, nullptr);
 
 }
 
@@ -381,9 +375,9 @@ void CDX12Gui::DisplayObjects()
 		ImGui::Separator();
 
 		//display for each model a button
-
-		DisplayDeque(mEngine->mMainScene->GetObjectManager()->mObjects);
-		DisplayDeque(mEngine->mMainScene->GetObjectManager()->mLights);
+		const auto objManager = mEngine->mMainScene->GetObjectManager();
+		DisplayDeque(objManager->mObjects);
+		DisplayDeque(objManager->mLights);
 	}
 	ImGui::End();
 
@@ -408,6 +402,9 @@ bool CDX12Gui::IsSceneFullscreen() const
 
 void CDX12Gui::End() const
 {
+
+	mEngine->mSRVDescriptorHeap->Set();
+
 	ImGui::Render();
 
 	ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), mEngine->mCommandList.Get());

@@ -11,6 +11,7 @@ CDX12DescriptorHeap::CDX12DescriptorHeap(CDX12Engine* engine, D3D12_DESCRIPTOR_H
 	}
 
 	mSize = mEngine->mDevice->GetDescriptorHandleIncrementSize(mDesc.Type);
+	mEngine->mDevice->Release();
 }
 
 D3D12_DESCRIPTOR_HEAP_DESC CDX12DescriptorHeap::GetDesc() const
@@ -33,7 +34,7 @@ SHandle CDX12DescriptorHeap::Add()
 	return mHandles.back();
 }
 
-SHandle CDX12DescriptorHeap::Get(INT pos) const
+SHandle CDX12DescriptorHeap::Get(UINT pos) const
 {
 	return mHandles[pos];
 }
@@ -47,4 +48,9 @@ void CDX12DescriptorHeap::Set() const
 INT CDX12DescriptorHeap::Top() const
 {
 	return mTop;
+}
+
+void CDX12DescriptorHeap::Remove(UINT pos)
+{
+
 }

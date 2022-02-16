@@ -22,13 +22,13 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -114,6 +114,9 @@
     </FxCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Source\DX12\DX12Shader.cpp" />
+    <ClCompile Include="Source\DX12\DX12RootSignature.cpp" />
+    <ClCompile Include="Source\DX12\DX12PipelineObject.cpp" />
     <ClCompile Include="Source\DX12\DX12DescriptorHeap.cpp" />
     <ClCompile Include="Source\DX12\DX12ConstantBuffer.cpp" />
     <ClCompile Include="Source\DX12\DX12Texture.cpp" />
@@ -172,6 +175,9 @@
     <Xml Include="Scene2.xml" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Source\DX12\DX12Shader.h" />
+    <ClInclude Include="Source\DX12\DX12RootSignature.h" />
+    <ClInclude Include="Source\DX12\DX12PipelineObject.h" />
     <ClInclude Include="Source\DX12\DX12DescriptorHeap.h" />
     <ClInclude Include="Source\DX12\DX12ConstantBuffer.h" />
     <ClInclude Include="Source\DX12\DX12Texture.h" />

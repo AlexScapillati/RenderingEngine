@@ -38,7 +38,7 @@ public:
 	// Set the maps to the shader
 	// Optionally decide to set depth only shaders
 	void                RenderMaterial() const;
-	std::vector<void*>& GetTextureSRV() const ;
+	std::vector<void*> GetTextureSRV() const ;
 
 	auto& TextureFileNames() { return mMapsStr; }
 

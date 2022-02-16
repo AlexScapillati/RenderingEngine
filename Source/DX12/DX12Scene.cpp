@@ -161,6 +161,8 @@ void CDX12Scene::InitFrameDependentStuff()
 			auto dsv = mEngine->mDSVDescriptorHeap->Add().mCpu;
 
 			mEngine->mDevice->CreateDepthStencilView(mEngine->mDepthStencils[i].Get(), nullptr, dsv);
+
+			mEngine->mDevice->Release();
 		}
 	}
 }
@@ -286,7 +288,7 @@ void CDX12Scene::UpdateScene(float& frameTime)
 
 auto CDX12Scene::GetTextureSrv() const -> ImTextureID
 {
-	return reinterpret_cast<ImTextureID>(mSceneTexture->mHandle.mGpu.ptr);
+	return mSceneTexture != nullptr ? reinterpret_cast<ImTextureID>(mSceneTexture->mHandle.mGpu.ptr) : nullptr;
 }
 
 void CDX12Scene::Save(std::string fileName)
@@ -298,68 +300,36 @@ void CDX12Scene::Save(std::string fileName)
 	importer.SaveScene(fileName, this);
 }
 
-void CDX12Scene::Resize(UINT newX, UINT newY) {
+void CDX12Scene::Resize(UINT newX, UINT newY)
+{
+
+	mEngine->Flush();
+
+	mSceneTexture->Barrier(D3D12_RESOURCE_STATE_COMMON);
+
+	ThrowIfFailed(mEngine->mCommandList->Close());
 
 	mCamera->SetAspectRatio(float(newX) / float(newY));
 
 	mViewportX = newX;
 	mViewportY = newY;
 
-	auto desc = mSceneTexture->mResource->GetDesc();
-	desc.Width = newX;
-	desc.Height = newY;
-
-	mSceneTexture->Reset(desc);
+	mSceneTexture = nullptr;
 
 	for (int i = 0; i < CDX12Engine::mNumFrames; ++i)
 	{
-		mEngine->mDepthStencils[i].Reset();
+		mEngine->mDepthStencils[i] = nullptr;
 	}
 
-	//Creating the depth texture
-	{
-		const CD3DX12_RESOURCE_DESC depth_texture(
-			D3D12_RESOURCE_DIMENSION_TEXTURE2D,
-			0,
-			desc.Width,
-			desc.Height,
-			1,
-			1,
-			DXGI_FORMAT_D32_FLOAT,
-			1,
-			0,
-			D3D12_TEXTURE_LAYOUT_UNKNOWN,
-			D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL |
-			D3D12_RESOURCE_FLAG_DENY_SHADER_RESOURCE
-		);
+	InitFrameDependentStuff();
 
-		D3D12_CLEAR_VALUE clear_value;
-		clear_value.Format = DXGI_FORMAT_D32_FLOAT;
-		clear_value.DepthStencil.Depth = 1.0f;
-		clear_value.DepthStencil.Stencil = 0;
+	// Reset the current command allocator and the command list
+	mEngine->mCommandAllocators[mEngine->mCurrentBackBufferIndex]->Reset();
 
+	ThrowIfFailed(mEngine->mCommandList->Reset(mEngine->mCommandAllocators[mEngine->mCurrentBackBufferIndex].Get(), nullptr));
 
-		const auto heapProperties = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
-		for (int i = 0; i < CDX12Engine::mNumFrames; i++)
-		{
-			const auto result = mEngine->mDevice->CreateCommittedResource(
-				&heapProperties,
-				D3D12_HEAP_FLAG_NONE,
-				&depth_texture,
-				D3D12_RESOURCE_STATE_DEPTH_WRITE,
-				&clear_value,
-				IID_PPV_ARGS(&mEngine->mDepthStencils[i])
-			);
+	mEngine->mBackBuffers[mEngine->mCurrentBackBufferIndex]->mCurrentResourceState = D3D12_RESOURCE_STATE_COMMON;
 
-			NAME_D3D12_OBJECT_INDEXED(mEngine->mDepthStencils, i);
-
-			assert(result == S_OK && "CREATING THE DEPTH STENCIL FAILED");
-
-			auto dsv = mEngine->mDSVDescriptorHeap->Add().mCpu;
-
-			mEngine->mDevice->CreateDepthStencilView(mEngine->mDepthStencils[i].Get(), nullptr, dsv);
-		}
-	}
 }
 
 void CDX12Scene::PostProcessingPass()

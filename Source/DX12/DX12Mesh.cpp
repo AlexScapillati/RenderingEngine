@@ -11,6 +11,7 @@
 #include "DX12ConstantBuffer.h"
 
 #include "CDX12Material.h"
+#include "DX12PipelineObject.h"
 
 CDX12Mesh::CDX12Mesh(const CDX12Mesh& other) : CDX12Mesh(other.mEngine, other.mFileName, other.Material()->TextureFileNames()) {}
 
@@ -119,13 +120,13 @@ CDX12Mesh::CDX12Mesh(CDX12Engine* engine, std::string fileName, std::vector<std:
 		if (!assimpMesh->HasPositions())
 			throw std::runtime_error("No position data for sub-mesh " + subMeshName + " in " + fileName);
 		auto positionOffset = offset;
-		vertexElements.push_back({ "position", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, positionOffset, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 });
+		vertexElements.push_back({ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, positionOffset, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 });
 		offset += 12;
 
 		if (!assimpMesh->HasNormals())
 			throw std::runtime_error("No normal data for sub-mesh " + subMeshName + " in " + fileName);
 		auto normalOffset = offset;
-		vertexElements.push_back({ "normal", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, normalOffset, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 });
+		vertexElements.push_back({ "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, normalOffset, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 });
 		offset += 12;
 
 		auto tangentOffset = offset;
@@ -219,130 +220,15 @@ CDX12Mesh::CDX12Mesh(CDX12Engine* engine, std::string fileName, std::vector<std:
 			*index++ = assimpMesh->mFaces[face].mIndices[2];
 		}
 
+
 		//-----------------------------------
-		 // Create a root signature.
-		D3D12_FEATURE_DATA_ROOT_SIGNATURE featureData = {};
-		featureData.HighestVersion = D3D_ROOT_SIGNATURE_VERSION_1_1;
-		if (FAILED(engine->mDevice->CheckFeatureSupport(D3D12_FEATURE_ROOT_SIGNATURE, &featureData, sizeof(featureData))))
-		{
-			featureData.HighestVersion = D3D_ROOT_SIGNATURE_VERSION_1_0;
-		}
+		//
+		// DirectX Stuff
+		//
+		//-----------------------------------
 
-		// Allow input layout and deny unnecessary access to certain pipeline stages.
-		D3D12_ROOT_SIGNATURE_FLAGS rootSignatureFlags =
-			D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT |
-			D3D12_ROOT_SIGNATURE_FLAG_DENY_HULL_SHADER_ROOT_ACCESS |
-			D3D12_ROOT_SIGNATURE_FLAG_DENY_DOMAIN_SHADER_ROOT_ACCESS |
-			D3D12_ROOT_SIGNATURE_FLAG_DENY_GEOMETRY_SHADER_ROOT_ACCESS;
-
-		// constant root parameters that are used by the vertex shader.
-		CD3DX12_DESCRIPTOR_RANGE1 ranges[9] = {};
-		CD3DX12_ROOT_PARAMETER1 rootParameters[9] = {};
-
-		ranges[ModelCB].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 0); // per model constant buffer
-		ranges[FrameCB].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 1); // per frame constant buffer
-		ranges[LightsCB].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 2); // per lights constant buffer
-
-		ranges[Albedo]		.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV,1, 0); // texture
-		ranges[Roughness]	.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV,1, 1); // texture
-		ranges[AO]			.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV,1, 2); // texture
-		ranges[Displacement].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV,1, 3); // texture
-		ranges[Normal]		.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV,1, 4); // texture
-		ranges[Metalness]	.Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV,1, 5); // texture
-		
-
-		rootParameters[ModelCB].InitAsDescriptorTable(1, &ranges[0], D3D12_SHADER_VISIBILITY_ALL);
-		rootParameters[FrameCB].InitAsDescriptorTable(1, &ranges[1], D3D12_SHADER_VISIBILITY_ALL);
-		rootParameters[LightsCB].InitAsDescriptorTable(1, &ranges[2], D3D12_SHADER_VISIBILITY_ALL);
-
-
-		rootParameters[Albedo]		.InitAsDescriptorTable(1, &ranges[3], D3D12_SHADER_VISIBILITY_PIXEL);
-		rootParameters[Roughness]	.InitAsDescriptorTable(1, &ranges[4], D3D12_SHADER_VISIBILITY_PIXEL);
-		rootParameters[AO]			.InitAsDescriptorTable(1, &ranges[5], D3D12_SHADER_VISIBILITY_PIXEL);
-		rootParameters[Displacement].InitAsDescriptorTable(1, &ranges[6], D3D12_SHADER_VISIBILITY_PIXEL);
-		rootParameters[Normal]		.InitAsDescriptorTable(1, &ranges[7], D3D12_SHADER_VISIBILITY_PIXEL);
-		rootParameters[Metalness]	.InitAsDescriptorTable(1, &ranges[8], D3D12_SHADER_VISIBILITY_PIXEL);
-
-		auto samplerDesc = DirectX::CommonStates::StaticAnisotropicWrap(0);
-
-		CD3DX12_VERSIONED_ROOT_SIGNATURE_DESC rootSignatureDescription;
-		rootSignatureDescription.Init_1_1(_countof(rootParameters), rootParameters, 1u, &samplerDesc, rootSignatureFlags);
-		// TODO: when using point clamp filtering, the texture looks weird
-
-		// Serialize the root signature.
-		ComPtr<ID3DBlob> rootSignatureBlob;
-		ComPtr<ID3DBlob> errorBlob;
-		D3DX12SerializeVersionedRootSignature(&rootSignatureDescription, featureData.HighestVersion, &rootSignatureBlob, &errorBlob);
-
-		if (errorBlob)
-		{
-			OutputDebugStringA((char*)errorBlob->GetBufferPointer());
-			errorBlob->Release();
-		}
-
-		// Create the root signature.
-		ThrowIfFailed(engine->mDevice->CreateRootSignature(0, rootSignatureBlob->GetBufferPointer(),
-			rootSignatureBlob->GetBufferSize(), IID_PPV_ARGS(&mRootSignature)));
-
-		NAME_D3D12_OBJECT(mRootSignature);
-
-		// Create pipeline state
-		{
-
-			// Get the shaders
-			ID3DBlob* vertexShader;
-			ID3DBlob* pixelShader;
-
-#if defined(_DEBUG)
-			// Enable better shader debugging with the graphics debugging tools.
-			UINT compileFlags = D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;
-#else
-			UINT compileFlags = 0;
-#endif
-
-			std::string absolutePath = std::filesystem::current_path().string() + "/Source/Shaders/SimpleShader.hlsl";
-
-			ThrowIfFailed(D3DCompileFromFile(std::wstring(absolutePath.begin(), absolutePath.end()).c_str(),
-				nullptr, nullptr, "VSMain", "vs_5_0",
-				compileFlags, 0, &vertexShader, nullptr));
-
-			ThrowIfFailed(D3DCompileFromFile(std::wstring(absolutePath.begin(), absolutePath.end()).c_str(),
-				nullptr, nullptr, "PSMain", "ps_5_0",
-				compileFlags, 0, &pixelShader, nullptr));
-
-			// Define the vertex input layout.
-			D3D12_INPUT_ELEMENT_DESC inputElementDescs[] = {
-				{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0,
-					D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0},
-				{"NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12,
-					D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0},
-				{"TANGENT", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 24,
-					D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0},
-				{"UV", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 36,
-					D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0} };
-
-			// Describe and create the graphics pipeline state object (PSO).
-			D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = {};
-			psoDesc.InputLayout = { inputElementDescs, _countof(inputElementDescs) };
-			psoDesc.pRootSignature = mRootSignature.Get();
-			psoDesc.VS = CD3DX12_SHADER_BYTECODE(vertexShader);
-			psoDesc.PS = CD3DX12_SHADER_BYTECODE(pixelShader);
-			psoDesc.RasterizerState = DirectX::CommonStates::CullCounterClockwise;
-			psoDesc.BlendState = DirectX::CommonStates::AlphaBlend;
-			psoDesc.DepthStencilState = DirectX::CommonStates::DepthDefault;
-			psoDesc.SampleMask = UINT_MAX;
-			psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
-			psoDesc.NumRenderTargets = 1;
-			psoDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
-			psoDesc.DSVFormat = DXGI_FORMAT_D32_FLOAT;
-			psoDesc.DepthStencilState.StencilEnable = FALSE;
-			psoDesc.SampleDesc.Count = 1;
-
-			ThrowIfFailed(engine->mDevice->CreateGraphicsPipelineState(
-				&psoDesc, IID_PPV_ARGS(mPipelineState.GetAddressOf())));
-
-			NAME_D3D12_OBJECT(mPipelineState);
-		}
+		// Create pipeline state object
+		mPbrPipelineStateObject = std::make_unique<CDX12PBRPSO>(mEngine, vertexElements,mEngine->vs.get(),mEngine->ps.get());
 
 		auto hProp = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
 		auto buffer = CD3DX12_RESOURCE_DESC::Buffer(subMesh.vertexSize * subMesh.numVertices);
@@ -393,44 +279,13 @@ CDX12Mesh::CDX12Mesh(CDX12Engine* engine, std::string fileName, std::vector<std:
 		subMesh.indexBufferView.Format = DXGI_FORMAT_R32_UINT;
 	}
 
-	// Describe and create a constant buffer view (CBV) descriptor heap.
-	{
-		D3D12_DESCRIPTOR_HEAP_DESC cbvHeapDesc = {};
-		cbvHeapDesc.NumDescriptors = mEngine->mNumFrames;
-		cbvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-		cbvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
-		ThrowIfFailed(mEngine->mDevice->CreateDescriptorHeap(&cbvHeapDesc, IID_PPV_ARGS(&mModelCBVDescriptorHeap)));
-		NAME_D3D12_OBJECT(mModelCBVDescriptorHeap);
-	}
-
 	// Create the constant buffer.
 	{
 		constexpr UINT constantBufferSize = sizeof(DX12Common::PerModelConstants); // CB size is required to be 256-byte aligned.
 
-		auto prop = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
+		mModelConstantBuffer = std::make_unique<CDX12ConstantBuffer>(mEngine, constantBufferSize);
 
-		auto buffer = CD3DX12_RESOURCE_DESC::Buffer(constantBufferSize);
-
-		ThrowIfFailed(mEngine->mDevice->CreateCommittedResource(
-			&prop,
-			D3D12_HEAP_FLAG_NONE,
-			&buffer,
-			D3D12_RESOURCE_STATE_GENERIC_READ,
-			nullptr,
-			IID_PPV_ARGS(&mModelConstantBuffer)));
-
-		// Describe and create a constant buffer view.
-		D3D12_CONSTANT_BUFFER_VIEW_DESC cbvDesc = {};
-		cbvDesc.BufferLocation = mModelConstantBuffer->GetGPUVirtualAddress();
-		cbvDesc.SizeInBytes = constantBufferSize;
-		mEngine->mDevice->CreateConstantBufferView(&cbvDesc, mModelCBVDescriptorHeap->GetCPUDescriptorHandleForHeapStart());
-
-		// Map and initialize the constant buffer. We don't unmap this until the
-		// app closes. Keeping things mapped for the lifetime of the resource is okay.
-		CD3DX12_RANGE readRange(0, 0);        // We do not intend to read from this resource on the CPU.
-		ThrowIfFailed(mModelConstantBuffer->Map(0, &readRange, reinterpret_cast<void**>(&mModelCbvDataBegin)));
-		memcpy(mModelCbvDataBegin, &mModelConstants, sizeof(mModelConstants));
-		mModelConstantBuffer->Unmap(0, nullptr);
+		mModelConstantBuffer->Copy(mModelConstants);
 	}
 
 	if (scene->HasTextures())
@@ -465,8 +320,11 @@ void CDX12Mesh::Render(std::vector<CMatrix4x4>& modelMatrices)
 
 	const auto commandList = mEngine->mCommandList.Get();
 
-	commandList->SetGraphicsRootSignature(mRootSignature.Get());
-	commandList->SetPipelineState(mPipelineState.Get());
+	mPbrPipelineStateObject->Set(commandList);
+
+
+	// Render the material
+	mMaterial->RenderMaterial();
 
 	// Render a mesh without skinning. Although slightly reorganised to use the matrices calculated
 	// above, this is basically the same code as the rigid body animation lab
@@ -476,39 +334,18 @@ void CDX12Mesh::Render(std::vector<CMatrix4x4>& modelMatrices)
 		// Send this node's matrix to the GPU via a constant buffer
 		mModelConstants.modelMatrix = absoluteMatrices[nodeIndex];
 
-		ID3D12DescriptorHeap* ppHeaps[1] = {};
-
 		// Set the frame constant buffer heap and set the correct root parameter to pass to the vertex shader
-		// TODO: move it to scene.cpp
 		{
 			mEngine->mCBVDescriptorHeap->Set();
-			mEngine->mPerFrameConstantBuffer->Set(FrameCB);
-			mEngine->mPerFrameLightsConstantBuffer->Set(LightsCB);
+			mEngine->mPerFrameConstantBuffer->Set(1);
+			mEngine->mPerFrameLightsConstantBuffer->Set(2);
 		}
-
-		// TODO: move to gameobject.cpp
 
 		// Set the model constant buffer heap and set the correct root parameter to pass to the vertex shader
 		{
-			ppHeaps[0] = mModelCBVDescriptorHeap.Get();
-			commandList->SetDescriptorHeaps(_countof(ppHeaps), ppHeaps);
-			commandList->SetGraphicsRootDescriptorTable(ModelCB, mModelCBVDescriptorHeap->GetGPUDescriptorHandleForHeapStart());
+			mModelConstantBuffer->Set(0);
+			mModelConstantBuffer->Copy(mModelConstants);
 		}
-
-		// TODO: move to gameobject.cpp
-
-		// Copy model constant buffer
-		{
-			CD3DX12_RANGE readRange(0, 0); // We do not intend to read from this resource on the CPU.
-			// copy memory in the model vertex buffer
-			ThrowIfFailed(mModelConstantBuffer->Map(0, &readRange, reinterpret_cast<void**>(&mModelCbvDataBegin)));
-			memcpy(mModelCbvDataBegin, &mModelConstants, sizeof(mModelConstants));
-			mModelConstantBuffer->Unmap(0, nullptr);
-		}
-
-		// Render the material
-		mMaterial->RenderMaterial();
-
 		// Render the sub-meshes attached to this node (no bones - rigid movement)
 		for (const auto& subMeshIndex : mNodes[nodeIndex].subMeshes)
 		{

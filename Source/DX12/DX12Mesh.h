@@ -14,6 +14,7 @@
 
 #include "../Math/CMatrix4x4.h"
 
+class CDX12PBRPSO;
 struct aiNode;
 class CDX12Material;
 
@@ -125,12 +126,9 @@ protected:
 
 	bool mHasBones; // If any submesh has bones, then all submeshes are given bones - makes rendering easier (one shader for the whole mesh)
 
-	ComPtr<ID3D12RootSignature>  mRootSignature;
-	ComPtr<ID3D12PipelineState>  mPipelineState;
+	std::unique_ptr<CDX12PBRPSO> mPbrPipelineStateObject;
 
-	ComPtr<ID3D12Resource>       mModelConstantBuffer;
-	ComPtr<ID3D12DescriptorHeap> mModelCBVDescriptorHeap;
-	UINT8*                       mModelCbvDataBegin = nullptr;
+	std::unique_ptr<CDX12ConstantBuffer> mModelConstantBuffer;
 
 	// The material
 	// It will hold all the textures and send them to the shader with RenderMaterial()
@@ -138,19 +136,6 @@ protected:
 
 	public:
 
-	PerModelConstants  mModelConstants;
+	PerModelConstants  mModelConstants{};
 
-
-	enum
-	{
-		ModelCB,
-		FrameCB,
-		LightsCB,
-		Albedo,
-		Roughness,
-		AO,
-		Displacement,
-		Normal,
-		Metalness
-	};
 };

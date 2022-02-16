@@ -23,11 +23,13 @@ public:
 
 	SHandle Add();
 
-	SHandle Get(INT pos) const;
+	SHandle Get(UINT pos) const;
 
 	void Set() const;
 
 	INT Top() const;
+
+	void Remove(UINT pos);
 
 private:
 

@@ -3,6 +3,7 @@
 #include "DX12Engine.h"
 #include "../Common/Camera.h"
 #include "DX12GameObjectManager.h"
+#include "DX12PipelineObject.h"
 
 class CDX12GameObject;
 
@@ -56,6 +57,8 @@ public:
 	UINT mViewportY;
 
 	std::unique_ptr<CDX12RenderTarget> mSceneTexture;
+
+	std::unique_ptr<CDX12PBRPSO> mPso;
 
 	//--------------------------------------------------------------------------------------
 	// Public Variables TODO REMOVE BIG NONO

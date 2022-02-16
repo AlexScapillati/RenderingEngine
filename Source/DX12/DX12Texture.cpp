@@ -39,11 +39,6 @@ CDX12Texture::~CDX12Texture()
 {
 }
 
-void CDX12Texture::Reset(D3D12_RESOURCE_DESC desc)
-{
-	mResource->Release();
-	CreateTexture(desc);
-}
 
 void CDX12Texture::Barrier(D3D12_RESOURCE_STATES after)
 {
@@ -68,7 +63,10 @@ void CDX12Texture::LoadTexture(std::string& filename)
 {
 	filename = mPtrEngine->GetMediaFolder() + filename;
 
-	DirectX::ResourceUploadBatch resourceUpload(mPtrEngine->mDevice.Get());
+
+	const auto device = mPtrEngine->mDevice.Get();
+
+	DirectX::ResourceUploadBatch resourceUpload(device);
 
 	resourceUpload.Begin();
 
@@ -90,7 +88,7 @@ void CDX12Texture::LoadTexture(std::string& filename)
 		std::equal(dds.rbegin(), dds.rend(), filename.rbegin(), [](unsigned char a, unsigned char b) { return std::tolower(a) == std::tolower(b); }))
 	{
 		if (FAILED(DirectX::CreateDDSTextureFromFileEx(
-			mPtrEngine->mDevice.Get(),
+			device,
 			resourceUpload,
 			ATL::CA2W(filename.c_str()),
 			0,
@@ -104,7 +102,7 @@ void CDX12Texture::LoadTexture(std::string& filename)
 	else
 	{
 		if (FAILED(DirectX::CreateWICTextureFromFileEx(
-			mPtrEngine->mDevice.Get(),
+			device,
 			resourceUpload,
 			ATL::CA2W(filename.c_str()),
 			0,
@@ -116,32 +114,39 @@ void CDX12Texture::LoadTexture(std::string& filename)
 		}
 	}
 
-	DirectX::CreateShaderResourceView(mPtrEngine->mDevice.Get(), textureResource.Get(), mHandle.mCpu);
+	DirectX::CreateShaderResourceView(device, textureResource.Get(), mHandle.mCpu);
 
 	const auto uploadResourceFinished = resourceUpload.End(mPtrEngine->mCommandQueue.Get());
 
 	uploadResourceFinished.wait();
 
 	mResource = textureResource;
+
+	device->Release();
 }
 
 void CDX12Texture::CreateTexture(D3D12_RESOURCE_DESC desc)
 {
 	D3D12_CLEAR_VALUE clearValue = { DXGI_FORMAT_R8G8B8A8_UNORM, { 0.f, 0.f, 0.f, 0.f } };
 
-	auto heapProperties = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
+	const auto heapProperties = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
 
-	mPtrEngine->mDevice->CreateCommittedResource(
+	const auto device = mPtrEngine->mDevice.Get();
+
+	device->CreateCommittedResource(
 		&heapProperties,
 		D3D12_HEAP_FLAG_ALLOW_ALL_BUFFERS_AND_TEXTURES,
 		&desc,
 		D3D12_RESOURCE_STATE_COMMON,
 		&clearValue,
 		IID_PPV_ARGS(mResource.GetAddressOf()));
+	
 
 	mCurrentResourceState = D3D12_RESOURCE_STATE_COMMON;
 
-	DirectX::CreateShaderResourceView(mPtrEngine->mDevice.Get(), mResource.Get(), mHandle.mCpu);
+	DirectX::CreateShaderResourceView(device, mResource.Get(), mHandle.mCpu);
+
+	device->Release();
 }
 
 CDX12RenderTarget::CDX12RenderTarget(CDX12Engine* engine, Resource r): CDX12Texture(engine,r)
@@ -149,24 +154,22 @@ CDX12RenderTarget::CDX12RenderTarget(CDX12Engine* engine, Resource r): CDX12Text
 	mRTVDescriptorIndex = mPtrEngine->mRTVDescriptorHeap->Top();
 	mRTVHandle          = mPtrEngine->mRTVDescriptorHeap->Add();
 
-	mPtrEngine->mDevice->CreateRenderTargetView(mResource.Get(), nullptr, mRTVHandle.mCpu);
+	const auto device = mPtrEngine->mDevice.Get();
+
+	device->CreateRenderTargetView(mResource.Get(), nullptr, mRTVHandle.mCpu);
+	device->Release();
 }
 
 CDX12RenderTarget::CDX12RenderTarget(CDX12Engine* engine, D3D12_RESOURCE_DESC desc): CDX12Texture(engine, desc)
 {
 	mRTVDescriptorIndex = mPtrEngine->mRTVDescriptorHeap->Top();
+	mRTVHandle			= mPtrEngine->mRTVDescriptorHeap->Add();
 
-	mRTVHandle = mPtrEngine->mRTVDescriptorHeap->Add();
-
-	mPtrEngine->mDevice->CreateRenderTargetView(mResource.Get(), nullptr, mRTVHandle.mCpu);
+	const auto device = mPtrEngine->mDevice.Get();
+	device->CreateRenderTargetView(mResource.Get(), nullptr, mRTVHandle.mCpu);
+	device->Release();
 }
 
 CDX12RenderTarget::~CDX12RenderTarget()
 {
-}
-
-void CDX12RenderTarget::Reset(D3D12_RESOURCE_DESC desc) {
-	CDX12Texture::Reset(desc);
-
-	mPtrEngine->mDevice->CreateRenderTargetView(mResource.Get(), nullptr, mRTVHandle.mCpu);
 }

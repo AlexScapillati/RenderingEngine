@@ -52,16 +52,16 @@ void CDX12Material::RenderMaterial() const
 	{
 		mEngine->mSRVDescriptorHeap->Set();
 
-		if (mAlbedo)		mAlbedo->Set(CDX12Mesh::Albedo);
-		if (mRoughness)		mRoughness->Set(CDX12Mesh::Roughness);
-		if (mAo)			mAo->Set(CDX12Mesh::AO);
-		if (mDisplacement)	mDisplacement->Set(CDX12Mesh::Displacement);
-		if (mHasNormals)	mNormal->Set(CDX12Mesh::Normal);
-		if (mMetalness)		mMetalness->Set(CDX12Mesh::Metalness);
+		if (mAlbedo)		mAlbedo->Set(3);
+		if (mRoughness)		mRoughness->Set(4);
+		if (mAo)			mAo->Set(5);
+		if (mDisplacement)	mDisplacement->Set(6);
+		if (mHasNormals)	mNormal->Set(7);
+		if (mMetalness)		mMetalness->Set(8);
 	}
 }
 
-std::vector<void*>& CDX12Material::GetTextureSRV() const
+std::vector<void*> CDX12Material::GetTextureSRV() const
 {
 	std::vector<void*> r;
 
@@ -73,7 +73,6 @@ std::vector<void*>& CDX12Material::GetTextureSRV() const
 	if (mMetalness)		r.push_back((void*)mMetalness->mHandle.mGpu.ptr);
 
 	return r;
-
 }
 
 void CDX12Material::LoadMaps(std::vector<std::string>& fileMaps)

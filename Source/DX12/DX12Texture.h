@@ -17,7 +17,7 @@ public:
 	CDX12Texture& operator=(const CDX12Texture&&) = delete;
 
 
-	CDX12Engine* mPtrEngine;
+	CDX12Engine*		  mPtrEngine;
 	DX12Common::Resource  mResource;
 	DX12Common::SHandle   mHandle;
 	INT                   mDescriptorIndex;
@@ -30,8 +30,6 @@ public:
 	CDX12Texture(CDX12Engine* engine, D3D12_RESOURCE_DESC desc);
 
 	virtual ~CDX12Texture();
-
-	virtual void Reset(D3D12_RESOURCE_DESC desc);
 
 	void Barrier(D3D12_RESOURCE_STATES after);
 
@@ -59,8 +57,6 @@ public:
 	CDX12RenderTarget(CDX12Engine* engine, D3D12_RESOURCE_DESC desc);
 
 	~CDX12RenderTarget() override;
-
-	void Reset(D3D12_RESOURCE_DESC desc) override;
 
 	DX12Common::SHandle mRTVHandle;
 

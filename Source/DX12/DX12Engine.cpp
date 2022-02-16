@@ -8,6 +8,7 @@
 #include "DX12Scene.h"
 #include "DX12Gui.h"
 #include "D3D12Helpers.h"
+#include "DX12Shader.h"
 
 CDX12Engine::CDX12Engine(HINSTANCE hInstance, int nCmdShow)
 {
@@ -43,7 +44,7 @@ CDX12Engine::CDX12Engine(HINSTANCE hInstance, int nCmdShow)
 		mGui = std::make_unique<CDX12Gui>(this);
 
 		// Create scene
-		mMainScene = std::make_unique<CDX12Scene>(this, "Scene1.xml");
+		mMainScene = std::make_unique<CDX12Scene>(this/*, "Scene1.xml"*/);
 	}
 	catch (const std::runtime_error& e) { throw std::runtime_error(e.what()); }
 
@@ -98,6 +99,8 @@ bool CDX12Engine::Update()
 				PIXEndEvent(mCommandList.Get());
 
 				FinalizeFrame();
+
+				Present();
 			}
 			catch (const std::exception& e) { throw std::runtime_error(e.what()); }
 
@@ -150,7 +153,7 @@ void CDX12Engine::InitializeFrame()
 	// Reset the current command allocator and the command list
 	mCommandAllocators[mCurrentBackBufferIndex]->Reset();
 
-	mCommandList->Reset(mCommandAllocators[mCurrentBackBufferIndex].Get(), nullptr);
+	ThrowIfFailed(mCommandList->Reset(mCommandAllocators[mCurrentBackBufferIndex].Get(), nullptr));
 
 	mSRVDescriptorHeap->Set();
 }
@@ -168,17 +171,22 @@ void CDX12Engine::FinalizeFrame()
 		};
 		mCommandQueue->ExecuteCommandLists(_countof(commandLists), commandLists);
 
-		mFrameFenceValues[mCurrentBackBufferIndex] = Signal();
-
-		const UINT syncInterval = mMainScene->GetLockFps() ? 1 : 0;
-		const UINT presentFlags = !mMainScene->GetLockFps() ? DXGI_PRESENT_ALLOW_TEARING : 0;
-		if (FAILED(mSwapChain->Present(syncInterval, presentFlags))) { throw std::runtime_error("Error presenting"); }
-
-		mCurrentBackBufferIndex = mSwapChain->GetCurrentBackBufferIndex();
-
-		WaitForFenceValue(mFence, mFrameFenceValues[mCurrentBackBufferIndex], mFenceEvent);
 	}
 }
+
+void CDX12Engine::Present()
+{
+	mFrameFenceValues[mCurrentBackBufferIndex] = Signal();
+
+	const UINT syncInterval = mMainScene->GetLockFps() ? 1 : 0;
+	const UINT presentFlags = !mMainScene->GetLockFps() ? DXGI_PRESENT_ALLOW_TEARING : 0;
+	if (FAILED(mSwapChain->Present(syncInterval, presentFlags))) { throw std::runtime_error("Error presenting"); }
+
+	mCurrentBackBufferIndex = mSwapChain->GetCurrentBackBufferIndex();
+
+	WaitForFenceValue(mFence, mFrameFenceValues[mCurrentBackBufferIndex], mFenceEvent);
+}
+
 
 ID3D12Device2* CDX12Engine::GetDevice() const { return mDevice.Get(); }
 
@@ -243,18 +251,20 @@ void CDX12Engine::Resize(UINT width, UINT height)
 		const UINT newWidth = std::max(1u, width);
 		const UINT newHeight = std::max(1u, height);
 
-		// Flush the GPU queue to make sure the swap chain's back buffers
-		// are not being referenced by an in-flight command list.
 		Flush();
 
-		for (int i = 0; i < mNumFrames; ++i)
+		// Reset everything
+
+		for (uint32_t i = 0; i < mNumFrames; ++i)
 		{
 			// Any references to the back buffers must be released
 			// before the swap chain can be resized.
-			mBackBuffers[i]->mResource.Reset();
+			mBackBuffers[i]->mResource = nullptr;
 
 			mFrameFenceValues[i] = mFrameFenceValues[mCurrentBackBufferIndex];
 		}
+
+		mMainScene->Resize(newWidth, newHeight);
 
 		DXGI_SWAP_CHAIN_DESC swapChainDesc = {};
 		ThrowIfFailed(mSwapChain->GetDesc(&swapChainDesc));
@@ -264,7 +274,7 @@ void CDX12Engine::Resize(UINT width, UINT height)
 
 		mCurrentBackBufferIndex = mSwapChain->GetCurrentBackBufferIndex();
 
-		for (int i = 0; i < mNumFrames; ++i)
+		for (uint32_t i = 0; i < mNumFrames; ++i)
 		{
 			ThrowIfFailed(mSwapChain->GetBuffer(i, IID_PPV_ARGS(&mBackBuffers[i]->mResource)));
 
@@ -273,10 +283,12 @@ void CDX12Engine::Resize(UINT width, UINT height)
 
 		mWindow->SetWindowSize(newWidth, newHeight);
 
-		mMainScene->Resize(newWidth, newHeight);
 
 		mViewport.Width = static_cast<FLOAT>(newWidth);
 		mViewport.Height = static_cast<FLOAT>(newHeight);
+
+		Flush();
+
 	}
 }
 
@@ -284,6 +296,12 @@ void CDX12Engine::LoadDefaultShaders()
 {
 	try
 	{
+
+		std::string absolutePath = std::filesystem::current_path().string() + "/Source/Shaders/SimpleShader.hlsl";
+
+		vs = std::make_unique<CDX12VertexShader>(this, absolutePath);
+		ps = std::make_unique<CDX12PixelShader>(this, absolutePath);
+
 		mDepthOnlyPixelShader.LoadShaderFromFile("Source/Shaders/DepthOnly_ps");
 		mDepthOnlyNormalPixelShader.LoadShaderFromFile(("Source/Shaders/DepthOnlyNormal_ps"));
 		mBasicTransformVertexShader.LoadShaderFromFile(("Source/Shaders/BasicTransform_vs"));
@@ -342,7 +360,7 @@ static void ReportLiveObjects()
 	DXGIGetDebugInterface1(0, IID_PPV_ARGS(&dxgiDebug));
 	dxgiDebug->EnableLeakTrackingForThread();
 	//dxgiDebug->ReportLiveObjects(DXGI_DEBUG_ALL, DXGI_DEBUG_RLO_DETAIL);
-	//dxgiDebug->Release();
+	dxgiDebug->Release();
 }
 
 ComPtr<IDXGIAdapter4> GetAdapter(bool useWarp)
@@ -429,26 +447,20 @@ ComPtr<ID3D12Device2> CreateDevice(ComPtr<IDXGIAdapter4> adapter)
 		// Suppress messages based on their severity level
 
 		D3D12_MESSAGE_SEVERITY Severities[] =
-
 		{
-
 			D3D12_MESSAGE_SEVERITY_INFO
-
 		};
 
 		// Suppress individual messages by their ID
 
-		D3D12_MESSAGE_ID DenyIds[] = {
-
+		D3D12_MESSAGE_ID DenyIds[] =
+		{
 			D3D12_MESSAGE_ID_CLEARRENDERTARGETVIEW_MISMATCHINGCLEARVALUE,
 			// I'm really not sure how to avoid this message.
-
 			D3D12_MESSAGE_ID_MAP_INVALID_NULLRANGE,
 			// This warning occurs when using capture frame while graphics debugging.
-
 			D3D12_MESSAGE_ID_UNMAP_INVALID_NULLRANGE,
 			// This warning occurs when using capture frame while graphics debugging.
-
 		};
 
 		D3D12_INFO_QUEUE_FILTER NewFilter = {};
@@ -621,7 +633,7 @@ void CDX12Engine::InitD3D()
 	{
 		// Describe and create a render target view (RTV) descriptor heap.
 		D3D12_DESCRIPTOR_HEAP_DESC desc = {};
-		desc.NumDescriptors = mNumFrames + 1;
+		desc.NumDescriptors =100;
 		desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
 		desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
 
@@ -633,7 +645,7 @@ void CDX12Engine::InitD3D()
 	// Create depth stencil view
 	{
 		D3D12_DESCRIPTOR_HEAP_DESC desc = {};
-		desc.NumDescriptors = mNumFrames;
+		desc.NumDescriptors = 100;
 		desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
 		desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
 
@@ -657,7 +669,7 @@ void CDX12Engine::InitD3D()
 	{
 		// Describe and create a constant buffer view (CBV) descriptor heap.
 		D3D12_DESCRIPTOR_HEAP_DESC desc = {};
-		desc.NumDescriptors = mNumFrames;
+		desc.NumDescriptors = 100;
 		desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
 		desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
 
