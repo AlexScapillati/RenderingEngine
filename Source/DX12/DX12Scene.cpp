@@ -24,8 +24,8 @@ CDX12Scene::CDX12Scene(CDX12Engine* engine)
 	mCamera = nullptr;
 	mSelectedObj = nullptr;
 
-	mViewportX = 1024;
-	mViewportY = 720;
+	mViewportX = 1920;
+	mViewportY = 1080;
 
 	mLockFPS = true;
 
@@ -61,8 +61,8 @@ CDX12Scene::CDX12Scene(CDX12Engine* engine, std::string fileName)
 	mCamera = nullptr;
 	mSelectedObj = nullptr;
 
-	mViewportX = 1240;
-	mViewportY = 720;
+	mViewportX = 1920;
+	mViewportY = 1080;
 
 	gAmbientColour = { 0.03f, 0.03f, 0.04f };
 	mLockFPS = true;
@@ -302,7 +302,7 @@ void CDX12Scene::Save(std::string fileName)
 
 void CDX12Scene::Resize(UINT newX, UINT newY)
 {
-
+	return;
 	mEngine->Flush();
 
 	mSceneTexture->Barrier(D3D12_RESOURCE_STATE_COMMON);

@@ -3,9 +3,9 @@
 //--------------------------------------------------------------------------------------
 
 #include "GraphicsHelpers.h"
-#include "../External/DirectXTK/DDSTextureLoader.h"
-#include "../External/DirectXTK/WICTextureLoader.h"
-#include "../External/DirectXTex-master/DirectXTex/DirectXTex.h"
+#include "DDSTextureLoader.h"
+#include "WICTextureLoader.h"
+#include "DirectXTex.h"
 #include "ScreenGrab.h"
 
 //--------------------------------------------------------------------------------------

@@ -1,13 +1,12 @@
 
 #include "DX12Texture.h"
 #include "DX12ConstantBuffer.h"
-
-#include "DirectXHelpers.h"
-#include "DDSTextureLoader.h"
 #include "DX12DescriptorHeap.h"
-#include "WICTextureLoader.h"
-#include "ResourceUploadBatch.h"
 
+#include "ResourceUploadBatch.h"
+#include "../DirectXTK12/Inc/DDSTextureLoader.h"
+#include "../DirectXTK12/Inc/WICTextureLoader.h"
+#include "../DirectXTK12/Inc/DirectXHelpers.h"
 
 CDX12Texture::CDX12Texture(CDX12Engine* engine, DX12Common::Resource r)
 {

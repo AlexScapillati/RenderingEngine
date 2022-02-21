@@ -44,7 +44,7 @@ CDX12Engine::CDX12Engine(HINSTANCE hInstance, int nCmdShow)
 		mGui = std::make_unique<CDX12Gui>(this);
 
 		// Create scene
-		mMainScene = std::make_unique<CDX12Scene>(this/*, "Scene1.xml"*/);
+		mMainScene = std::make_unique<CDX12Scene>(this, "Scene1.xml");
 	}
 	catch (const std::runtime_error& e) { throw std::runtime_error(e.what()); }
 

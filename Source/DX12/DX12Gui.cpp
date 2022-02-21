@@ -177,7 +177,7 @@ void CDX12Gui::Show(float& frameTime)
 			if ((size.x != mEngine->mMainScene->mViewportX || size.y != mEngine->mMainScene->mViewportY) && (size.x != 0 && size.y != 0))
 			{
 				//if they are different, resize the scene viewport
-				mEngine->mMainScene->Resize(UINT(size.x), UINT(size.y));
+				//mEngine->mMainScene->Resize(UINT(size.x), UINT(size.y));
 			}
 
 			//render the scene image to ImGui
