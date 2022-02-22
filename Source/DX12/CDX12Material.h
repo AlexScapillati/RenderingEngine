@@ -1,58 +1,60 @@
 #pragma once
 
-#include "DX12Engine.h"
 
-class CDX12Texture;
-
-class CDX12Material
+namespace DX12
 {
+	class CDX12Texture;
 
-public:
+	class CDX12Material
+	{
 
-	//-------------------------------------
-	// Construction / Usage
-	//-------------------------------------
+	public:
 
-	CDX12Material() = delete;
-	CDX12Material(const CDX12Material&&) = delete;
-	CDX12Material& operator=(const CDX12Material&) = delete;
-	CDX12Material& operator=(const CDX12Material&&) = delete;
+		//-------------------------------------
+		// Construction / Usage
+		//-------------------------------------
 
-	// Main Constructor
-	// Requires a vector of filemaps
-	// Formats: NAME_RESOLUTION_TYPE.EXTENTION
-	// Types supported: Albedo,AmbientOccusion,Displacement,Roughness,Metallness
-	// It will set automatically the correct shaders depending on the use (Normals = PBR / No Normals = PBRNoNormals)
-	CDX12Material(std::vector<std::string> fileMaps, CDX12Engine* engine);
+		CDX12Material() = delete;
+		CDX12Material(const CDX12Material&&) = delete;
+		CDX12Material& operator=(const CDX12Material&) = delete;
+		CDX12Material& operator=(const CDX12Material&&) = delete;
 
-	// Copy Constuctor
-	// Deep Copy
-	CDX12Material(CDX12Material& m);
+		// Main Constructor
+		// Requires a vector of filemaps
+		// Formats: NAME_RESOLUTION_TYPE.EXTENTION
+		// Types supported: Albedo,AmbientOccusion,Displacement,Roughness,Metallness
+		// It will set automatically the correct shaders depending on the use (Normals = PBR / No Normals = PBRNoNormals)
+		CDX12Material(std::vector<std::string> fileMaps, CDX12Engine* engine);
 
-	~CDX12Material();
+		// Copy Constuctor
+		// Deep Copy
+		CDX12Material(CDX12Material& m);
 
-	// Return if the material has a normal map
-	bool HasNormals() const { return mHasNormals; }
+		~CDX12Material();
 
-	// Set the shaders
-	// Set the maps to the shader
-	// Optionally decide to set depth only shaders
-	void                RenderMaterial() const;
-	std::vector<void*> GetTextureSRV() const ;
+		// Return if the material has a normal map
+		bool HasNormals() const { return mHasNormals; }
 
-	auto& TextureFileNames() { return mMapsStr; }
+		// Set the shaders
+		// Set the maps to the shader
+		// Optionally decide to set depth only shaders
+		void               RenderMaterial() const;
+		std::vector<void*> GetTextureSRV() const;
+		auto& TextureFileNames() { return mMapsStr; }
 
-private:
+	private:
 
-	CDX12Engine* mEngine;
+		CDX12Engine* mEngine;
 
-	std::vector<std::string> mMapsStr;
+		std::vector<std::string> mMapsStr;
 
-	bool mHasNormals;
+		bool mHasNormals;
 
-	std::unique_ptr<CDX12Texture> mAlbedo, mDisplacement, mRoughness, mAo, mNormal, mMetalness;
+		std::unique_ptr<CDX12Texture> mAlbedo, mDisplacement, mRoughness, mAo, mNormal, mMetalness;
+		
+		void               LoadMaps(std::vector<std::string>& fileMaps);
 
-	void LoadMaps(std::vector<std::string>& maps);
-};
+	};
 
 
+}

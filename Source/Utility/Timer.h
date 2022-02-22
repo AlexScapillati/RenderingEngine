@@ -1,9 +1,8 @@
 //--------------------------------------------------------------------------------------
 // Timer class - works like a stopwatch
 //--------------------------------------------------------------------------------------
+#pragma once
 
-#ifndef _TIMER_H_INCLUDED_
-#define _TIMER_H_INCLUDED_
 
 #include "stdint.h"
 
@@ -65,6 +64,3 @@ private:
 	// Time when low-resolution timer was stopped (if it has been)
 	uint32_t mLowResStop;
 };
-
-
-#endif //_TIMER_H_INCLUDED_

@@ -1,3 +1,7 @@
 #include "CDX12Sky.h"
-void CDX12Sky::SetRotation(CVector3 rotation, int node) { CDX12GameObject::SetRotation(rotation, node); }
-void CDX12Sky::Render() { CDX12GameObject::Render(); }
+
+namespace DX12
+{
+	void CDX12Sky::Render(bool basicGeometry) { CDX12GameObject::Render(basicGeometry); }
+	void CDX12Sky::LoadNewMesh(std::string newMesh) { CDX12GameObject::LoadNewMesh(newMesh); }
+}

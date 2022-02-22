@@ -2,14 +2,17 @@
 
 #include <deque>
 
-#include "CDX12Common.h"
+#include "../Common/CGui.h"
+
+namespace DX12
+{
 
 class CDX12Scene;
 class CDX12Engine;
 class CDX12GameObject;
 
-class CDX12Gui
-{
+	class CDX12Gui final : public CGui
+	{
 	public:
 
 		CDX12Gui(CDX12Engine* engine);
@@ -22,21 +25,20 @@ class CDX12Gui
 		CDX12Gui& operator=(const CDX12Gui&) = delete;
 		CDX12Gui& operator=(const CDX12Gui&&) = delete;
 
-		void Begin(float& frameTime);
+		void Begin(float& frameTime) override;
 
-		void Show(float& frameTime);
+		void Show(float& frameTime) override;
 
-		void AddObjectsMenu() const;
+		void AddObjectsMenu() const override;
 
-		void DisplayPropertiesWindow() const;
+		void DisplayPropertiesWindow() const override;
 
-		void DisplayObjects();
+		void DisplayObjects() override;
 
-		void DisplaySceneSettings(bool& b) const;
+		void DisplaySceneSettings(bool& b) const override;
 
-		void DisplayShadowMaps() const;
+		void DisplayShadowMaps() const override;
 
-		bool IsSceneFullscreen() const;
 		void End() const;
 
 		template<class T>
@@ -45,9 +47,10 @@ class CDX12Gui
 		~CDX12Gui();
 
 	private:
-		CDX12Engine*     mEngine             = nullptr;
-		CDX12GameObject* mSelectedObj        = nullptr;
+		CDX12Engine* mEngine = nullptr;
+		CDX12GameObject* mSelectedObj = nullptr;
 		bool             mViewportFullscreen = false;
 		CVector2         mViewportWindowPos;
-		
-};
+
+	};
+}

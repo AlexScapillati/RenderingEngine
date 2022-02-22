@@ -1,56 +1,62 @@
 #include "DX12DescriptorHeap.h"
 
-CDX12DescriptorHeap::CDX12DescriptorHeap(CDX12Engine* engine, D3D12_DESCRIPTOR_HEAP_DESC desc):
-	mEngine(engine),
-	mDesc(desc),
-	mTop(0)
+namespace DX12
 {
-	if (FAILED(mEngine->mDevice->CreateDescriptorHeap(&mDesc, IID_PPV_ARGS(&mDescriptorHeap))))
+
+	CDX12DescriptorHeap::CDX12DescriptorHeap(CDX12Engine* engine, D3D12_DESCRIPTOR_HEAP_DESC desc) :
+		mEngine(engine),
+		mDesc(desc),
+		mTop(0)
 	{
-		throw std::runtime_error("Error Creating Descriptor Heap");
+		if (FAILED(mEngine->mDevice->CreateDescriptorHeap(&mDesc, IID_PPV_ARGS(&mDescriptorHeap))))
+		{
+			throw std::runtime_error("Error Creating Descriptor Heap");
+		}
+
+		mSize = mEngine->mDevice->GetDescriptorHandleIncrementSize(mDesc.Type);
+		mEngine->mDevice->Release();
 	}
 
-	mSize = mEngine->mDevice->GetDescriptorHandleIncrementSize(mDesc.Type);
-	mEngine->mDevice->Release();
-}
-
-D3D12_DESCRIPTOR_HEAP_DESC CDX12DescriptorHeap::GetDesc() const
-{ return mDesc; }
-
-SHandle CDX12DescriptorHeap::Add()
-{
-
-	const SHandle newHandle
+	D3D12_DESCRIPTOR_HEAP_DESC CDX12DescriptorHeap::GetDesc() const
 	{
-		CD3DX12_CPU_DESCRIPTOR_HANDLE(mDescriptorHeap->GetCPUDescriptorHandleForHeapStart(),mTop,mSize),
-		mDesc.Flags == D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE ?
-			CD3DX12_GPU_DESCRIPTOR_HANDLE(mDescriptorHeap->GetGPUDescriptorHandleForHeapStart(),mTop,mSize) :
-			CD3DX12_GPU_DESCRIPTOR_HANDLE()
-	};
+		return mDesc;
+	}
 
-	mTop++;
+	SHandle CDX12DescriptorHeap::Add()
+	{
 
-	mHandles.push_back(newHandle);
-	return mHandles.back();
-}
+		const SHandle newHandle
+		{
+			CD3DX12_CPU_DESCRIPTOR_HANDLE(mDescriptorHeap->GetCPUDescriptorHandleForHeapStart(),mTop,mSize),
+			mDesc.Flags == D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE ?
+				CD3DX12_GPU_DESCRIPTOR_HANDLE(mDescriptorHeap->GetGPUDescriptorHandleForHeapStart(),mTop,mSize) :
+				CD3DX12_GPU_DESCRIPTOR_HANDLE()
+		};
 
-SHandle CDX12DescriptorHeap::Get(UINT pos) const
-{
-	return mHandles[pos];
-}
+		mTop++;
 
-void CDX12DescriptorHeap::Set() const
-{
-	ID3D12DescriptorHeap* const pheap[] = {mDescriptorHeap.Get()};
-	mEngine->mCommandList->SetDescriptorHeaps(1, pheap);
-}
+		mHandles.push_back(newHandle);
+		return mHandles.back();
+	}
 
-INT CDX12DescriptorHeap::Top() const
-{
-	return mTop;
-}
+	SHandle CDX12DescriptorHeap::Get(UINT pos) const
+	{
+		return mHandles[pos];
+	}
 
-void CDX12DescriptorHeap::Remove(UINT pos)
-{
+	void CDX12DescriptorHeap::Set() const
+	{
+		ID3D12DescriptorHeap* const pheap[] = { mDescriptorHeap.Get() };
+		mEngine->mCommandList->SetDescriptorHeaps(1, pheap);
+	}
 
+	INT CDX12DescriptorHeap::Top() const
+	{
+		return mTop;
+	}
+
+	void CDX12DescriptorHeap::Remove(UINT pos)
+	{
+
+	}
 }

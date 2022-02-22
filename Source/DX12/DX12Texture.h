@@ -1,66 +1,65 @@
 #pragma once
 
-#include "CDX12Common.h"
+#include "DX12Common.h"
 
-class CDX12Engine;
-
-class CDX12Texture
+namespace DX12
 {
-public:
+	class CDX12Engine;
+
+	class CDX12Texture
+	{
+	public:
+
+		CDX12Texture() = delete;
+		CDX12Texture(const CDX12Texture&) = delete;
+		CDX12Texture(const CDX12Texture&&) = delete;
+		CDX12Texture& operator=(const CDX12Texture&) = delete;
+		CDX12Texture& operator=(const CDX12Texture&&) = delete;
 
 
+		CDX12Engine* mPtrEngine;
+		Resource  mResource;
+		SHandle   mHandle;
+		INT                   mDescriptorIndex;
+		D3D12_RESOURCE_STATES mCurrentResourceState;
 
-	CDX12Texture() = delete;
-	CDX12Texture(const CDX12Texture&) = delete;
-	CDX12Texture(const CDX12Texture&&) = delete;
-	CDX12Texture& operator=(const CDX12Texture&) = delete;
-	CDX12Texture& operator=(const CDX12Texture&&) = delete;
+		CDX12Texture(CDX12Engine* engine,Resource r);
 
+		CDX12Texture(CDX12Engine* engine, std::string& filename);
 
-	CDX12Engine*		  mPtrEngine;
-	DX12Common::Resource  mResource;
-	DX12Common::SHandle   mHandle;
-	INT                   mDescriptorIndex;
-	D3D12_RESOURCE_STATES mCurrentResourceState;
+		CDX12Texture(CDX12Engine* engine, D3D12_RESOURCE_DESC desc);
+		
+		virtual ~CDX12Texture();
 
-	CDX12Texture(CDX12Engine* engine, DX12Common::Resource r);
+		void Barrier(D3D12_RESOURCE_STATES after);
 
-	CDX12Texture(CDX12Engine* engine, std::string& filename);
-
-	CDX12Texture(CDX12Engine* engine, D3D12_RESOURCE_DESC desc);
-
-	virtual ~CDX12Texture();
-
-	void Barrier(D3D12_RESOURCE_STATES after);
-
-	void Set(UINT rootParameterIndex);
+		void Set(UINT rootParameterIndex);
 
 
-protected:
-	void LoadTexture(std::string& filename);
+	protected:
+		void LoadTexture(std::string& filename);
 
-	void CreateTexture(D3D12_RESOURCE_DESC desc);
-};
+		void CreateTexture(D3D12_RESOURCE_DESC desc);
+	};
 
-class CDX12RenderTarget final : public CDX12Texture
-{
-public:
+	class CDX12RenderTarget final : public CDX12Texture
+	{
+	public:
 
-	CDX12RenderTarget() = delete;
-	CDX12RenderTarget(const CDX12RenderTarget&) = delete;
-	CDX12RenderTarget(const CDX12RenderTarget&&) = delete;
-	CDX12RenderTarget& operator=(const CDX12RenderTarget&) = delete;
-	CDX12RenderTarget& operator=(const CDX12RenderTarget&&) = delete;
+		CDX12RenderTarget() = delete;
+		CDX12RenderTarget(const CDX12RenderTarget&) = delete;
+		CDX12RenderTarget(const CDX12RenderTarget&&) = delete;
+		CDX12RenderTarget& operator=(const CDX12RenderTarget&) = delete;
+		CDX12RenderTarget& operator=(const CDX12RenderTarget&&) = delete;
 
-	CDX12RenderTarget(CDX12Engine* engine, DX12Common::Resource r);
+		CDX12RenderTarget(CDX12Engine* engine,Resource r);
 
-	CDX12RenderTarget(CDX12Engine* engine, D3D12_RESOURCE_DESC desc);
+		CDX12RenderTarget(CDX12Engine* engine, D3D12_RESOURCE_DESC desc);
 
-	~CDX12RenderTarget() override;
+		~CDX12RenderTarget() override;
 
-	DX12Common::SHandle mRTVHandle;
+		SHandle mRTVHandle;
 
-	INT mRTVDescriptorIndex;
-
-
-};
+		INT mRTVDescriptorIndex;
+	};
+}

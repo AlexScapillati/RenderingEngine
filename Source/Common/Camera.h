@@ -11,8 +11,6 @@
 #include "..\Math/MathHelpers.h"
 #include "..\Utility/Input.h"
 
-
-
 class CCamera
 {
 public:

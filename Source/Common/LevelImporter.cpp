@@ -2,19 +2,18 @@
 
 #include "LevelImporter.h"
 
-#include "Mesh.h"
+#include <stdexcept>
 
-#include "Objects/GameObject.h"
-#include "Objects/Light.h"
-#include "Objects/DirLight.h"
-#include "Objects/SpotLight.h"
-#include "Objects/PointLight.h"
-#include "Objects/Sky.h"
+#include "../Engine.h"
 #include "..\Common/Camera.h"
-#include "Objects/Plant.h"
+#include "..\Common/CScene.h"
+
+#include "../Common/CGameObject.h"
+#include "../Common/CPostProcess.h"
+#include "../DX11/DX11Engine.h"
 
 bool CLevelImporter::LoadScene(const std::string& level,
-                               CDX11Scene*        scene)
+	CScene* scene)
 {
 	tinyxml2::XMLDocument doc;
 
@@ -47,7 +46,7 @@ bool CLevelImporter::LoadScene(const std::string& level,
 }
 
 void CLevelImporter::SaveScene(std::string& fileName /* ="" */,
-                               CDX11Scene*  ptrScene)
+	CScene* ptrScene)
 {
 	if (fileName.empty())
 	{
@@ -72,7 +71,7 @@ void CLevelImporter::SaveScene(std::string& fileName /* ="" */,
 
 	const auto ppEffects = scene->InsertNewChildElement("PostProcessingEffects");
 
-	SavePostProcessingEffect(ppEffects, ptrScene);
+	SavePostProcessingEffect(ppEffects);
 
 	doc.InsertEndChild(scene);
 
@@ -82,14 +81,14 @@ void CLevelImporter::SaveScene(std::string& fileName /* ="" */,
 	}
 }
 
-CLevelImporter::CLevelImporter(CDX11Engine* engine)
+CLevelImporter::CLevelImporter(IEngine* engine)
 {
 	mEngine = engine;
 }
 
 
 void CLevelImporter::SavePositionRotationScale(tinyxml2::XMLElement* obj,
-                                               CDX11GameObject*      it)
+	CGameObject* it)
 {
 	//save position, position and scale
 	auto childEl = obj->InsertNewChildElement("Position");
@@ -101,7 +100,7 @@ void CLevelImporter::SavePositionRotationScale(tinyxml2::XMLElement* obj,
 }
 
 void CLevelImporter::SaveObjects(tinyxml2::XMLElement* el,
-                                 CDX11Scene*           ptrScene)
+	CScene* ptrScene)
 {
 	//----------------------------------------------------
 	//	Game Objects
@@ -128,27 +127,27 @@ void CLevelImporter::SaveObjects(tinyxml2::XMLElement* el,
 
 		auto childEl = obj->InsertNewChildElement("Geometry");
 
-		if (it->Material()->HasNormals())
-		{
-			std::string id = it->Mesh()->MeshFileName();
+		//if (dynamic_cast<DX11::CDX11GameObject*>(it)->Material()->HasNormals())
+		//{
+		//	std::string id = dynamic_cast<DX11::CDX11GameObject*>(it)->Mesh()->MeshFileName();
 
-			childEl->SetAttribute("ID", id.c_str());
-		}
-		else
-		{
-			childEl->SetAttribute("Mesh", it->Mesh()->MeshFileName().c_str());
-			childEl->SetAttribute("Diffuse", it->TextrueFileName().c_str());
-		}
+		//	childEl->SetAttribute("ID", id.c_str());
+		//}
+		//else
+		//{
+		//	childEl->SetAttribute("Mesh", dynamic_cast<DX11::CDX11GameObject*>(it)->Mesh()->MeshFileName().c_str());
+		//	childEl->SetAttribute("Diffuse", dynamic_cast<DX11::CDX11GameObject*>(it)->TextureFileName().c_str());
+		//}
 
 		SavePositionRotationScale(obj, it);
 
-		// Ambient Map
-		if (it->AmbientMapEnabled())
-		{
-			childEl = obj->InsertNewChildElement("AmbientMap");
-			childEl->SetAttribute("Enabled", it->AmbientMapEnabled());
-			childEl->SetAttribute("Size", (int)it->AmbientMap()->Size());
-		}
+		//// Ambient Map
+		//if (dynamic_cast<DX11::CDX11GameObject*>(it)->AmbientMapEnabled())
+		//{
+		//	childEl = obj->InsertNewChildElement("AmbientMap");
+		//	childEl->SetAttribute("Enabled", dynamic_cast<DX11::CDX11GameObject*>(it)->AmbientMapEnabled());
+		//	childEl->SetAttribute("Size", (int)dynamic_cast<DX11::CDX11GameObject*>(it)->AmbientMap()->Size());
+		//}
 	}
 
 	//----------------------------------------------------
@@ -159,15 +158,15 @@ void CLevelImporter::SaveObjects(tinyxml2::XMLElement* el,
 	{
 		const auto obj = el->InsertNewChildElement("Entity");
 		obj->SetAttribute("Type", "Light");
-		obj->SetAttribute("Name", it->Name().c_str());
+		obj->SetAttribute("Name", dynamic_cast<CGameObject*>(it)->Name().c_str());
 
 		auto childEl = obj->InsertNewChildElement("Geometry");
 
-		childEl->SetAttribute("Mesh", it->Mesh()->MeshFileName().c_str());
-		childEl->SetAttribute("Diffuse", it->TextrueFileName().c_str());
+		childEl->SetAttribute("Mesh", dynamic_cast<CGameObject*>(it)->MeshFileNames().c_str());
+		childEl->SetAttribute("Diffuse", dynamic_cast<CGameObject*>(it)->TextureFileName().c_str());
 
 		//save position, position and scale
-		SavePositionRotationScale(obj, it);
+		SavePositionRotationScale(obj, dynamic_cast<CGameObject*>(it));
 
 		//save colour and strength
 		childEl = obj->InsertNewChildElement("Colour");
@@ -184,15 +183,15 @@ void CLevelImporter::SaveObjects(tinyxml2::XMLElement* el,
 	{
 		const auto obj = el->InsertNewChildElement("Entity");
 		obj->SetAttribute("Type", "SpotLight");
-		obj->SetAttribute("Name", it->Name().c_str());
+		obj->SetAttribute("Name", dynamic_cast<CGameObject*>(it)->Name().c_str());
 
 		auto childEl = obj->InsertNewChildElement("Geometry");
 
-		childEl->SetAttribute("Mesh", it->Mesh()->MeshFileName().c_str());
-		childEl->SetAttribute("Diffuse", it->TextrueFileName().c_str());
+		childEl->SetAttribute("Mesh", dynamic_cast<CGameObject*>(it)->MeshFileNames().c_str());
+		childEl->SetAttribute("Diffuse", dynamic_cast<CGameObject*>(it)->TextureFileName().c_str());
 
 		//save position, position and scale
-		SavePositionRotationScale(obj, it);
+		SavePositionRotationScale(obj, dynamic_cast<CGameObject*>(it));
 
 		//save colour and strength
 		childEl = obj->InsertNewChildElement("Colour");
@@ -209,15 +208,15 @@ void CLevelImporter::SaveObjects(tinyxml2::XMLElement* el,
 	{
 		const auto obj = el->InsertNewChildElement("Entity");
 		obj->SetAttribute("Type", "DirectionalLight");
-		obj->SetAttribute("Name", it->Name().c_str());
+		obj->SetAttribute("Name", dynamic_cast<CGameObject*>(it)->Name().c_str());
 
 		auto childEl = obj->InsertNewChildElement("Geometry");
 
-		childEl->SetAttribute("Mesh", it->Mesh()->MeshFileName().c_str());
-		childEl->SetAttribute("Diffuse", it->TextrueFileName().c_str());
+		childEl->SetAttribute("Mesh", dynamic_cast<CGameObject*>(it)->MeshFileNames().c_str());
+		childEl->SetAttribute("Diffuse", dynamic_cast<CGameObject*>(it)->TextureFileName().c_str());
 
 		//save rotation and scale
-		SavePositionRotationScale(obj, it);
+		SavePositionRotationScale(obj, dynamic_cast<CGameObject*>(it));
 
 		//save colour and strength
 		childEl = obj->InsertNewChildElement("Colour");
@@ -234,15 +233,15 @@ void CLevelImporter::SaveObjects(tinyxml2::XMLElement* el,
 	{
 		const auto obj = el->InsertNewChildElement("Entity");
 		obj->SetAttribute("Type", "PointLight");
-		obj->SetAttribute("Name", it->Name().c_str());
+		obj->SetAttribute("Name", dynamic_cast<CGameObject*>(it)->Name().c_str());
 
 		auto childEl = obj->InsertNewChildElement("Geometry");
 
-		childEl->SetAttribute("Mesh", it->Mesh()->MeshFileName().c_str());
-		childEl->SetAttribute("Diffuse", it->TextrueFileName().c_str());
+		childEl->SetAttribute("Mesh", dynamic_cast<CGameObject*>(it)->MeshFileNames().c_str());
+		childEl->SetAttribute("Diffuse", dynamic_cast<CGameObject*>(it)->TextureFileName().c_str());
 
 		//save position, position and scale
-		SavePositionRotationScale(obj, it);
+		SavePositionRotationScale(obj, dynamic_cast<CGameObject*>(it));
 
 		//save colour and strength
 		childEl = obj->InsertNewChildElement("Colour");
@@ -255,7 +254,7 @@ void CLevelImporter::SaveObjects(tinyxml2::XMLElement* el,
 	//	Camera
 	//----------------------------------------------------
 
-	const auto camera = ptrScene->mCamera.get();
+	const auto camera = ptrScene->GetCamera();
 
 	const auto obj = el->InsertNewChildElement("Entity");
 	obj->SetAttribute("Type", "Camera");
@@ -268,7 +267,7 @@ void CLevelImporter::SaveObjects(tinyxml2::XMLElement* el,
 }
 
 void CLevelImporter::SaveVector3(CVector3              v,
-                                 tinyxml2::XMLElement* el)
+	tinyxml2::XMLElement* el)
 {
 	el->SetAttribute("X", v.x);
 	el->SetAttribute("Y", v.y);
@@ -276,7 +275,7 @@ void CLevelImporter::SaveVector3(CVector3              v,
 }
 
 bool CLevelImporter::ParseScene(tinyxml2::XMLElement* sceneEl,
-                                CDX11Scene*           scene)
+	CScene* scene)
 {
 	auto element = sceneEl->FirstChildElement();
 
@@ -295,25 +294,9 @@ bool CLevelImporter::ParseScene(tinyxml2::XMLElement* sceneEl,
 				throw std::runtime_error(e.what());
 			}
 		}
-		else if (elementName == "Default")
-		{
-			const auto elementShaders = element->FirstChildElement("Shaders");
-			if (elementShaders)
-			{
-				auto child = elementShaders->FindAttribute("VS");
-				if (child) scene->mDefaultVs = child->Value();
-
-				child = elementShaders->FindAttribute("PS");
-				if (child) scene->mDefaultPs = child->Value();
-			}
-			else
-			{
-				throw std::runtime_error("Error loading default scene values");
-			}
-		}
 		else if (elementName == "PostProcessingEffects")
 		{
-			ParsePostProcessingEffects(element, scene);
+			ParsePostProcessingEffects(element);
 		}
 		element = element->NextSiblingElement();
 	}
@@ -331,15 +314,15 @@ CVector3 LoadVector3(tinyxml2::XMLElement* el)
 }
 
 void CLevelImporter::LoadObject(tinyxml2::XMLElement* currEntity,
-                                CDX11Scene*           scene)
+	CScene* scene)
 {
 	std::string ID;
 	std::string mesh;
 	std::string name;
 	std::string diffuse;
 
-	CVector3 pos   = { 0,0,0 };
-	CVector3 rot   = { 0,0,0 };
+	CVector3 pos = { 0,0,0 };
+	CVector3 rot = { 0,0,0 };
 	auto     scale = 1.0f;
 
 	const auto entityNameAttr = currEntity->FindAttribute("Name");
@@ -381,55 +364,51 @@ void CLevelImporter::LoadObject(tinyxml2::XMLElement* currEntity,
 	const auto ambientMapEl = currEntity->FirstChildElement("AmbientMap");
 
 	bool enabled = false;
-	int  size    = 1;
+	int  size = 1;
 
 	if (ambientMapEl)
 	{
 		enabled = ambientMapEl->FindAttribute("Enabled")->BoolValue();
-		size    = ambientMapEl->FindAttribute("Size")->IntValue();
+		size = ambientMapEl->FindAttribute("Size")->IntValue();
 	}
 
 	// Create objects
-	CDX11GameObject* obj;
+	CGameObject* obj = nullptr;
 
-	try
+	if (ID.empty())
 	{
-		if (ID.empty())
-		{
-			obj = new CDX11GameObject(mEngine, mesh, name, diffuse, pos, rot, scale);
-		}
-		else
-		{
-			obj = new CDX11GameObject(mEngine, ID, name, pos, rot, scale);
-		}
-	}
-	catch (const std::exception& e)
-	{
-		//throw std::runtime_error(std::string(e.what()) + " of object " + name);
+		obj = mEngine->CreateObject(mesh, name, diffuse, pos, rot, scale);
 
-		return;
+		// Add it to the object manager
+		if (obj) scene->GetObjectManager()->AddObject(obj);
 	}
+	else
+	{
+		obj = mEngine->CreateObject(ID, name, pos, rot, scale);
+
+		// Add it to the object manager
+		if (obj) scene->GetObjectManager()->AddObject(obj);
+	}
+
 
 	// Set ambient map values
-	obj->AmbientMapEnabled() = enabled;
-	obj->AmbientMap()->SetSize(size);
+	//obj->AmbientMapEnabled() = enabled;
+	//obj->AmbientMap()->SetSize(size);
 
-	// Add it to the object manager
-	scene->mObjManager->AddObject(obj);
 }
 
 void CLevelImporter::LoadPointLight(tinyxml2::XMLElement* currEntity,
-                                    CDX11Scene*           scene)
+	CScene* scene)
 {
 	std::string mesh;
 	std::string name;
 	std::string diffuse;
 
-	CVector3 colour   = { 0,0,0 };
+	CVector3 colour = { 0,0,0 };
 	float    strength = 0;
-	CVector3 pos      = { 0,0,0 };
-	CVector3 rot      = { 0,0,0 };
-	auto     scale    = 1.0f;
+	CVector3 pos = { 0,0,0 };
+	CVector3 rot = { 0,0,0 };
+	auto     scale = 1.0f;
 
 	const auto entityNameAttr = currEntity->FindAttribute("Name");
 	if (entityNameAttr) name = entityNameAttr->Value();
@@ -474,29 +453,23 @@ void CLevelImporter::LoadPointLight(tinyxml2::XMLElement* currEntity,
 		colour = LoadVector3(colourEl);
 	}
 
-	try
-	{
-		const auto obj = new CPointLight(mEngine, mesh, name, diffuse, colour, strength, pos, rot, scale);
-		scene->mObjManager->AddPointLight(obj);
-	}
-	catch (const std::exception& e)
-	{
-		throw std::runtime_error(std::string(e.what()) + " of object " + name);
-	}
+	auto obj = mEngine->CreatePointLight(mesh, name, diffuse, colour, strength, pos, rot, scale);
+
+	scene->GetObjectManager()->AddPointLight(obj);
 }
 
 void CLevelImporter::LoadLight(tinyxml2::XMLElement* currEntity,
-                               CDX11Scene*           scene)
+	CScene* scene)
 {
 	std::string mesh;
 	std::string name;
 	std::string diffuse;
 
-	CVector3 colour   = { 0,0,0 };
+	CVector3 colour = { 0,0,0 };
 	float    strength = 0;
-	CVector3 pos      = { 0,0,0 };
-	CVector3 rot      = { 0,0,0 };
-	auto     scale    = 1.0f;
+	CVector3 pos = { 0,0,0 };
+	CVector3 rot = { 0,0,0 };
+	auto     scale = 1.0f;
 
 	const auto entityNameAttr = currEntity->FindAttribute("Name");
 	if (entityNameAttr) name = entityNameAttr->Value();
@@ -540,31 +513,25 @@ void CLevelImporter::LoadLight(tinyxml2::XMLElement* currEntity,
 	{
 		colour = LoadVector3(colourEl);
 	}
-	try
-	{
-		const auto obj = new CLight(mEngine, mesh, name, diffuse, colour, strength, pos, rot, scale);
 
-		scene->mObjManager->AddLight(obj);
-	}
-	catch (const std::exception& e)
-	{
-		throw std::runtime_error(std::string(e.what()) + " of object " + name);
-	}
+	auto obj = mEngine->CreateLight(mesh, name, diffuse, colour, strength, pos, rot, scale);
+
+	scene->GetObjectManager()->AddLight(obj);
 }
 
 
 void CLevelImporter::LoadSpotLight(tinyxml2::XMLElement* currEntity,
-                                   CDX11Scene*           scene)
+	CScene* scene)
 {
 	std::string mesh;
 	std::string name;
 	std::string diffuse;
 
-	CVector3 colour   = { 0,0,0 };
+	CVector3 colour = { 0,0,0 };
 	float    strength = 0;
-	CVector3 pos      = { 0,0,0 };
-	CVector3 rot      = { 0,0,0 };
-	auto     scale    = 1.0f;
+	CVector3 pos = { 0,0,0 };
+	CVector3 rot = { 0,0,0 };
+	auto     scale = 1.0f;
 
 	const auto entityNameAttr = currEntity->FindAttribute("Name");
 	if (entityNameAttr) name = entityNameAttr->Value();
@@ -609,31 +576,24 @@ void CLevelImporter::LoadSpotLight(tinyxml2::XMLElement* currEntity,
 		colour = LoadVector3(colourEl);
 	}
 
-	try
-	{
-		const auto obj = new CSpotLight(mEngine, mesh, name, diffuse, colour, strength, pos, rot, scale);
+	auto obj = mEngine->CreateSpotLight(mesh, name, diffuse, colour, strength, pos, rot, scale);
 
-		scene->mObjManager->AddSpotLight(obj);
-	}
-	catch (const std::exception& e)
-	{
-		throw std::runtime_error(std::string(e.what()) + " of object " + name);
-	}
+	scene->GetObjectManager()->AddSpotLight(obj);
 }
 
 
 void CLevelImporter::LoadDirLight(tinyxml2::XMLElement* currEntity,
-                                  CDX11Scene*           scene)
+	CScene* scene)
 {
 	std::string mesh;
 	std::string name;
 	std::string diffuse;
 
-	CVector3 colour   = { 0,0,0 };
+	CVector3 colour = { 0,0,0 };
 	float    strength = 0;
-	CVector3 pos      = { 0,0,0 };
-	CVector3 rot      = { 0,0,0 };
-	auto     scale    = 1.0f;
+	CVector3 pos = { 0,0,0 };
+	CVector3 rot = { 0,0,0 };
+	auto     scale = 1.0f;
 
 	const auto entityNameAttr = currEntity->FindAttribute("Name");
 	if (entityNameAttr) name = entityNameAttr->Value();
@@ -678,28 +638,21 @@ void CLevelImporter::LoadDirLight(tinyxml2::XMLElement* currEntity,
 		colour = LoadVector3(colourEl);
 	}
 
-	try
-	{
-		const auto obj = new CDirLight(mEngine, mesh, name, diffuse, colour, strength, pos, rot, scale);
+	auto obj = mEngine->CreateDirectionalLight(mesh, name, diffuse, colour, strength, pos, rot, scale);
 
-		scene->mObjManager->AddDirLight(obj);
-	}
-	catch (const std::exception& e)
-	{
-		throw std::runtime_error(std::string(e.what()) + " of object " + name);
-	}
+	scene->GetObjectManager()->AddDirLight(obj);
 }
 
 
 void CLevelImporter::LoadSky(tinyxml2::XMLElement* currEntity,
-                             CDX11Scene*           scene)
+	CScene* scene)
 {
 	std::string mesh;
 	std::string name;
 	std::string diffuse;
 
-	CVector3 pos   = { 0,0,0 };
-	CVector3 rot   = { 0,0,0 };
+	CVector3 pos = { 0,0,0 };
+	CVector3 rot = { 0,0,0 };
 	auto     scale = 1.0f;
 
 	const auto entityNameAttr = currEntity->FindAttribute("Name");
@@ -737,29 +690,21 @@ void CLevelImporter::LoadSky(tinyxml2::XMLElement* currEntity,
 
 	// No ambient map for the sky object
 
-	try
-	{
-		const auto obj = new CSky(mEngine, mesh, name, diffuse, pos, rot, scale);
+	CSky* obj = mEngine->CreateSky(mesh, name, diffuse, pos, rot, scale);
 
-		scene->mObjManager->AddObject(obj);
-	}
-	catch (const std::exception& e)
-	{
-		throw std::runtime_error(std::string(e.what()) + " of object " + name);
-	}
+	scene->GetObjectManager()->AddSky(obj);
+
 }
 
 void CLevelImporter::LoadCamera(tinyxml2::XMLElement* currEntity,
-                                CDX11Scene*           scene)
+	CScene* scene)
 {
 	std::string mesh;
 	std::string diffuse;
-	auto        vertexShader = scene->mDefaultVs;
-	auto        pixelShader  = scene->mDefaultPs;
-	const auto  FOV          = PI / 3;
-	const auto  aspectRatio  = 1.333333373f;
-	const auto  nearClip     = 0.100000015f;
-	const auto  farClip      = 10000.0f;
+	const auto  FOV = PI / 3;
+	const auto  aspectRatio = 1.333333373f;
+	const auto  nearClip = 0.100000015f;
+	const auto  farClip = 10000.0f;
 
 	CVector3 pos = { 0,0,0 };
 	CVector3 rot = { 0,0,0 };
@@ -776,24 +721,24 @@ void CLevelImporter::LoadCamera(tinyxml2::XMLElement* currEntity,
 		rot = ToRadians(LoadVector3(rotationEl));
 	}
 
-	scene->mCamera = std::make_unique<CCamera>(pos, rot, FOV, aspectRatio, nearClip, farClip);
+	scene->SetCamera(new CCamera(pos, rot, FOV, aspectRatio, nearClip, farClip));
 
-	if (!scene->mCamera)
+	if (!scene->GetCamera())
 	{
 		throw std::runtime_error("Error initializing camera");
 	}
 }
 
 void CLevelImporter::LoadPlant(tinyxml2::XMLElement* currEntity,
-                               CDX11Scene*           scene)
+	CScene* scene)
 {
 	std::string ID;
 	std::string mesh;
 	std::string name;
 	std::string diffuse;
 
-	CVector3 pos   = { 0,0,0 };
-	CVector3 rot   = { 0,0,0 };
+	CVector3 pos = { 0,0,0 };
+	CVector3 rot = { 0,0,0 };
 	auto     scale = 1.0f;
 
 	const auto entityNameAttr = currEntity->FindAttribute("Name");
@@ -832,41 +777,10 @@ void CLevelImporter::LoadPlant(tinyxml2::XMLElement* currEntity,
 		scale = scaleEl->FindAttribute("X")->FloatValue();
 	}
 
-	// Ambient Map settings
-
-	const auto ambientMapEl = currEntity->FirstChildElement("AmbientMap");
-
-	bool enabled = false;
-	int  size    = 1;
-
-	if (ambientMapEl)
-	{
-		enabled = ambientMapEl->FindAttribute("Enabled")->BoolValue();
-		size    = ambientMapEl->FindAttribute("Size")->IntValue();
-	}
-
 	try
 	{
-		if (ID.empty())
-		{
-			const auto obj = new CPlant(mEngine, mesh, name, diffuse, pos, rot, scale);
-
-			// Set ambient map values
-			obj->AmbientMapEnabled() = enabled;
-			obj->AmbientMap()->SetSize(size);
-
-			scene->mObjManager->AddObject(obj);
-		}
-		else
-		{
-			const auto obj = new CPlant(mEngine, ID, name, pos, rot, scale);
-
-			// Set ambient map values
-			obj->AmbientMapEnabled() = enabled;
-			obj->AmbientMap()->SetSize(size);
-
-			scene->mObjManager->AddObject(obj);
-		}
+		const auto obj = mEngine->CreatePlant(mesh, name, pos, rot, scale);
+		scene->GetObjectManager()->AddObject(obj);
 	}
 	catch (const std::exception& e)
 	{
@@ -874,25 +788,26 @@ void CLevelImporter::LoadPlant(tinyxml2::XMLElement* currEntity,
 	}
 }
 
-void CLevelImporter::SavePostProcessingEffect(tinyxml2::XMLElement* curr,
-                                              CDX11Scene*           scene)
+void CLevelImporter::SavePostProcessingEffect(tinyxml2::XMLElement* curr)
 {
+
+
 	// Save the Type and mode for every effect
-	for (auto pp : scene->mPostProcessingFilters)
+	for (const auto& pp : mPostProcessingFilters)
 	{
 		const auto ppEl = curr->InsertNewChildElement("Effect");
 
 		// Cast the type string with the corresponding enum
-		ppEl->SetAttribute("Type", scene->mPostProcessStrings[(int)pp.type].c_str());
-		ppEl->SetAttribute("Mode", scene->mPostProcessModeStrings[(int)pp.mode].c_str());
+		ppEl->SetAttribute("Type", mPostProcessStrings[(int)pp.type].c_str());
+		ppEl->SetAttribute("Mode", mPostProcessModeStrings[(int)pp.mode].c_str());
 	}
 
 	// Save settings
 	// Create an array of floats
-	float settings[sizeof(PostProcessingConstants) / sizeof(float)];
+	float settings[sizeof(DX11::PostProcessingConstants) / sizeof(float)];
 
 	// Copy the postprocessing constants struct in the array of floats with memcpy
-	memcpy(settings, &gPostProcessingConstants, sizeof(PostProcessingConstants));
+	memcpy(settings, &DX11::gPostProcessingConstants, sizeof(DX11::PostProcessingConstants));
 
 	// Insert the settings element
 	const auto settingsEl = curr->InsertNewChildElement("Settings");
@@ -909,9 +824,9 @@ void CLevelImporter::SavePostProcessingEffect(tinyxml2::XMLElement* curr,
 	}
 }
 
-void CLevelImporter::ParsePostProcessingEffects(tinyxml2::XMLElement* curr,
-                                                CDX11Scene*           scene)
+void CLevelImporter::ParsePostProcessingEffects(tinyxml2::XMLElement* curr)
 {
+
 	auto currEffect = curr->FirstChildElement();
 
 	while (currEffect)
@@ -933,33 +848,34 @@ void CLevelImporter::ParsePostProcessingEffects(tinyxml2::XMLElement* curr,
 			if (mode)
 				modeValue = mode->Value();
 
-			CDX11Scene::PostProcessFilter filter;
+			PostProcessFilter filter;
 
-			for (unsigned long long int i = 0; i < ARRAYSIZE(scene->mPostProcessModeStrings); ++i)
+
+			for (unsigned long long int i = 0; i < ARRAYSIZE(mPostProcessModeStrings); ++i)
 			{
-				if (modeValue._Equal(scene->mPostProcessModeStrings[i]))
+				if (modeValue._Equal(mPostProcessModeStrings[i]))
 				{
-					filter.mode = (CDX11Scene::PostProcessMode)i;
+					filter.mode = (PostProcessMode)i;
 				}
 			}
 
-			for (int i = 0; i < ARRAYSIZE(scene->mPostProcessStrings); ++i)
+			for (int i = 0; i < ARRAYSIZE(mPostProcessStrings); ++i)
 			{
-				if (typeValue._Equal(scene->mPostProcessStrings[i]))
+				if (typeValue._Equal(mPostProcessStrings[i]))
 				{
-					filter.type = (CDX11Scene::PostProcess)i;
+					filter.type = (PostProcess)i;
 				}
 			}
 
-			scene->mPostProcessingFilters.push_back(filter);
+			mPostProcessingFilters.push_back(filter);
 		}
-			// After Loading all the effects
-			// Load the settings
+		// After Loading all the effects
+		// Load the settings
 		else if (item == "Settings")
 		{
-			float values[sizeof(gPostProcessingConstants) / sizeof(float)];
+			float values[sizeof(DX11::gPostProcessingConstants) / sizeof(float)];
 
-			for (unsigned long long int i = 0; i < sizeof(gPostProcessingConstants) / sizeof(float); ++i)
+			for (unsigned long long int i = 0; i < sizeof(DX11::gPostProcessingConstants) / sizeof(float); ++i)
 			{
 				// get the different name for each setting
 				std::string name = "setting";
@@ -970,14 +886,14 @@ void CLevelImporter::ParsePostProcessingEffects(tinyxml2::XMLElement* curr,
 				values[i] = currSetting->FloatValue();
 			}
 
-			memcpy(&gPostProcessingConstants, values, sizeof(values));
+			memcpy(&DX11::gPostProcessingConstants, values, sizeof(values));
 		}
 		currEffect = currEffect->NextSiblingElement();
 	}
 }
 
 bool CLevelImporter::ParseEntities(tinyxml2::XMLElement* entitiesEl,
-                                   CDX11Scene*           scene)
+	CScene* scene)
 {
 	auto currEntity = entitiesEl->FirstChildElement();
 

@@ -43,7 +43,7 @@
 #undef max
 #endif
 
-namespace DX12Common
+namespace DX12
 {
 	using namespace Microsoft::WRL;
 

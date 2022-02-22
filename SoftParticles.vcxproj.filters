@@ -31,34 +31,28 @@
     <ClCompile Include="Source\DX11\DX11Scene.cpp">
       <Filter>Engine\DX11</Filter>
     </ClCompile>
-    <ClCompile Include="Source\DX11\Material.cpp">
+    <ClCompile Include="Source\DX11\DX11Material.cpp">
       <Filter>Engine\DX11</Filter>
     </ClCompile>
-    <ClCompile Include="Source\DX11\Mesh.cpp">
-      <Filter>Engine\DX11</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\DX11\LevelImporter.cpp">
+    <ClCompile Include="Source\DX11\DX11Mesh.cpp">
       <Filter>Engine\DX11</Filter>
     </ClCompile>
     <ClCompile Include="Source\DX11\PostProcessing.cpp">
       <Filter>Engine\DX11</Filter>
     </ClCompile>
-    <ClCompile Include="Source\DX11\Objects\Light.cpp">
+    <ClCompile Include="Source\DX11\Objects\DX11Light.cpp">
       <Filter>Engine\DX11\Objects</Filter>
     </ClCompile>
-    <ClCompile Include="Source\DX11\Objects\Plant.cpp">
+    <ClCompile Include="Source\DX11\Objects\DX11Plant.cpp">
       <Filter>Engine\DX11\Objects</Filter>
     </ClCompile>
-    <ClCompile Include="Source\DX11\Objects\PointLight.cpp">
+    <ClCompile Include="Source\DX11\Objects\DX11PointLight.cpp">
       <Filter>Engine\DX11\Objects</Filter>
     </ClCompile>
-    <ClCompile Include="Source\DX11\Objects\SpotLight.cpp">
+    <ClCompile Include="Source\DX11\Objects\DX11SpotLight.cpp">
       <Filter>Engine\DX11\Objects</Filter>
     </ClCompile>
-    <ClCompile Include="Source\DX11\Objects\GameObjectManager.cpp">
-      <Filter>Engine\DX11\Objects</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\DX11\Objects\GameObject.cpp">
+    <ClCompile Include="Source\DX11\Objects\DX11GameObject.cpp">
       <Filter>Engine\DX11\Objects</Filter>
     </ClCompile>
     <ClCompile Include="Source\DX11\Shader.cpp">
@@ -106,9 +100,6 @@
     <ClCompile Include="Source\DX12\DX12Scene.cpp">
       <Filter>Engine\DX12</Filter>
     </ClCompile>
-    <ClCompile Include="Source\DX12\DX12GameObjectManager.cpp">
-      <Filter>Engine\DX12</Filter>
-    </ClCompile>
     <ClCompile Include="Source\External\imgui\backends\imgui_impl_dx12.cpp">
       <Filter>External\Imgui</Filter>
     </ClCompile>
@@ -118,7 +109,7 @@
     <ClCompile Include="Source\DX12\Objects\DX12GameObject.cpp">
       <Filter>Engine\DX12\Objects</Filter>
     </ClCompile>
-    <ClCompile Include="Source\DX12\CDX12Material.cpp">
+    <ClCompile Include="Source\DX12\DX12Material.cpp">
       <Filter>Engine\DX12</Filter>
     </ClCompile>
     <ClCompile Include="Source\DX12\DX12Mesh.cpp">
@@ -127,14 +118,8 @@
     <ClCompile Include="Source\DX12\D3D12Helpers.h">
       <Filter>Engine\DX12</Filter>
     </ClCompile>
-    <ClCompile Include="Source\DX12\CDX12Common.h">
+    <ClCompile Include="Source\DX12\DX12Common.h">
       <Filter>Engine\DX12</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\DX12\DX12Importer.cpp">
-      <Filter>Engine\DX12</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\DX12\Objects\DX12Light.cpp">
-      <Filter>Engine\DX12\Objects</Filter>
     </ClCompile>
     <ClCompile Include="Source\Math\CVector4.cpp">
       <Filter>Math</Filter>
@@ -143,7 +128,7 @@
     <ClCompile Include="Source\Common\Camera.cpp">
       <Filter>Engine</Filter>
     </ClCompile>
-    <ClCompile Include="Source\DX11\Objects\DirLight.cpp">
+    <ClCompile Include="Source\DX11\Objects\DX11DirLight.cpp">
       <Filter>Engine\DX11\Objects</Filter>
     </ClCompile>
     <ClCompile Include="Source\DX12\DX12Texture.cpp">
@@ -164,6 +149,20 @@
     <ClCompile Include="Source\DX12\DX12Shader.cpp">
       <Filter>Engine\DX12</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Common\LevelImporter.cpp">
+      <Filter>Engine\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Common\CGameObject.cpp">
+      <Filter>Engine\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Common\CGameObjectManager.cpp">
+      <Filter>Engine\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Common\CScene.cpp">
+      <Filter>Engine\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Common\CGui.cpp" />
+    <ClCompile Include="Source\Common\CLight.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="External">
@@ -198,6 +197,9 @@
     </Filter>
     <Filter Include="Shaders">
       <UniqueIdentifier>{e05bdec9-3444-45cd-bb33-24bcee8fbfe2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\Common">
+      <UniqueIdentifier>{210ccbab-5567-457a-82c3-4b84d9f0794d}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -286,7 +288,7 @@
     <ClInclude Include="Source\FactoryEngine.h">
       <Filter>Engine</Filter>
     </ClInclude>
-    <ClInclude Include="Source\DX11\CDX11Common.h">
+    <ClInclude Include="Source\DX11\DX11Common.h">
       <Filter>Engine\DX11</Filter>
     </ClInclude>
     <ClInclude Include="Source\DX11\DX11Engine.h">
@@ -298,49 +300,40 @@
     <ClInclude Include="Source\DX11\DX11Scene.h">
       <Filter>Engine\DX11</Filter>
     </ClInclude>
-    <ClInclude Include="Source\DX11\Objects\GameObject.h">
-      <Filter>Engine\DX11</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\DX11\Objects\GameObjectManager.h">
+    <ClInclude Include="Source\DX11\Objects\DX11GameObject.h">
       <Filter>Engine\DX11</Filter>
     </ClInclude>
     <ClInclude Include="Source\DX11\GraphicsHelpers.h">
       <Filter>Engine\DX11</Filter>
     </ClInclude>
-    <ClInclude Include="Source\DX11\LevelImporter.h">
-      <Filter>Engine\DX11</Filter>
-    </ClInclude>
     <ClInclude Include="Source\DX11\Mesh.h">
       <Filter>Engine\DX11</Filter>
     </ClInclude>
-    <ClInclude Include="Source\DX11\Objects\DirLight.h">
+    <ClInclude Include="Source\DX11\Objects\DX11DirLight.h">
       <Filter>Engine\DX11\Objects</Filter>
     </ClInclude>
-    <ClInclude Include="Source\DX11\Objects\Light.h">
+    <ClInclude Include="Source\DX11\Objects\DX11Light.h">
       <Filter>Engine\DX11\Objects</Filter>
     </ClInclude>
-    <ClInclude Include="Source\DX11\Material.h">
+    <ClInclude Include="Source\DX11\DX11Material.h">
       <Filter>Engine\DX11\Objects</Filter>
     </ClInclude>
-    <ClInclude Include="Source\DX11\Objects\Plant.h">
+    <ClInclude Include="Source\DX11\Objects\DX11Plant.h">
       <Filter>Engine\DX11\Objects</Filter>
     </ClInclude>
-    <ClInclude Include="Source\DX11\Objects\PointLight.h">
+    <ClInclude Include="Source\DX11\Objects\DX11PointLight.h">
       <Filter>Engine\DX11\Objects</Filter>
     </ClInclude>
-    <ClInclude Include="Source\DX11\Objects\Sky.h">
+    <ClInclude Include="Source\DX11\Objects\DX11Sky.h">
       <Filter>Engine\DX11\Objects</Filter>
     </ClInclude>
-    <ClInclude Include="Source\DX11\Objects\SpotLight.h">
+    <ClInclude Include="Source\DX11\Objects\DX11SpotLight.h">
       <Filter>Engine\DX11\Objects</Filter>
     </ClInclude>
     <ClInclude Include="Source\DX12\CDX12Material.h">
       <Filter>Engine\DX12</Filter>
     </ClInclude>
     <ClInclude Include="Source\DX12\DX12Engine.h">
-      <Filter>Engine\DX12</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\DX12\DX12GameObjectManager.h">
       <Filter>Engine\DX12</Filter>
     </ClInclude>
     <ClInclude Include="Source\DX12\DX12Gui.h">
@@ -357,9 +350,6 @@
     </ClInclude>
     <ClInclude Include="Source\DX12\Objects\DX12GameObject.h">
       <Filter>Engine\DX12\Objects</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\DX12\DX12Importer.h">
-      <Filter>Engine\DX12</Filter>
     </ClInclude>
     <ClInclude Include="Source\DX12\Objects\DX12Light.h">
       <Filter>Engine\DX12\Objects</Filter>
@@ -382,6 +372,26 @@
     <ClInclude Include="Source\DX12\DX12Shader.h">
       <Filter>Engine\DX12</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Common\LevelImporter.h">
+      <Filter>Engine\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Common\CGameObject.h">
+      <Filter>Engine\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Common\CGameObjectManager.h">
+      <Filter>Engine\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Common.h">
+      <Filter>Engine\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Common\CPostProcess.h">
+      <Filter>Engine\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Common\CScene.h">
+      <Filter>Engine\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Common\CGui.h" />
+    <ClInclude Include="Source\Common\CLight.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Source\Shaders\DepthOnly_ps.hlsl">

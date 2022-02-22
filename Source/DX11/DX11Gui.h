@@ -3,40 +3,45 @@
 #include <deque>
 
 #include "DX11Engine.h"
-#include "Objects/GameObject.h"
+#include "../Common/CGameObject.h"
 
+#include "../Common/CGui.h"
 
-class CDX11Gui
+namespace DX11
 {
-public:
+	class CDX11Gui : public CGui
+	{
+		public:
 	
-	CDX11Gui(CDX11Engine* engine);
+			CDX11Gui(CDX11Engine* engine);
 
-	void Begin(float& frameTime);
+			void Begin(float& frameTime) override;
 
-	void Show(float& frameTime);
+			void Show(float& frameTime) override;
 
-	void AddObjectsMenu() const;
+			void AddObjectsMenu() const override;
 
-	void DisplayPropertiesWindow() const;
+			void DisplayPropertiesWindow() const override;
 
-	void DisplayObjects();
+			void DisplayObjects() override;
 
-	void DisplaySceneSettings(bool& b) const;
+			void DisplaySceneSettings(bool& b) const override;
 
-	void DisplayShadowMaps() const;
+			void DisplayShadowMaps() const override;
 
-	bool IsSceneFullscreen() const;
+			template<class T>
+			void DisplayDeque(std::deque<T*>& deque);
 
-	template<class T>
-	void DisplayDeque(std::deque<T*>& deque);
+			~CDX11Gui() override;
 
-	~CDX11Gui();
+			void End() const override;
 
-private:
-	CDX11Engine*              mEngine             = nullptr;
-	CDX11Scene*               mScene              = nullptr;
-	CDX11GameObject*          mSelectedObj        = nullptr;
-	bool                      mViewportFullscreen = false;
-	CVector2                  mViewportWindowPos  = {};
-};
+		private:
+			CDX11Engine*     mEngine             = nullptr;
+			CDX11Scene*      mScene              = nullptr;
+			CGameObject* mSelectedObj        = nullptr;
+			bool             mViewportFullscreen = false;
+			CVector2         mViewportWindowPos  = {};
+	};
+	
+}

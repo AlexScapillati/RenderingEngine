@@ -3,42 +3,45 @@
 
 #include "DX12Engine.h"
 
-class CDX12DescriptorHeap
+namespace DX12
 {
+	class CDX12DescriptorHeap
+	{
 
-public:
+	public:
 
-	CDX12DescriptorHeap(CDX12Engine* engine, D3D12_DESCRIPTOR_HEAP_DESC desc);
+		CDX12DescriptorHeap(CDX12Engine* engine, D3D12_DESCRIPTOR_HEAP_DESC desc);
 
-	CDX12DescriptorHeap() = delete;
-	CDX12DescriptorHeap(const CDX12DescriptorHeap&) = delete;
-	CDX12DescriptorHeap(const CDX12DescriptorHeap&&) = delete;
-	CDX12DescriptorHeap& operator=(const CDX12DescriptorHeap&) = delete;
-	CDX12DescriptorHeap& operator=(const CDX12DescriptorHeap&&) = delete;
-
-
-	ComPtr<ID3D12DescriptorHeap> mDescriptorHeap;
-
-	D3D12_DESCRIPTOR_HEAP_DESC GetDesc() const;
-
-	SHandle Add();
-
-	SHandle Get(UINT pos) const;
-
-	void Set() const;
-
-	INT Top() const;
-
-	void Remove(UINT pos);
-
-private:
-
-	CDX12Engine* mEngine;
-	D3D12_DESCRIPTOR_HEAP_DESC mDesc;
-	INT mSize;
-	INT mTop;
+		CDX12DescriptorHeap() = delete;
+		CDX12DescriptorHeap(const CDX12DescriptorHeap&) = delete;
+		CDX12DescriptorHeap(const CDX12DescriptorHeap&&) = delete;
+		CDX12DescriptorHeap& operator=(const CDX12DescriptorHeap&) = delete;
+		CDX12DescriptorHeap& operator=(const CDX12DescriptorHeap&&) = delete;
 
 
-	std::deque<SHandle> mHandles;
-};
+		ComPtr<ID3D12DescriptorHeap> mDescriptorHeap;
 
+		D3D12_DESCRIPTOR_HEAP_DESC GetDesc() const;
+
+		SHandle Add();
+
+		SHandle Get(UINT pos) const;
+
+		void Set() const;
+
+		INT Top() const;
+
+		void Remove(UINT pos);
+
+	private:
+
+		CDX12Engine* mEngine;
+		D3D12_DESCRIPTOR_HEAP_DESC mDesc;
+		INT mSize;
+		INT mTop;
+
+
+		std::deque<SHandle> mHandles;
+	};
+
+}

@@ -1,74 +1,77 @@
 #pragma once
 
-#include "DX12DescriptorHeap.h"
 #include "DX12Engine.h"
+#include "DX12DescriptorHeap.h"
 
-class CDX12ConstantBuffer
+namespace DX12
 {
-public:
-
-	CDX12ConstantBuffer() = delete;
-	CDX12ConstantBuffer(const CDX12ConstantBuffer&) = delete;
-	CDX12ConstantBuffer(const CDX12ConstantBuffer&&) = delete;
-	CDX12ConstantBuffer& operator=(const CDX12ConstantBuffer&) = delete;
-	CDX12ConstantBuffer& operator=(const CDX12ConstantBuffer&&) = delete;
-
-	CDX12ConstantBuffer(CDX12Engine* engine, size_t size) :
-		mEngine(engine),
-		mSize(size)
+	class CDX12ConstantBuffer
 	{
+	public:
 
-		const auto prop = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
+		CDX12ConstantBuffer() = delete;
+		CDX12ConstantBuffer(const CDX12ConstantBuffer&) = delete;
+		CDX12ConstantBuffer(const CDX12ConstantBuffer&&) = delete;
+		CDX12ConstantBuffer& operator=(const CDX12ConstantBuffer&) = delete;
+		CDX12ConstantBuffer& operator=(const CDX12ConstantBuffer&&) = delete;
 
-		const auto buffer = CD3DX12_RESOURCE_DESC::Buffer(size);
+		CDX12ConstantBuffer(CDX12Engine* engine, size_t size) :
+			mEngine(engine),
+			mSize(size)
+		{
 
-		ThrowIfFailed(
-			mEngine->mDevice->CreateCommittedResource(
-				&prop,
-				D3D12_HEAP_FLAG_NONE,
-				&buffer,
-				D3D12_RESOURCE_STATE_GENERIC_READ,
-				nullptr,
-				IID_PPV_ARGS(&mResource)));
+			const auto prop = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
 
-		// Describe and create a constant buffer view.
-		D3D12_CONSTANT_BUFFER_VIEW_DESC cbvDesc = {};
-		cbvDesc.BufferLocation = mResource->GetGPUVirtualAddress();
-		cbvDesc.SizeInBytes = static_cast<UINT>(size);
+			const auto buffer = CD3DX12_RESOURCE_DESC::Buffer(size);
 
-		mDescriptorIndex = mEngine->mCBVDescriptorHeap->Top();
+			ThrowIfFailed(
+				mEngine->mDevice->CreateCommittedResource(
+					&prop,
+					D3D12_HEAP_FLAG_NONE,
+					&buffer,
+					D3D12_RESOURCE_STATE_GENERIC_READ,
+					nullptr,
+					IID_PPV_ARGS(&mResource)));
 
-		mHandle = mEngine->mCBVDescriptorHeap->Add();
+			// Describe and create a constant buffer view.
+			D3D12_CONSTANT_BUFFER_VIEW_DESC cbvDesc = {};
+			cbvDesc.BufferLocation = mResource->GetGPUVirtualAddress();
+			cbvDesc.SizeInBytes = static_cast<UINT>(size);
 
-		mEngine->mDevice->CreateConstantBufferView(&cbvDesc, mHandle.mCpu);
+			mDescriptorIndex = mEngine->mCBVDescriptorHeap->Top();
 
-		// Map and initialize the constant buffer. We don't unmap this until the
-		// app closes. Keeping things mapped for the lifetime of the resource is okay.
-		const CD3DX12_RANGE readRange(0, 0); // We do not intend to read from this resource on the CPU.
-		ThrowIfFailed(mResource->Map(0, &readRange, reinterpret_cast<void**>(&mCBVDataBegin)));
-		mResource->Unmap(0, nullptr);
-	}
+			mHandle = mEngine->mCBVDescriptorHeap->Add();
+
+			mEngine->mDevice->CreateConstantBufferView(&cbvDesc, mHandle.mCpu);
+
+			// Map and initialize the constant buffer. We don't unmap this until the
+			// app closes. Keeping things mapped for the lifetime of the resource is okay.
+			const CD3DX12_RANGE readRange(0, 0); // We do not intend to read from this resource on the CPU.
+			ThrowIfFailed(mResource->Map(0, &readRange, reinterpret_cast<void**>(&mCBVDataBegin)));
+			mResource->Unmap(0, nullptr);
+		}
 
 
-	template <typename T>
-	void Copy(T& data) const
-	{
-		memcpy(mCBVDataBegin, &data, mSize);
-	}
+		template <typename T>
+		void Copy(T& data) const
+		{
+			memcpy(mCBVDataBegin, &data, mSize);
+		}
 
-	void Set(UINT RootParameterIndex) const
-	{
-		mEngine->mCommandList->SetGraphicsRootDescriptorTable(RootParameterIndex, mHandle.mGpu);
-	}
+		void Set(UINT RootParameterIndex) const
+		{
+			mEngine->mCommandList->SetGraphicsRootDescriptorTable(RootParameterIndex, mHandle.mGpu);
+		}
 
-private:
+	private:
 
-	CDX12Engine* mEngine;
-	ComPtr<ID3D12Resource> mResource;
-	UINT8* mCBVDataBegin;
-	size_t mSize;
+		CDX12Engine* mEngine;
+		ComPtr<ID3D12Resource> mResource;
+		UINT8* mCBVDataBegin;
+		size_t mSize;
 
-	SHandle mHandle;
+		SHandle mHandle;
 
-	INT mDescriptorIndex;
-};
+		INT mDescriptorIndex;
+	};
+}

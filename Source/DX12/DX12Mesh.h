@@ -14,128 +14,132 @@
 
 #include "../Math/CMatrix4x4.h"
 
-class CDX12PBRPSO;
+
 struct aiNode;
-class CDX12Material;
 
-class CDX12Mesh
+namespace DX12
 {
-	//--------------------------------------------------------------------------------------
-	// Private data structures
-	//--------------------------------------------------------------------------------------
-private:
+	class CDX12Material;
+	class CDX12PBRPSO;
 
-	// A mesh is made of multiple sub-meshes. Each one uses a single material (texture).
-	// Each sub-mesh has a vertex / index buffer on the GPU. Could share buffers for performance but that would be complex.
-	struct SubMesh
+	class CDX12Mesh
 	{
-		uint32_t       vertexSize = 0;         // Size in bytes of a single vertex (depends on what it contains, uvs, tangents etc.)
+		//--------------------------------------------------------------------------------------
+		// Private data structures
+		//--------------------------------------------------------------------------------------
+	private:
 
-		//// GPU-side vertex and index buffers
-		uint32_t       numVertices = 0;
+		// A mesh is made of multiple sub-meshes. Each one uses a single material (texture).
+		// Each sub-mesh has a vertex / index buffer on the GPU. Could share buffers for performance but that would be complex.
+		struct SubMesh
+		{
+			uint32_t       vertexSize = 0;         // Size in bytes of a single vertex (depends on what it contains, uvs, tangents etc.)
 
-		uint32_t numIndices;
-		ComPtr<ID3D12Resource> IndexBuffer;
-		D3D12_INDEX_BUFFER_VIEW indexBufferView;
-		std::unique_ptr<unsigned char[]> indices;
+			//// GPU-side vertex and index buffers
+			uint32_t       numVertices = 0;
 
-		ComPtr<ID3D12Resource> mVertexBuffer;
-		D3D12_VERTEX_BUFFER_VIEW mVertexBufferView;
-		std::unique_ptr<unsigned char[]> vertices;
-	};
+			uint32_t numIndices;
+			ComPtr<ID3D12Resource> IndexBuffer;
+			D3D12_INDEX_BUFFER_VIEW indexBufferView;
+			std::unique_ptr<unsigned char[]> indices;
 
-
-	// A mesh contains a hierarchy of nodes. A node represents a seperate animatable part of the mesh
-	// A node can contain several sub-meshes (because a single node might use multiple textures)
-	// A node can also have child nodes. The children will follow the motion of the parent node
-	// Each node has a default matrix which is it's initial/ default position. Models using this mesh are
-	// given these default matrices as a starting position.
-	struct Node
-	{
-		std::string  name;
-		CMatrix4x4   defaultMatrix; // Starting position/rotation/scale for this node. Relative to parent. Used when first creating a model from this mesh
-		CMatrix4x4   offsetMatrix;
-
-		unsigned int parentIndex;   // Index of the parent node (from the mNodes vector below). Root node refers to itself (0)
-
-		std::vector<unsigned int> childNodes; // Child nodes that are controlled by this node (indexes into the mNodes vector below)
-		std::vector<unsigned int> subMeshes;  // The geometry representing this node (indexes into the mSubMeshes vector below)
-	};
+			ComPtr<ID3D12Resource> mVertexBuffer;
+			D3D12_VERTEX_BUFFER_VIEW mVertexBufferView;
+			std::unique_ptr<unsigned char[]> vertices;
+		};
 
 
-	//--------------------------------------------------------------------------------------
-	// Construction / Usage
-	//--------------------------------------------------------------------------------------
-public:
+		// A mesh contains a hierarchy of nodes. A node represents a seperate animatable part of the mesh
+		// A node can contain several sub-meshes (because a single node might use multiple textures)
+		// A node can also have child nodes. The children will follow the motion of the parent node
+		// Each node has a default matrix which is it's initial/ default position. Models using this mesh are
+		// given these default matrices as a starting position.
+		struct Node
+		{
+			std::string  name;
+			CMatrix4x4   defaultMatrix; // Starting position/rotation/scale for this node. Relative to parent. Used when first creating a model from this mesh
+			CMatrix4x4   offsetMatrix;
 
-	CDX12Mesh() = delete;
-	CDX12Mesh(const CDX12Mesh&&) = delete;
-	CDX12Mesh& operator=(const CDX12Mesh&) = delete;
-	CDX12Mesh& operator=(const CDX12Mesh&&) = delete;
+			unsigned int parentIndex;   // Index of the parent node (from the mNodes vector below). Root node refers to itself (0)
 
-	virtual ~CDX12Mesh() = default;
+			std::vector<unsigned int> childNodes; // Child nodes that are controlled by this node (indexes into the mNodes vector below)
+			std::vector<unsigned int> subMeshes;  // The geometry representing this node (indexes into the mSubMeshes vector below)
+		};
 
-	// Pass the name of the mesh file to load. Uses assimp (http://www.assimp.org/) to support many file types
-	// Optionally request tangents to be calculated (for normal and parallax mapping - see later lab)
-	// Will throw a std::runtime_error exception on failure (since constructors can't return errors).
-	CDX12Mesh(CDX12Engine* engine, std::string fileName, std::vector<std::string>& tex);
 
-	CDX12Mesh(const CDX12Mesh&);
+		//--------------------------------------------------------------------------------------
+		// Construction / Usage
+		//--------------------------------------------------------------------------------------
+	public:
+		virtual ~CDX12Mesh() = default;
 
-	// How many nodes are in the hierarchy for this mesh. Nodes can control individual parts (rigid body animation),
-	// or bones (skinned animation), or they can be dummy nodes to create child parts in a more convenient way
-	unsigned int NumberNodes() const { return static_cast<unsigned int>(mNodes.size()); }
+		CDX12Mesh() = delete;
+		CDX12Mesh(const CDX12Mesh&&) = delete;
+		CDX12Mesh& operator=(const CDX12Mesh&) = delete;
+		CDX12Mesh& operator=(const CDX12Mesh&&) = delete;
 
-	// The default matrix for a given node - used to set the initial position for a new model
-	CMatrix4x4 GetNodeDefaultMatrix(unsigned int node) const { return mNodes[node].defaultMatrix; }
+		// Pass the name of the mesh file to load. Uses assimp (http://www.assimp.org/) to support many file types
+		// Optionally request tangents to be calculated (for normal and parallax mapping - see later lab)
+		// Will throw a std::runtime_error exception on failure (since constructors can't return errors).
+		CDX12Mesh(CDX12Engine* engine, std::string fileName, std::vector<std::string>& tex);
 
-	// Render the mesh with the given matrices
-	// Handles rigid body meshes (including single part meshes) as well as skinned meshes
-	// LIMITATION: The mesh must use a single texture throughout
-	virtual void Render(std::vector<CMatrix4x4>& modelMatrices);
+		CDX12Mesh(const CDX12Mesh&);
 
-	std::string MeshFileName() const { return mFileName; }
-	auto Material() const { return mMaterial.get(); }
+		// How many nodes are in the hierarchy for this mesh. Nodes can control individual parts (rigid body animation),
+		// or bones (skinned animation), or they can be dummy nodes to create child parts in a more convenient way
+		unsigned int NumberNodes() const { return static_cast<unsigned int>(mNodes.size()); }
 
-	//--------------------------------------------------------------------------------------
-	// Private helper functions
-	//--------------------------------------------------------------------------------------
-private:
+		// The default matrix for a given node - used to set the initial position for a new model
+		CMatrix4x4 GetNodeDefaultMatrix(unsigned int node) const { return mNodes[node].defaultMatrix; }
 
-	// Count the number of nodes with given assimp node as root
-	unsigned int CountNodes(aiNode* assimpNode);
+		// Render the mesh with the given matrices
+		// Handles rigid body meshes (including single part meshes) as well as skinned meshes
+		// LIMITATION: The mesh must use a single texture throughout
+		virtual void Render(std::vector<CMatrix4x4>& modelMatrices);
 
-	// Help build the arrays of submeshes and nodes from the assimp data - recursive
-	unsigned int ReadNodes(aiNode* assimpNode, unsigned int nodeIndex, unsigned int parentIndex);
+		std::string MeshFileName() const { return mFileName; }
+		auto Material() const { return mMaterial.get(); }
 
-	// Helper function for Render function - renders a given sub-mesh. World matrices / textures / states etc. must already be set
-	void RenderSubMesh(const SubMesh& subMesh) const;
+		//--------------------------------------------------------------------------------------
+		// Private helper functions
+		//--------------------------------------------------------------------------------------
+	private:
 
-	//--------------------------------------------------------------------------------------
-	// Member data
-	//--------------------------------------------------------------------------------------
-protected:
+		// Count the number of nodes with given assimp node as root
+		unsigned int CountNodes(aiNode* assimpNode);
 
-	CDX12Engine* mEngine;
+		// Help build the arrays of submeshes and nodes from the assimp data - recursive
+		unsigned int ReadNodes(aiNode* assimpNode, unsigned int nodeIndex, unsigned int parentIndex);
 
-	std::string mFileName;			//store the filename for the copy constructor
-	bool hasTangents;			//store if the mesh has tangents, same reason for above
+		// Helper function for Render function - renders a given sub-mesh. World matrices / textures / states etc. must already be set
+		void RenderSubMesh(const SubMesh& subMesh) const;
 
-	std::vector<SubMesh> mSubMeshes; // The mesh geometry. Nodes refer to sub-meshes in this vector
-	std::vector<Node>    mNodes;     // The mesh hierarchy. First entry is root. remainder aree stored in depth-first order
+		//--------------------------------------------------------------------------------------
+		// Member data
+		//--------------------------------------------------------------------------------------
+	protected:
 
-	bool mHasBones; // If any submesh has bones, then all submeshes are given bones - makes rendering easier (one shader for the whole mesh)
+		CDX12Engine* mEngine;
 
-	std::unique_ptr<CDX12PBRPSO> mPbrPipelineStateObject;
+		std::string mFileName;			//store the filename for the copy constructor
+		bool hasTangents;			//store if the mesh has tangents, same reason for above
 
-	std::unique_ptr<CDX12ConstantBuffer> mModelConstantBuffer;
+		std::vector<SubMesh> mSubMeshes; // The mesh geometry. Nodes refer to sub-meshes in this vector
+		std::vector<Node>    mNodes;     // The mesh hierarchy. First entry is root. remainder aree stored in depth-first order
 
-	// The material
-	// It will hold all the textures and send them to the shader with RenderMaterial()
-	std::unique_ptr<CDX12Material> mMaterial;
+		bool mHasBones; // If any submesh has bones, then all submeshes are given bones - makes rendering easier (one shader for the whole mesh)
+
+		std::unique_ptr<CDX12PBRPSO> mPbrPipelineStateObject;
+
+		std::unique_ptr<CDX12ConstantBuffer> mModelConstantBuffer;
+
+		// The material
+		// It will hold all the textures and send them to the shader with RenderMaterial()
+		std::unique_ptr<CDX12Material> mMaterial;
 
 	public:
 
-	PerModelConstants  mModelConstants{};
+		PerModelConstants  mModelConstants{};
 
-};
+	};
+}
