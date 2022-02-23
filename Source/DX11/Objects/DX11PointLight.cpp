@@ -185,5 +185,6 @@ namespace DX11
 			i->Release();
 		}
 	}
-	
+
+	void CDX11PointLight::LoadNewMesh(std::string newMesh) { CDX11Light::LoadNewMesh(newMesh); }
 }

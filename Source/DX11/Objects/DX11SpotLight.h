@@ -8,7 +8,7 @@ namespace DX11
 	public:
 		CDX11SpotLight(CDX11Engine* engine, std::string mesh,
 			std::string  name,
-			std::string& diffuse,
+			std::string diffuse,
 			CVector3     colour = { 0.0f,0.0f,0.0f },
 			float        strength = 0.0f,
 			CVector3     position = { 0,0,0 },
@@ -27,7 +27,9 @@ namespace DX11
 
 	private:
 		void                      InitTextures();
-
+	public:
+		void LoadNewMesh(std::string newMesh) override;
+	private:
 		ID3D11Texture2D*          mShadowMap;
 		ID3D11DepthStencilView*   mShadowMapDepthStencil;
 		ID3D11ShaderResourceView* mShadowMapSRV;

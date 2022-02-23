@@ -1,13 +1,14 @@
 #pragma once
-#include <string>
-#include <vector>
 
 #include "CLight.h"
 
+#include <string>
+#include <vector>
+
+enum KeyCode;
 class IEngine;
 class CVector3;
 class CMatrix4x4;
-enum KeyCode;
 
 class CGameObject
 {
@@ -58,15 +59,15 @@ public:
 	CVector3                  Position(int node = 0); // Position is on bottom row of matrix
 	CVector3                  Rotation(int node = 0); // Getting angles from a matrix is complex - see .cpp file
 	CVector3                  Scale(int node = 0);    // Scale is length of rows 0-2 in matrix
-	CMatrix4x4&               WorldMatrix(int node = 0);
+	CMatrix4x4& WorldMatrix(int node = 0);
 	std::string               Name();
 	void                      SetName(std::string n);
-	float&                    ParallaxDepth();
+	float& ParallaxDepth();
 	void                      SetParallaxDepth(float p);
-	float*                    DirectPosition();
-	bool*                     Enabled();
-	float&                    Roughness();
-	float&                    Metalness();
+	float* DirectPosition();
+	bool* Enabled();
+	float& Roughness();
+	float& Metalness();
 	void                      SetRoughness(float r);
 	void                      SetPosition(CVector3 position, int node = 0);
 	virtual void              SetRotation(CVector3 rotation, int node = 0);
@@ -87,7 +88,7 @@ public:
 	// So when the user wants it it can change the lod or variation in runtime loading the corrected mesh.
 	// This however will freeze the current frame because assimp will need to load the mesh.
 
-	// This function will return all the mesh variations filenames for the current LOD (Level of Detail)
+	// This function will return all the mesh variations file names for the current LOD (Level of Detail)
 	std::vector<std::string>& GetVariations();
 
 	// Set the given mesh variation
@@ -104,7 +105,7 @@ protected:
 
 	//the meshes that a model has (all the LODS that a model has)
 	std::vector<std::string> mMeshFiles;
-	
+
 	std::vector<std::string> mTextureFiles;
 
 	// All the lods that a mesh has, every lod will have multiple variations if any
@@ -136,15 +137,16 @@ protected:
 
 class CSky : public CGameObject
 {
-	public:
-		~CSky() override;
-		void Render(bool basicGeometry = false) override = 0;
+public:
+	virtual void Render(bool basicGeometry = false) override = 0;
+	virtual void LoadNewMesh(std::string newMesh)override = 0;
 };
 
 
 class CPlant : public CGameObject
 {
 public:
-	void Render(bool basicGeometry = false) override = 0;
+	virtual void Render(bool basicGeometry = false) override = 0;
+	virtual void LoadNewMesh(std::string newMesh) override = 0;
 };
 

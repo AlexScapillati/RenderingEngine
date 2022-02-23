@@ -8,6 +8,13 @@
 #include "../Utility/Input.h"
 
 #include "DX11Scene.h"
+#include "Objects/DX11DirLight.h"
+#include "Objects/DX11GameObject.h"
+#include "Objects/DX11Light.h"
+#include "Objects/DX11Plant.h"
+#include "Objects/DX11PointLight.h"
+#include "Objects/DX11Sky.h"
+#include "Objects/DX11SpotLight.h"
 
 namespace DX11
 {
@@ -340,4 +347,54 @@ namespace DX11
 		}
 	}
 
+
+	CScene* CDX11Engine::CreateScene(std::string fileName)
+	{
+		return new CDX11Scene(this, fileName);
+	}
+
+	CScene* CDX11Engine::CreateScene()
+	{
+		return new CDX11Scene(this);
+	}
+
+	CGameObject* CDX11Engine::CreateObject(const std::string& mesh, const std::string& name, const std::string& diffuseMap, CVector3 position, CVector3 rotation, float scale)
+	{
+		return new CDX11GameObject(this, mesh, name, diffuseMap, position, rotation, scale);
+	}
+
+	CSky* CDX11Engine::CreateSky(const std::string& mesh, const std::string& name, const std::string& diffuseMap, CVector3 position, CVector3 rotation, float scale)
+	{
+		return new CDX11Sky(this, mesh, name, diffuseMap, position, rotation, scale);
+	}
+
+	CPlant* CDX11Engine::CreatePlant(const std::string& mesh, const std::string& name, CVector3 position, CVector3 rotation, float scale)
+	{
+		return new CDX11Plant(this, mesh, name, position, rotation, scale);
+	}
+
+	CGameObject* CDX11Engine::CreateObject(const std::string& dirPath, const std::string& name, CVector3 position, CVector3 rotation, float scale)
+	{
+		return new CDX11GameObject(this, dirPath, name, position, rotation, scale);
+	}
+
+	CLight* CDX11Engine::CreateLight(const std::string& mesh, const std::string& name, const std::string& diffuseMap, const CVector3& colour, const float& strength, CVector3 position, CVector3 rotation, float scale)
+	{
+		return new CDX11Light(this, mesh, name, diffuseMap, colour, strength, position, rotation, scale);
+	}
+
+	CSpotLight* CDX11Engine::CreateSpotLight(const std::string& mesh, const std::string& name, const std::string& diffuseMap, const CVector3& colour, const float& strength, CVector3 position, CVector3 rotation, float scale)
+	{
+		return new CDX11SpotLight(this, mesh, name, diffuseMap, colour, strength, position, rotation, scale);
+	}
+
+	CDirectionalLight* CDX11Engine::CreateDirectionalLight(const std::string& mesh, const std::string& name, const std::string& diffuseMap, const CVector3& colour, const float& strength, CVector3 position, CVector3 rotation, float scale)
+	{
+		return new CDX11DirLight(this, mesh, name, diffuseMap, colour, strength, position, rotation, scale);
+	}
+
+	CPointLight* CDX11Engine::CreatePointLight(const std::string& mesh, const std::string& name, const std::string& diffuseMap, const CVector3& colour, const float& strength, CVector3 position, CVector3 rotation, float scale)
+	{
+		return new CDX11PointLight(this, mesh, name, diffuseMap, colour, strength, position, rotation, scale);
+	}
 }

@@ -260,13 +260,4 @@ namespace DX11
 		return true;
 	}
 
-	CScene* CDX11Engine::CreateScene(std::string fileName)
-	{
-		return new CDX11Scene(this, fileName);
-	}
-
-	CScene* CDX11Engine::CreateScene()
-	{
-		return new CDX11Scene(this);
-	}
 }

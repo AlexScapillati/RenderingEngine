@@ -11,14 +11,14 @@ namespace DX11
 {
 	class CDX11Engine;
 
-	class CDX11DirLight : public CDX11Light, public CDirectionalLight
+	class CDX11DirLight final : public CDX11Light, public CDirectionalLight
 	{
 		public:
 
 			CDX11DirLight(CDX11Engine* engine, 
 					std::string    mesh, 
 					std::string    name,
-					std::string&   diffuse, 
+					std::string   diffuse, 
 					CVector3       colour   = { 0.0f, 0.0f, 0.0f }, 
 					float          strength = 0.0f,
 					CVector3       position = { 0, 0, 0 }, 
@@ -36,6 +36,8 @@ namespace DX11
 			void Release() const;
 
 			void InitTextures();
+			void Render(bool basicGeometry) override;
+			void LoadNewMesh(std::string newMesh) override;
 
 		private:
 

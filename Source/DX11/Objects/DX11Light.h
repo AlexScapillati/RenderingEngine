@@ -30,6 +30,7 @@ namespace DX11
 			const float& scale = 1);
 
 		void Render(bool basicGeometry = false) override;
-		
+		void LoadNewMesh(std::string newMesh) override;
+		~CDX11Light() override;
 	};
 }

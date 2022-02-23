@@ -10,7 +10,7 @@ namespace DX11
 {
 	CDX11DirLight::CDX11DirLight(CDX11Engine* engine, std::string mesh,
 		std::string name,
-		std::string& diffuse,
+		std::string diffuse,
 		CVector3 colour,
 		float strength,
 		CVector3 position,
@@ -152,4 +152,7 @@ namespace DX11
 			throw std::runtime_error("Error creating shadow map shader resource view");
 		}
 	}
+
+	void CDX11DirLight::Render(bool basicGeometry) { CDX11Light::Render(basicGeometry); }
+	void CDX11DirLight::LoadNewMesh(std::string newMesh) { CDX11Light::LoadNewMesh(newMesh); }
 }

@@ -2,9 +2,12 @@
 
 namespace DX11
 {
-	CDX11Plant::CDX11Plant(CDX11Plant& p) : CDX11GameObject(p)
-	{
-	}
+	CDX11Plant::CDX11Plant(CDX11Plant& p)
+		:
+		CDX11GameObject(p),
+		CPlant()
+		{
+		}
 
 	void CDX11Plant::Render(bool basicGeometry)
 	{
@@ -41,4 +44,6 @@ namespace DX11
 			delete[] prevBlendFactor;
 		}
 	}
+
+	void CDX11Plant::LoadNewMesh(std::string newMesh) { CDX11GameObject::LoadNewMesh(newMesh); }
 }

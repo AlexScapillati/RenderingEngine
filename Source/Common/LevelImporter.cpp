@@ -780,7 +780,7 @@ void CLevelImporter::LoadPlant(tinyxml2::XMLElement* currEntity,
 	try
 	{
 		const auto obj = mEngine->CreatePlant(mesh, name, pos, rot, scale);
-		scene->GetObjectManager()->AddObject(obj);
+		scene->GetObjectManager()->AddPlant(obj);
 	}
 	catch (const std::exception& e)
 	{

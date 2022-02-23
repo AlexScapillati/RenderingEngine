@@ -1,18 +1,22 @@
 #pragma once
 
+#include "CGameObject.h"
 #include "../Math/CVector3.h"
 
-class CLight
+class CLight : public CGameObject
 {
 	public:
-		virtual ~CLight() = default;
+		~CLight() override = default;
+
 
 		CLight(const CVector3& col = {1,1,1}, const float& s = 1000) : mColour(col), mStrength(s) {}
 
-		void         SetColour(CVector3 colour) { mColour = colour; }
-		void         SetStrength(float strength) { mStrength = strength; }
-		CVector3&    GetColour() { return mColour; }
-		float&       GetStrength() { return mStrength; }
+		void      SetColour(CVector3 colour) { mColour = colour; }
+		void      SetStrength(float strength) { mStrength = strength; }
+		CVector3& GetColour() { return mColour; }
+		float&    GetStrength() { return mStrength; }
+		virtual void Render(bool basicGeometry = false) override = 0;
+		virtual void LoadNewMesh(std::string newMesh) override = 0;
 
 	protected:
 		CVector3 mColour;
@@ -30,8 +34,11 @@ class CSpotLight : public CLight
 		virtual void SetConeAngle(float value) = 0;
 		virtual void SetShadowMapsSize(int value) = 0;
 
-		int&         GetShadowMapSize() { return mShadowMapSize; }
-		float&       GetConeAngle() { return mConeAngle; }
+		int&   GetShadowMapSize() { return mShadowMapSize; }
+		float& GetConeAngle() { return mConeAngle; }
+
+		virtual void   Render(bool basicGeometry = false) override = 0;
+		virtual void   LoadNewMesh(std::string newMesh) override = 0;
 
 	protected:
 		int   mShadowMapSize = 0;
@@ -58,6 +65,8 @@ class CDirectionalLight : public CLight
 	mFarClip(farClip){}
 
 		virtual void SetShadowMapSize(int s) = 0;
+		virtual void   Render(bool basicGeometry = false) override = 0;
+		virtual void   LoadNewMesh(std::string newMesh) override = 0;
 
 		auto GetNearClip() const { return mNearClip; }
 		auto GetFarClip() const { return mFarClip; }
@@ -88,6 +97,8 @@ class CPointLight : public CLight
 			: CLight(col, s), mShadowMapSize(shadowMapSize) {}
 
 		virtual void SetShadowMapSize(int size) = 0;
+		virtual void   Render(bool basicGeometry = false) override = 0;
+		virtual void   LoadNewMesh(std::string newMesh) override = 0;
 
 		int GetShadowMapSize() const { return mShadowMapSize; }
 

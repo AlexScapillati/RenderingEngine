@@ -7,7 +7,6 @@
 
 #include "imgui.h"
 #include "ImGuiFileBrowser.h"
-#include <windef.h>
 
 #include "CGameObject.h"
 #include "ImGuizmo.h"

@@ -54,8 +54,8 @@ CScene::CScene(IEngine* engine)
 	auto ground = mEngine->CreateObject("Hills.x", "Ground", "GrassDiffuseSpecular.dds");
 	auto cube = mEngine->CreateObject("Cube.x", "Cube", "Mossy.png");
 	auto light = mEngine->CreateLight("Light.x", "Light", "Flare.jpg", { 1,1,1 }, 1000);
-	
-	light->SetPosition({ 10.f,20.f,30.f });
+
+	reinterpret_cast<CGameObject*>(light)->SetPosition({ 10.f,20.f,30.f });
 	cube->SetPosition({ 0.0f,10.0f,20.0f });
 	mObjManager->AddObject(ground);
 	mObjManager->AddObject(cube);

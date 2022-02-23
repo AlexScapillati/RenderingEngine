@@ -5,12 +5,12 @@
 
 namespace DX12
 {
-	class CDX12Light : public CDX12GameObject, public CLight
+	class CDX12Light final : public CDX12GameObject, public CLight
 	{
 		public:
 			CDX12Light(CDX12Engine*       engine,
-					   const std::string  mesh,
-					   const std::string  name,
+					   const std::string& mesh,
+					   const std::string& name,
 					   const std::string& diffuse,
 					   CVector3           colour   = { 1.f,1.f,.7f },
 					   float              strength = 1.f,
@@ -27,10 +27,10 @@ namespace DX12
 							 int      node) override;
 			void    LoadNewMesh(std::string newMesh) override;
 			void    Render(bool basicGeometry) override;
-			virtual ~ CDX12Light() = default ;
+			~ CDX12Light() override = default ;
 	};
-
-	class CDX12DirectionalLight : public CDX12Light, public CDirectionalLight
+	
+	class CDX12DirectionalLight : public CDX12GameObject, public CDirectionalLight
 	{
 		public :
 			CDX12DirectionalLight(CDX12Engine*       engine,
@@ -42,16 +42,14 @@ namespace DX12
 								  const CVector3&    position,
 								  const CVector3&    rotation,
 								  float              scale,
-								  const CVector3&    col,
-								  const float&       s,
-								  const int&         shadowMapSize,
-								  const float&       width,
-								  const float&       height,
-								  const float&       nearClip,
-								  const float&       farClip)
+								  const int&         shadowMapSize = 2048,
+								  const float&       width = 1000,
+								  const float&       height = 1000,
+								  const float&       nearClip = 0.001f,
+								  const float&       farClip = 1000)
 				:
-				CDX12Light(engine, mesh, name, diffuse, colour, strength, position, rotation, scale),
-				CDirectionalLight(col, s, shadowMapSize, width, height, nearClip, farClip)
+				CDX12GameObject(engine, mesh, name, diffuse, position, rotation, scale),
+				CDirectionalLight(colour, strength, shadowMapSize, width, height, nearClip, farClip)
 				{
 				}
 
@@ -63,7 +61,7 @@ namespace DX12
 			void SetShadowMapSize(int s) override;
 	};
 
-	class CDX12PointLight final : public CDX12Light, CPointLight
+	class CDX12PointLight final : public CDX12GameObject, public CPointLight
 	{
 		public :
 			CDX12PointLight(CDX12Engine*       engine,
@@ -75,12 +73,10 @@ namespace DX12
 							const CVector3&    position,
 							const CVector3&    rotation,
 							float              scale,
-							const CVector3&    col,
-							const float&       s,
-							const int&         shadowMapSize)
+							const int&         shadowMapSize = 2048)
 				:
-				CDX12Light(engine, mesh, name, diffuse, colour, strength, position, rotation, scale),
-				CPointLight(col, s, shadowMapSize)
+				CDX12GameObject(engine, mesh, name, diffuse, position, rotation, scale),
+				CPointLight(colour, strength, shadowMapSize)
 				{
 				}
 
@@ -92,7 +88,7 @@ namespace DX12
 			void SetShadowMapSize(int size) override;
 	};
 
-	class CDX12SpotLight final : public CDX12Light, CSpotLight
+	class CDX12SpotLight final : public CDX12GameObject, public CSpotLight
 	{
 		public :
 			CDX12SpotLight(CDX12Engine*       engine,
@@ -104,13 +100,11 @@ namespace DX12
 						   const CVector3&    position,
 						   const CVector3&    rotation,
 						   float              scale,
-						   const CVector3&    col,
-						   const float&       s,
-						   const int&         shadowMapSize,
-						   const float&       coneAngle)
+						   const int&         shadowMapSize = 2048,
+						   const float&       coneAngle = 90.f)
 				:
-				CDX12Light(engine, mesh, name, diffuse, colour, strength, position, rotation, scale),
-				CSpotLight(col, s, shadowMapSize, coneAngle)
+				CDX12GameObject(engine, mesh, name, diffuse, position, rotation, scale),
+				CSpotLight(colour, strength, shadowMapSize, coneAngle)
 				{
 				}
 
@@ -131,11 +125,11 @@ namespace DX12
 	inline void CDX12Light::Render(bool basicGeometry) { CDX12GameObject::Render(basicGeometry); }
 
 	inline void CDX12DirectionalLight::SetRotation(CVector3 rotation,
-												   int      node) { CDX12Light::SetRotation(rotation, node); }
+												   int      node) { CDX12GameObject::SetRotation(rotation, node); }
 
-	inline void CDX12DirectionalLight::LoadNewMesh(std::string newMesh) { CDX12Light::LoadNewMesh(newMesh); }
+	inline void CDX12DirectionalLight::LoadNewMesh(std::string newMesh) { CDX12GameObject::LoadNewMesh(newMesh); }
 
-	inline void CDX12DirectionalLight::Render(bool basicGeometry) { CDX12Light::Render(basicGeometry); }
+	inline void CDX12DirectionalLight::Render(bool basicGeometry) { CDX12GameObject::Render(basicGeometry); }
 
 	inline CDX12DirectionalLight::~ CDX12DirectionalLight()
 		{
@@ -150,22 +144,22 @@ namespace DX12
 	inline void CDX12SpotLight::SetShadowMapsSize(int value) { mShadowMapSize = value; }
 
 	inline void CDX12PointLight::SetRotation(CVector3 rotation,
-											 int      node) { CDX12Light::SetRotation(rotation, node); }
+											 int      node) {CDX12GameObject::SetRotation(rotation, node); }
 
-	inline void CDX12PointLight::LoadNewMesh(std::string newMesh) { CDX12Light::LoadNewMesh(newMesh); }
+	inline void CDX12PointLight::LoadNewMesh(std::string newMesh) { CDX12GameObject::LoadNewMesh(newMesh); }
 
-	inline void CDX12PointLight::Render(bool basicGeometry) { CDX12Light::Render(basicGeometry); }
+	inline void CDX12PointLight::Render(bool basicGeometry) { CDX12GameObject::Render(basicGeometry); }
 
 	inline CDX12PointLight::~ CDX12PointLight()
 		{
 		}
 
 	inline void CDX12SpotLight::SetRotation(CVector3 rotation,
-											int      node) { CDX12Light::SetRotation(rotation, node); }
+											int      node) { CGameObject::SetRotation(rotation, node); }
 
-	inline void CDX12SpotLight::LoadNewMesh(std::string newMesh) { CDX12Light::LoadNewMesh(newMesh); }
+	inline void CDX12SpotLight::LoadNewMesh(std::string newMesh) { CDX12GameObject::LoadNewMesh(newMesh); }
 
-	inline void CDX12SpotLight::Render(bool basicGeometry) { CDX12Light::Render(basicGeometry); }
+	inline void CDX12SpotLight::Render(bool basicGeometry) { CDX12GameObject::Render(basicGeometry); }
 
 	inline CDX12SpotLight::~ CDX12SpotLight()
 		{

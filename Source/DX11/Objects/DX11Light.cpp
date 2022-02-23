@@ -15,8 +15,9 @@ namespace DX11
 							const CVector3& position ,
 							const CVector3& rotation,
 							const float& scale)
-	: CDX11GameObject(engine, mesh, name, diffuse, position, rotation, scale),
-		CLight(colour,strength)
+	:
+	CLight(colour, strength),
+	CDX11GameObject(engine, mesh, name, diffuse, position, rotation, scale)
 	{
 		try
 		{
@@ -71,5 +72,10 @@ namespace DX11
 
 			delete[] prevBlendFactor;
 		}
+	}
+
+	void CDX11Light::LoadNewMesh(std::string newMesh) { CDX11GameObject::LoadNewMesh(newMesh); }
+	CDX11Light::~CDX11Light()
+	{
 	}
 }
