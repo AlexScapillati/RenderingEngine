@@ -72,7 +72,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>Source\External\DirectXTex\WICTextureLoader;Source\External\imgui\FileBrowser;Source\External\tinyxml2;Source\External\imgui;Utility;Math;Source\External\DirectXTex\DirectXTex;Source\External\assimp\include;Source\External\DirectXTK12\Inc;Source\External\DirectXTex\DDSTextureLoader</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
@@ -95,7 +95,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_WINDOWS;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>Source\External\DirectXTex\WICTextureLoader;Source\External\imgui\FileBrowser;Source\External\tinyxml2;Source\External\imgui;Utility;Math;Source\External\DirectXTex\DirectXTex;Source\External\assimp\include;Source\External\DirectXTK12\Inc;Source\External\DirectXTex\DDSTextureLoader</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
@@ -155,13 +155,12 @@
     <ClCompile Include="Source\External\imgui\backends\imgui_impl_dx11.cpp" />
     <ClCompile Include="Source\External\imgui\backends\imgui_impl_dx12.cpp" />
     <ClCompile Include="Source\External\imgui\backends\imgui_impl_win32.cpp" />
-    <ClCompile Include="Source\External\imgui\FileBrowser\ImGuiFileBrowser.cpp" />
     <ClCompile Include="Source\External\imgui\imgui.cpp" />
+    <ClCompile Include="Source\External\imgui\ImGuiFileBrowser.cpp" />
     <ClCompile Include="Source\External\imgui\ImGuizmo.cpp" />
     <ClCompile Include="Source\External\imgui\imgui_draw.cpp" />
     <ClCompile Include="Source\External\imgui\imgui_tables.cpp" />
     <ClCompile Include="Source\External\imgui\imgui_widgets.cpp" />
-    <ClCompile Include="Source\External\imgui\misc\cpp\imgui_stdlib.cpp" />
     <ClCompile Include="Source\External\tinyxml2\tinyxml2.cpp" />
     <ClCompile Include="Source\Math\CMatrix4x4.cpp" />
     <ClCompile Include="Source\Math\CVector2.cpp" />
@@ -190,6 +189,13 @@
     <ClInclude Include="Source\DX12\DX12ConstantBuffer.h" />
     <ClInclude Include="Source\DX12\DX12Texture.h" />
     <ClInclude Include="Source\DX12\Objects\DX12Light.h" />
+    <ClInclude Include="Source\External\imgui\backends\imgui_impl_dx11.h" />
+    <ClInclude Include="Source\External\imgui\backends\imgui_impl_dx12.h" />
+    <ClInclude Include="Source\External\imgui\backends\imgui_impl_win32.h" />
+    <ClInclude Include="Source\External\imgui\imgui.h" />
+    <ClInclude Include="Source\External\imgui\ImGuiFileBrowser.h" />
+    <ClInclude Include="Source\External\imgui\ImGuizmo.h" />
+    <ClInclude Include="Source\External\imgui\imgui_internal.h" />
     <ClInclude Include="Source\Utility\HelperFunctions.h" />
     <ClInclude Include="Source\DX12\CDX12Material.h" />
     <ClInclude Include="Source\DX12\DX12Mesh.h" />
@@ -215,19 +221,6 @@
     <ClInclude Include="Source\DX12\DX12Engine.h" />
     <ClInclude Include="Source\DX12\DX12Gui.h" />
     <ClInclude Include="Source\Engine.h" />
-    <ClInclude Include="Source\External\imgui\backends\imgui_impl_dx11.h" />
-    <ClInclude Include="Source\External\imgui\backends\imgui_impl_dx12.h" />
-    <ClInclude Include="Source\External\imgui\backends\imgui_impl_win32.h" />
-    <ClInclude Include="Source\External\imgui\FileBrowser\ImGuiFileBrowser.h" />
-    <ClInclude Include="Source\External\imgui\imconfig.h" />
-    <ClInclude Include="Source\External\imgui\imgui.h" />
-    <ClInclude Include="Source\External\imgui\ImGuizmo.h" />
-    <ClInclude Include="Source\External\imgui\imgui_internal.h" />
-    <ClInclude Include="Source\External\imgui\imstb_rectpack.h" />
-    <ClInclude Include="Source\External\imgui\imstb_textedit.h" />
-    <ClInclude Include="Source\External\imgui\imstb_truetype.h" />
-    <ClInclude Include="Source\External\imgui\misc\cpp\imgui_stdlib.h" />
-    <ClInclude Include="Source\External\imgui\stb_image.h" />
     <ClInclude Include="Source\External\tinyxml2\tinyxml2.h" />
     <ClInclude Include="Source\FactoryEngine.h" />
     <ClInclude Include="Source\Math\CMatrix4x4.h" />
@@ -255,6 +248,7 @@
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(OutDir)/Source/Shaders/%(Filename).cso</ObjectFileOutput>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(OutDir)/Source/Shaders/%(Filename).cso</ObjectFileOutput>
     </FxCompile>
     <FxCompile Include="Source\Shaders\DepthOnlyNormal_ps.hlsl">
       <TargetProfile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">ps_4_0</TargetProfile>
@@ -264,6 +258,7 @@
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(OutDir)/Source/Shaders/%(Filename).cso</ObjectFileOutput>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(OutDir)/Source/Shaders/%(Filename).cso</ObjectFileOutput>
     </FxCompile>
     <FxCompile Include="Source\Shaders\DepthOnly_ps.hlsl">
       <TargetProfile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">ps_4_0</TargetProfile>
@@ -273,6 +268,7 @@
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(OutDir)/Source/Shaders/%(Filename).cso</ObjectFileOutput>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(OutDir)/Source/Shaders/%(Filename).cso</ObjectFileOutput>
     </FxCompile>
     <FxCompile Include="Source\Shaders\PBRNoNormals_ps.hlsl">
       <TargetProfile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">ps_4_0</TargetProfile>
@@ -282,6 +278,7 @@
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(OutDir)/Source/Shaders/%(Filename).cso</ObjectFileOutput>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(OutDir)/Source/Shaders/%(Filename).cso</ObjectFileOutput>
     </FxCompile>
     <FxCompile Include="Source\Shaders\PBRNoNormals_vs.hlsl">
       <TargetProfile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">vs_4_1</TargetProfile>
@@ -291,6 +288,7 @@
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(OutDir)/Source/Shaders/%(Filename).cso</ObjectFileOutput>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(OutDir)/Source/Shaders/%(Filename).cso</ObjectFileOutput>
     </FxCompile>
     <FxCompile Include="Source\Shaders\PBR_ps.hlsl">
       <TargetProfile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">ps_4_0</TargetProfile>
@@ -300,6 +298,7 @@
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(OutDir)/Source/Shaders/%(Filename).cso</ObjectFileOutput>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(OutDir)/Source/Shaders/%(Filename).cso</ObjectFileOutput>
     </FxCompile>
     <FxCompile Include="Source\Shaders\PBR_vs.hlsl">
       <TargetProfile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">vs_4_1</TargetProfile>
@@ -309,6 +308,7 @@
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(OutDir)/Source/Shaders/%(Filename).cso</ObjectFileOutput>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(OutDir)/Source/Shaders/%(Filename).cso</ObjectFileOutput>
     </FxCompile>
     <FxCompile Include="Source\Shaders\Sky_ps.hlsl">
       <TargetProfile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">ps_4_0</TargetProfile>
@@ -318,6 +318,7 @@
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(OutDir)/Source/Shaders/%(Filename).cso</ObjectFileOutput>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(OutDir)/Source/Shaders/%(Filename).cso</ObjectFileOutput>
     </FxCompile>
     <FxCompile Include="Source\Shaders\Sky_vs.hlsl">
       <TargetProfile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">vs_4_1</TargetProfile>
@@ -327,6 +328,7 @@
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(OutDir)/Source/Shaders/%(Filename).cso</ObjectFileOutput>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(OutDir)/Source/Shaders/%(Filename).cso</ObjectFileOutput>
     </FxCompile>
     <FxCompile Include="Source\Shaders\TintedTexture_ps.hlsl">
       <TargetProfile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">ps_4_0</TargetProfile>
@@ -336,6 +338,7 @@
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(OutDir)/Source/Shaders/%(Filename).cso</ObjectFileOutput>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(OutDir)/Source/Shaders/%(Filename).cso</ObjectFileOutput>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>

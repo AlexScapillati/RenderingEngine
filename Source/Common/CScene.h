@@ -19,6 +19,7 @@
 #include "imgui.h"
 #include "../Math/CVector2.h"
 #include "../Math/CVector3.h"
+
 class CWindow;
 class CCamera;
 
@@ -30,7 +31,6 @@ class CScene
 
 
 		CScene(IEngine* engine, std::string fileName);
-		CScene(IEngine* engine);
 
 		virtual void RenderSceneFromCamera(CCamera* camera) = 0;
 
@@ -51,10 +51,10 @@ class CScene
 		//--------------------------------------------------------------------------------------
 
 		virtual void Save(std::string fileName = "");
-		virtual void Resize(UINT newX, UINT newY);
-		virtual void PostProcessingPass();
-		virtual void RenderToDepthMap();
-		virtual void DisplayPostProcessingEffects(); // TODO: Remove
+		virtual void Resize(UINT newX, UINT newY) = 0;
+		virtual void PostProcessingPass() = 0;
+		virtual void RenderToDepthMap() = 0;
+		virtual void DisplayPostProcessingEffects() = 0; // TODO: Remove
 		
 
 		//--------------------------------------------------------------------------------------

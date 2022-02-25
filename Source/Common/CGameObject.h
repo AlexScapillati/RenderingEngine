@@ -1,14 +1,11 @@
 #pragma once
 
-#include "CLight.h"
-
 #include <string>
 #include <vector>
+#include "../Math/CMatrix4x4.h"
 
 enum KeyCode;
 class IEngine;
-class CVector3;
-class CMatrix4x4;
 
 class CGameObject
 {

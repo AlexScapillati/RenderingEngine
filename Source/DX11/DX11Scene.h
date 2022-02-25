@@ -34,8 +34,6 @@ namespace DX11
 
 		CDX11Scene(CDX11Engine* engine, std::string fileName);
 
-		CDX11Scene(CDX11Engine* e);
-
 		void RenderSceneFromCamera(CCamera* camera) override;
 
 		//--------------------------------------------------------------------------------------

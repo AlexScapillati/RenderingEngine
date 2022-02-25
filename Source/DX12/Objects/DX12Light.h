@@ -1,6 +1,9 @@
 #pragma once
 
 #include "DX12GameObject.h"
+
+#include "../../Common/CLight.h"
+
 #include "..\..\Math/CVector3.h"
 
 namespace DX12

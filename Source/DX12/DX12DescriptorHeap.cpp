@@ -14,7 +14,6 @@ namespace DX12
 		}
 
 		mSize = mEngine->mDevice->GetDescriptorHandleIncrementSize(mDesc.Type);
-		mEngine->mDevice->Release();
 	}
 
 	D3D12_DESCRIPTOR_HEAP_DESC CDX12DescriptorHeap::GetDesc() const
@@ -24,7 +23,6 @@ namespace DX12
 
 	SHandle CDX12DescriptorHeap::Add()
 	{
-
 		const SHandle newHandle
 		{
 			CD3DX12_CPU_DESCRIPTOR_HANDLE(mDescriptorHeap->GetCPUDescriptorHandleForHeapStart(),mTop,mSize),

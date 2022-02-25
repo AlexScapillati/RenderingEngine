@@ -64,44 +64,14 @@
     <ClCompile Include="Source\DX11\GraphicsHelpers.cpp">
       <Filter>Engine\DX11</Filter>
     </ClCompile>
-    <ClCompile Include="Source\External\imgui\imgui.cpp">
-      <Filter>External\Imgui</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\External\imgui\imgui_draw.cpp">
-      <Filter>External\Imgui</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\External\imgui\imgui_tables.cpp">
-      <Filter>External\Imgui</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\External\imgui\imgui_widgets.cpp">
-      <Filter>External\Imgui</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\External\imgui\ImGuizmo.cpp">
-      <Filter>External\Imgui</Filter>
-    </ClCompile>
     <ClCompile Include="Source\External\tinyxml2\tinyxml2.cpp">
       <Filter>External\TinyXml2</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\External\imgui\backends\imgui_impl_dx11.cpp">
-      <Filter>External\Imgui</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\External\imgui\backends\imgui_impl_win32.cpp">
-      <Filter>External\Imgui</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\External\imgui\misc\cpp\imgui_stdlib.cpp">
-      <Filter>External\Imgui</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\External\imgui\FileBrowser\ImGuiFileBrowser.cpp">
-      <Filter>External\Imgui</Filter>
     </ClCompile>
     <ClCompile Include="Source\Window.cpp">
       <Filter>Engine</Filter>
     </ClCompile>
     <ClCompile Include="Source\DX12\DX12Scene.cpp">
       <Filter>Engine\DX12</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\External\imgui\backends\imgui_impl_dx12.cpp">
-      <Filter>External\Imgui</Filter>
     </ClCompile>
     <ClCompile Include="Source\DX12\Objects\CDX12Sky.cpp">
       <Filter>Engine\DX12\Objects</Filter>
@@ -124,7 +94,6 @@
     <ClCompile Include="Source\Math\CVector4.cpp">
       <Filter>Math</Filter>
     </ClCompile>
-    <ClCompile Include="Main.cpp" />
     <ClCompile Include="Source\Common\Camera.cpp">
       <Filter>Engine</Filter>
     </ClCompile>
@@ -161,8 +130,40 @@
     <ClCompile Include="Source\Common\CScene.cpp">
       <Filter>Engine\Common</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Common\CGui.cpp" />
-    <ClCompile Include="Source\Common\CLight.cpp" />
+    <ClCompile Include="Source\External\imgui\imgui.cpp">
+      <Filter>External\Imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\External\imgui\ImGuiFileBrowser.cpp">
+      <Filter>External\Imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\External\imgui\ImGuizmo.cpp">
+      <Filter>External\Imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\External\imgui\imgui_draw.cpp">
+      <Filter>External\Imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\External\imgui\backends\imgui_impl_dx11.cpp">
+      <Filter>External\Imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\External\imgui\backends\imgui_impl_dx12.cpp">
+      <Filter>External\Imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\External\imgui\backends\imgui_impl_win32.cpp">
+      <Filter>External\Imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\External\imgui\imgui_tables.cpp">
+      <Filter>External\Imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\External\imgui\imgui_widgets.cpp">
+      <Filter>External\Imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Common\CGui.cpp">
+      <Filter>Engine\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Common\CLight.cpp">
+      <Filter>Engine\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="External">
@@ -213,50 +214,11 @@
     <ClInclude Include="Source\Utility\Timer.h">
       <Filter>Utility</Filter>
     </ClInclude>
-    <ClInclude Include="Source\External\imgui\imconfig.h">
-      <Filter>External\Imgui</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\External\imgui\imgui.h">
-      <Filter>External\Imgui</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\External\imgui\imgui_internal.h">
-      <Filter>External\Imgui</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\External\imgui\ImGuizmo.h">
-      <Filter>External\Imgui</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\External\imgui\imstb_rectpack.h">
-      <Filter>External\Imgui</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\External\imgui\imstb_textedit.h">
-      <Filter>External\Imgui</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\External\imgui\imstb_truetype.h">
-      <Filter>External\Imgui</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\External\imgui\stb_image.h">
-      <Filter>External\Imgui</Filter>
-    </ClInclude>
     <ClInclude Include="Source\External\tinyxml2\tinyxml2.h">
       <Filter>External\TinyXml2</Filter>
     </ClInclude>
-    <ClInclude Include="Source\External\imgui\backends\imgui_impl_dx11.h">
-      <Filter>External\Imgui</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\External\imgui\backends\imgui_impl_win32.h">
-      <Filter>External\Imgui</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\External\imgui\misc\cpp\imgui_stdlib.h">
-      <Filter>External\Imgui</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\External\imgui\FileBrowser\ImGuiFileBrowser.h">
-      <Filter>External\Imgui</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Window.h">
       <Filter>Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\External\imgui\backends\imgui_impl_dx12.h">
-      <Filter>External\Imgui</Filter>
     </ClInclude>
     <ClInclude Include="Source\Utility\HelperFunctions.h">
       <Filter>Utility</Filter>
@@ -390,8 +352,33 @@
     <ClInclude Include="Source\Common\CScene.h">
       <Filter>Engine\Common</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Common\CGui.h" />
-    <ClInclude Include="Source\Common\CLight.h" />
+    <ClInclude Include="Source\External\imgui\imgui.h">
+      <Filter>External\Imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\External\imgui\ImGuiFileBrowser.h">
+      <Filter>External\Imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\External\imgui\ImGuizmo.h">
+      <Filter>External\Imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\External\imgui\backends\imgui_impl_dx11.h">
+      <Filter>External\Imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\External\imgui\backends\imgui_impl_dx12.h">
+      <Filter>External\Imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\External\imgui\backends\imgui_impl_win32.h">
+      <Filter>External\Imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\External\imgui\imgui_internal.h">
+      <Filter>External\Imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Common\CGui.h">
+      <Filter>Engine\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Common\CLight.h">
+      <Filter>Engine\Common</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Source\Shaders\DepthOnly_ps.hlsl">

@@ -23,9 +23,6 @@ class CDX12GameObject;
 		// Constructors
 		//--------------------------------------------------------------------------------------
 
-		CDX12Scene(CDX12Engine* engine);
-
-
 		CDX12Scene(CDX12Engine* engine,
 			std::string  fileName);
 

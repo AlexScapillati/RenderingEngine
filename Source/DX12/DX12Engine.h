@@ -3,12 +3,14 @@
 #include "..\Engine.h"
 
 #include "DX12Common.h"
+#include "imgui.h"
 
 // https://www.3dgep.com/learning-directx-12-1/#GPU_Synchronization
 
 
 namespace DX12
 {
+
 	class CDX12RenderTarget;
 	class CDX12DescriptorHeap;
 	class CDX12ConstantBuffer;
@@ -46,7 +48,6 @@ namespace DX12
 		//--------------------------
 
 		ID3D12Device2* GetDevice() const;
-		CDX12Scene* GetScene() const;
 		ImTextureID    GetSceneTex() const;
 
 
@@ -214,18 +215,14 @@ namespace DX12
 			HANDLE                    fenceEvent,
 			std::chrono::milliseconds duration = std::chrono::milliseconds::max());
 
-		CScene*            CreateScene(std::string fileName) override;
-		CScene*            CreateScene() override;
+		void			   CreateScene(std::string fileName) override;
 		CGameObject*       CreateObject(const std::string& mesh, const std::string& name, const std::string& diffuseMap, CVector3 position, CVector3 rotation, float scale) override;
 		CSky*              CreateSky(const std::string& mesh, const std::string& name, const std::string& diffuseMap, CVector3 position, CVector3 rotation, float scale) override;
-		CPlant*            CreatePlant(const std::string& mesh, const std::string& name, CVector3 position, CVector3 rotation, float scale) override;
+		CPlant*            CreatePlant(const std::string& id, const std::string& name, CVector3 position, CVector3 rotation, float scale) override;
 		CGameObject*       CreateObject(const std::string& dirPath, const std::string& name, CVector3 position, CVector3 rotation, float scale) override;
 		CLight*            CreateLight(const std::string& mesh, const std::string& name, const std::string& diffuseMap, const CVector3& colour, const float& strength, CVector3 position, CVector3 rotation, float scale) override;
 		CSpotLight*        CreateSpotLight(const std::string& mesh, const std::string& name, const std::string& diffuseMap, const CVector3& colour, const float& strength, CVector3 position, CVector3 rotation, float scale) override;
 		CDirectionalLight* CreateDirectionalLight(const std::string& mesh, const std::string& name, const std::string& diffuseMap, const CVector3& colour, const float& strength, CVector3 position, CVector3 rotation, float scale) override;
 		CPointLight*       CreatePointLight(const std::string& mesh, const std::string& name, const std::string& diffuseMap, const CVector3& colour, const float& strength, CVector3 position, CVector3 rotation, float scale) override;
-
-		std::unique_ptr<CDX12Scene> mMainScene;
-		std::unique_ptr<CDX12Gui> mGui;
 	};
 }

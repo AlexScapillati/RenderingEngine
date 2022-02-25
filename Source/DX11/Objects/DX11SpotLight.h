@@ -3,7 +3,7 @@
 
 namespace DX11
 {
-	class CDX11SpotLight : public CDX11Light, public CSpotLight
+	class CDX11SpotLight : public CDX11GameObject, public CSpotLight
 	{
 	public:
 		CDX11SpotLight(CDX11Engine* engine, std::string mesh,
@@ -30,9 +30,9 @@ namespace DX11
 	public:
 		void LoadNewMesh(std::string newMesh) override;
 	private:
-		ID3D11Texture2D*          mShadowMap;
-		ID3D11DepthStencilView*   mShadowMapDepthStencil;
-		ID3D11ShaderResourceView* mShadowMapSRV;
+		ID3D11Texture2D*          mShadowMap{};
+		ID3D11DepthStencilView*   mShadowMapDepthStencil{};
+		ID3D11ShaderResourceView* mShadowMapSRV{};
 	};
 
 }

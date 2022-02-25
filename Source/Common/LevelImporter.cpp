@@ -8,7 +8,7 @@
 #include "..\Common/Camera.h"
 #include "..\Common/CScene.h"
 
-#include "../Common/CGameObject.h"
+#include "../Common/CLight.h"
 #include "../Common/CPostProcess.h"
 #include "../DX11/DX11Engine.h"
 
@@ -733,9 +733,7 @@ void CLevelImporter::LoadPlant(tinyxml2::XMLElement* currEntity,
 	CScene* scene)
 {
 	std::string ID;
-	std::string mesh;
 	std::string name;
-	std::string diffuse;
 
 	CVector3 pos = { 0,0,0 };
 	CVector3 rot = { 0,0,0 };
@@ -745,41 +743,30 @@ void CLevelImporter::LoadPlant(tinyxml2::XMLElement* currEntity,
 	if (entityNameAttr)
 		name = entityNameAttr->Value();
 
-	const auto geometry = currEntity->FirstChildElement("Geometry");
-
-	if (geometry)
+	if (const auto geometry = currEntity->FirstChildElement("Geometry"))
 	{
 		const auto idAttr = geometry->FindAttribute("ID");
 		if (idAttr) ID = idAttr->Value();
-
-		const auto meshAttr = geometry->FindAttribute("Mesh");
-		if (meshAttr) mesh = meshAttr->Value();
-
-		const auto diffuseAttr = geometry->FindAttribute("Diffuse");
-		if (diffuseAttr) diffuse = diffuseAttr->Value();
 	}
 
-	const auto positionEl = currEntity->FirstChildElement("Position");
-	if (positionEl)
+	if (const auto positionEl = currEntity->FirstChildElement("Position"))
 	{
 		pos = LoadVector3(positionEl);
 	}
 
-	const auto rotationEl = currEntity->FirstChildElement("Rotation");
-	if (rotationEl)
+	if (const auto rotationEl = currEntity->FirstChildElement("Rotation"))
 	{
 		rot = ToRadians(LoadVector3(rotationEl));
 	}
 
-	const auto scaleEl = currEntity->FirstChildElement("Scale");
-	if (scaleEl)
+	if (const auto scaleEl = currEntity->FirstChildElement("Scale"))
 	{
 		scale = scaleEl->FindAttribute("X")->FloatValue();
 	}
 
 	try
 	{
-		const auto obj = mEngine->CreatePlant(mesh, name, pos, rot, scale);
+		const auto obj = mEngine->CreatePlant(ID, name, pos, rot, scale);
 		scene->GetObjectManager()->AddPlant(obj);
 	}
 	catch (const std::exception& e)

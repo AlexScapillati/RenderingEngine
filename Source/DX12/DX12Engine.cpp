@@ -49,9 +49,6 @@ namespace DX12
 
 			// Create Gui
 			mGui = std::make_unique<CDX12Gui>(this);
-
-			// Create scene
-			mMainScene = std::make_unique<CDX12Scene>(this, "Scene1.xml");
 		}
 		catch (const std::runtime_error& e) { throw std::runtime_error(e.what()); }
 
@@ -87,16 +84,16 @@ namespace DX12
 				{
 					InitializeFrame();
 
-					mMainScene->UpdateScene(frameTime);
+					mScene->UpdateScene(frameTime);
 
 					// Draw the scene
-					mMainScene->RenderScene(frameTime);
+					mScene->RenderScene(frameTime);
 
 					MidFrame();
 
 					PIXBeginEvent(mCommandList.Get(), 0, L"GUI Rendering");
 
-					mGui->Begin(frameTime);
+					mGui->Begin();
 
 					//mGui
 					mGui->Show(frameTime);
@@ -185,8 +182,8 @@ namespace DX12
 	{
 		mFrameFenceValues[mCurrentBackBufferIndex] = Signal();
 
-		const UINT syncInterval = mMainScene->GetLockFps() ? 1 : 0;
-		const UINT presentFlags = !mMainScene->GetLockFps() ? DXGI_PRESENT_ALLOW_TEARING : 0;
+		const UINT syncInterval = mScene->GetLockFps() ? 1 : 0;
+		const UINT presentFlags = !mScene->GetLockFps() ? DXGI_PRESENT_ALLOW_TEARING : 0;
 		if (FAILED(mSwapChain->Present(syncInterval, presentFlags))) { throw std::runtime_error("Error presenting"); }
 
 		mCurrentBackBufferIndex = mSwapChain->GetCurrentBackBufferIndex();
@@ -197,9 +194,7 @@ namespace DX12
 
 	ID3D12Device2* CDX12Engine::GetDevice() const { return mDevice.Get(); }
 
-	CDX12Scene* CDX12Engine::GetScene() const { return mMainScene.get(); }
-
-	ImTextureID CDX12Engine::GetSceneTex() const { return mMainScene->GetTextureSRV(); }
+	ImTextureID CDX12Engine::GetSceneTex() const { return mScene->GetTextureSRV(); }
 
 	void CDX12Engine::CopyBuffers()
 	{
@@ -244,15 +239,11 @@ namespace DX12
 		}
 	}
 
-	CScene* CDX12Engine::CreateScene(std::string fileName)
+	void CDX12Engine::CreateScene(std::string fileName)
 	{
-		return new CDX12Scene(this, fileName);
+		mScene = std::make_unique<CDX12Scene>(this,fileName);
 	}
-
-	CScene* CDX12Engine::CreateScene()
-	{
-		return new CDX12Scene(this);
-	}
+	
 
 	CGameObject* CDX12Engine::CreateObject(const std::string& mesh, const std::string& name, const std::string& diffuseMap, CVector3 position, CVector3 rotation, float scale)
 	{
@@ -264,9 +255,9 @@ namespace DX12
 		return new CDX12Sky(this, mesh, name, diffuseMap, position, rotation, scale);
 	}
 
-	CPlant* CDX12Engine::CreatePlant(const std::string& mesh, const std::string& name, CVector3 position, CVector3 rotation, float scale)
+	CPlant* CDX12Engine::CreatePlant(const std::string& id, const std::string& name, CVector3 position, CVector3 rotation, float scale)
 	{
-		return new CDX12Plant(this, mesh, name, position, rotation, scale);
+		return new CDX12Plant(this, id, name, position, rotation, scale);
 	}
 
 	CGameObject* CDX12Engine::CreateObject(const std::string& dirPath, const std::string& name, CVector3 position, CVector3 rotation, float scale)
@@ -321,7 +312,7 @@ namespace DX12
 				mFrameFenceValues[i] = mFrameFenceValues[mCurrentBackBufferIndex];
 			}
 
-			mMainScene->Resize(newWidth, newHeight);
+			mScene->Resize(newWidth, newHeight);
 
 			DXGI_SWAP_CHAIN_DESC swapChainDesc = {};
 			ThrowIfFailed(mSwapChain->GetDesc(&swapChainDesc));
@@ -812,8 +803,6 @@ namespace DX12
 				{
 					throw std::runtime_error("Error getting the current swap chain buffer");
 				}
-
-				auto desc = res->GetDesc();
 
 				mBackBuffers[i] = std::make_unique<CDX12RenderTarget>(this, res);
 

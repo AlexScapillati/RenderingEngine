@@ -3,7 +3,7 @@
 #include "CGameObject.h"
 #include "../Math/CVector3.h"
 
-class CLight : public CGameObject
+class CLight : virtual public CGameObject
 {
 	public:
 		~CLight() override = default;

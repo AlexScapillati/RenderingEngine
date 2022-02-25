@@ -17,7 +17,7 @@
 
 namespace DX11
 {
-	class CDX11GameObject : public CGameObject
+	class CDX11GameObject : virtual public CGameObject
 	{
 		public:
 			~CDX11GameObject() override = default;

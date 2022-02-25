@@ -745,8 +745,7 @@ namespace DX11
 					filter++;
 			}
 
-			ImGui::End();
-		}
+		}ImGui::End();
 
 		//-------------------------------------------------------
 		// Post Processing Choose Window
@@ -806,8 +805,7 @@ namespace DX11
 						choosePP = false;
 					}
 				}
-			}
-			ImGui::End();
+			}ImGui::End();
 		}
 
 		//-------------------------------------------------------
@@ -971,8 +969,7 @@ namespace DX11
 				{
 					editProperties = false;
 				}
-			}
-			ImGui::End();
+			}ImGui::End();
 		}
 	}
 }

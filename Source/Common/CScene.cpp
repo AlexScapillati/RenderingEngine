@@ -11,9 +11,7 @@
 #include "../Engine.h"
 #include "../Utility/Input.h"
 #include "../Window.h"
-#include "../DX12/DX12Engine.h"
-#include "../DX12/Objects/DX12Light.h"
-#include "../DX11/Objects/DX11Light.h"
+#include "../Common/CLight.h"
 
 CScene::CScene(IEngine* engine, std::string fileName)
 {
@@ -30,9 +28,37 @@ CScene::CScene(IEngine* engine, std::string fileName)
 	{
 		mObjManager = std::make_unique<CGameObjectManager>(engine);
 
-		CLevelImporter importer(engine);
+		if (fileName.empty())
+		{
+			//--------------------------------------------------------------------------------------
+			// Scene Geometry and Layout
+			//--------------------------------------------------------------------------------------
 
-		importer.LoadScene(std::move(fileName), this);
+			mObjManager = std::make_unique<CGameObjectManager>(engine);
+
+			mCamera = std::make_unique<CCamera>();
+			mCamera->SetPosition({ 0, 10.0f, -4.0f });
+
+			auto ground = mEngine->CreateObject("Hills.x", "Ground", "GrassDiffuseSpecular.dds");
+			auto cube = mEngine->CreateObject("Cube.x", "Cube", "Mossy.png");
+			auto sky = mEngine->CreateSky("Stars.x", "sky", "Stars.jpg");
+			cube->SetPosition({ 0.0f,10.0f,20.0f });
+
+			auto light = mEngine->CreateLight("Light.x", "Light", "Flare.jpg", { 1,1,1 }, 1000);
+			light->SetPosition({ 10.f,20.f,30.f });
+
+			mObjManager->AddObject(ground);
+			mObjManager->AddObject(cube);
+			mObjManager->AddLight(light);
+			mObjManager->AddSky(sky);
+
+		}
+		else
+		{
+			CLevelImporter importer(engine);
+
+			importer.LoadScene(fileName, this);
+		}
 	}
 	catch (const std::exception& e)
 	{
@@ -40,27 +66,6 @@ CScene::CScene(IEngine* engine, std::string fileName)
 	}
 }
 
-CScene::CScene(IEngine* engine)
-{
-	mEngine = engine;
-	mWindow = mEngine->GetWindow();
-
-	//--------------------------------------------------------------------------------------
-	// Scene Geometry and Layout
-	//--------------------------------------------------------------------------------------
-	mCamera = std::make_unique<CCamera>();
-	mCamera->SetPosition({ 0, 10.0f, -4.0f });
-
-	auto ground = mEngine->CreateObject("Hills.x", "Ground", "GrassDiffuseSpecular.dds");
-	auto cube = mEngine->CreateObject("Cube.x", "Cube", "Mossy.png");
-	auto light = mEngine->CreateLight("Light.x", "Light", "Flare.jpg", { 1,1,1 }, 1000);
-
-	reinterpret_cast<CGameObject*>(light)->SetPosition({ 10.f,20.f,30.f });
-	cube->SetPosition({ 0.0f,10.0f,20.0f });
-	mObjManager->AddObject(ground);
-	mObjManager->AddObject(cube);
-	mObjManager->AddLight(light);
-}
 
 void CScene::UpdateScene(float& frameTime)
 {
@@ -83,7 +88,7 @@ void CScene::UpdateScene(float& frameTime)
 		std::ostringstream frameTimeMs;
 		frameTimeMs.precision(2);
 		frameTimeMs << std::fixed << avgFrameTime * 1000;
-		const auto windowTitle = "DirectX 11 - Game Engine Test " + frameTimeMs.str() +
+		const auto windowTitle = "DirectX - Game Engine Test " + frameTimeMs.str() +
 			"ms, FPS: " + std::to_string(static_cast<int>(1 / avgFrameTime + 0.5f));
 		SetWindowTextA(mEngine->GetWindow()->GetHandle(), windowTitle.c_str());
 		totalFrameTime = 0;
@@ -95,20 +100,4 @@ void CScene::Save(std::string fileName)
 {
 	CLevelImporter i(mEngine);
 	i.SaveScene(fileName, this);
-}
-
-void CScene::Resize(UINT newX, UINT newY)
-{
-}
-
-void CScene::PostProcessingPass()
-{
-}
-
-void CScene::RenderToDepthMap()
-{
-}
-
-void CScene::DisplayPostProcessingEffects()
-{
 }

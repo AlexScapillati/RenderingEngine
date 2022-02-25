@@ -34,11 +34,11 @@ class CGameObjectManager
 		void RenderAllObjects() const;
 		void UpdateObjects(float updateTime) const;
 
-		std::deque<CGameObject*> mObjects;
-		std::deque<CLight*> mLights;
-		std::deque<CPointLight*> mPointLights;
-		std::deque<CSpotLight*> mSpotLights;
-		std::deque<CDirectionalLight*> mDirLights;
+		std::deque<CGameObject*> mObjects {};
+		std::deque<CLight*> mLights {};
+		std::deque<CPointLight*> mPointLights {};
+		std::deque<CSpotLight*> mSpotLights {};
+		std::deque<CDirectionalLight*> mDirLights {};
 
 	private:
 		IEngine*		 mEngine;

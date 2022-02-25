@@ -29,7 +29,7 @@ namespace DX11
 		{
 			LoadMaps(mMapsStr);
 		}
-		catch (std::runtime_error e)
+		catch (const std::runtime_error& e)
 		{
 			throw std::runtime_error(e.what());
 		}

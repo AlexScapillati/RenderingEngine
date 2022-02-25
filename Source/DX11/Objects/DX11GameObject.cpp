@@ -71,7 +71,7 @@ namespace DX11
 		//geometry loaded, set its position...
 
 		SetPosition(position);
-		SetRotation(rotation);
+		CGameObject::SetRotation(rotation);
 		SetScale(scale);
 	}
 

@@ -11,18 +11,6 @@
 
 namespace DX12
 {
-	CDX12Scene::CDX12Scene(CDX12Engine* engine): CScene(engine)
-	{
-		mEngine = engine;
-
-		mFileName = "";
-
-		try
-		{
-			InitFrameDependentStuff();
-		}
-		catch (const std::runtime_error& e) { throw std::runtime_error(e.what()); }
-	}
 
 	CDX12Scene::CDX12Scene(CDX12Engine* engine, std::string fileName): CScene(engine, fileName)
 	{
@@ -159,7 +147,7 @@ namespace DX12
 
 		if (!mObjManager->mLights.empty())
 		{
-			const auto   light                 = dynamic_cast<CDX12Light*>(mObjManager->mLights.front());
+			const auto   light                 = mObjManager->mLights.front();
 			const SLight lightInfo             = { light->Position(),static_cast<float>(*light->Enabled()),light->GetColour(), light->GetStrength() };
 			mEngine->mPerFrameLights.lights[0] = lightInfo;
 		}
@@ -216,7 +204,7 @@ namespace DX12
 
 	void CDX12Scene::UpdateScene(float& frameTime) { CScene::UpdateScene(frameTime); }
 	void CDX12Scene::Save(std::string fileName) { CScene::Save(fileName); }
-	void CDX12Scene::PostProcessingPass() { CScene::PostProcessingPass(); }
-	void CDX12Scene::RenderToDepthMap() { CScene::RenderToDepthMap(); }
-	void CDX12Scene::DisplayPostProcessingEffects() { CScene::DisplayPostProcessingEffects(); }
+	void CDX12Scene::PostProcessingPass() {  }
+	void CDX12Scene::RenderToDepthMap() { }
+	void CDX12Scene::DisplayPostProcessingEffects() {  }
 }

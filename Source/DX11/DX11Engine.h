@@ -27,17 +27,12 @@ class CDX11Gui;
 
 			ID3D11Device*        GetDevice() const;
 			ID3D11DeviceContext* GetContext() const;
-			CDX11Scene*          GetScene() const;
-			CDX11Gui*            GetGui() const;
 
 			~CDX11Engine() override;
 
 			//------------------------------------------------
 			// Data
 			//------------------------------------------------
-
-			std::unique_ptr<CDX11Scene> mMainScene = nullptr;
-			std::unique_ptr<CDX11Gui>   mGui       = nullptr;
 
 			// The main Direct3D (D3D) variables
 			ComPtr<ID3D11Device>        mD3DDevice  = nullptr; // D3D device for overall features
@@ -182,8 +177,8 @@ class CDX11Gui;
 
 			bool    CreateStates();
 
-			CScene*      CreateScene(std::string fileName) override;
-			CScene*      CreateScene() override;
+			void     CreateScene(std::string fileName) override;
+
 			CGameObject* CreateObject(const std::string& mesh,
 					const std::string& name,
 					const std::string& diffuseMap,

@@ -14,7 +14,7 @@ namespace DX11
 								   CVector3     rotation,
 								   float        scale)
 		:
-		CDX11Light(engine, mesh, name, diffuse, colour, strength, position, rotation, scale)
+		CDX11GameObject(engine, mesh, name, diffuse, position, rotation, scale)
 		{
 			//initialize private values
 			mShadowMap             = nullptr;
@@ -29,7 +29,7 @@ namespace DX11
 
 	CDX11SpotLight::CDX11SpotLight(CDX11SpotLight& s)
 		:
-		CDX11Light(s)
+		CDX11GameObject(s)
 		{
 			mShadowMapSize = s.GetShadowMapSize();
 			mConeAngle     = s.GetConeAngle();
@@ -37,7 +37,7 @@ namespace DX11
 			InitTextures();
 		}
 
-	void CDX11SpotLight::Render(bool basicGeometry) { CDX11Light::Render(basicGeometry); }
+	void CDX11SpotLight::Render(bool basicGeometry) { CDX11GameObject::Render(basicGeometry); }
 
 	ID3D11ShaderResourceView* CDX11SpotLight::RenderFromThis()
 		{
@@ -63,7 +63,7 @@ namespace DX11
 			mEngine->GetContext()->OMSetRenderTargets(0, nullptr, mShadowMapDepthStencil);
 			mEngine->GetContext()->ClearDepthStencilView(mShadowMapDepthStencil, D3D11_CLEAR_DEPTH, 1.0f, 0);
 
-			gPerFrameConstants.viewMatrix           = InverseAffine(WorldMatrix());
+			gPerFrameConstants.viewMatrix           = InverseAffine(CDX11GameObject::WorldMatrix());
 			gPerFrameConstants.projectionMatrix     = MakeProjectionMatrix(1.0f, ToRadians(mConeAngle));
 			gPerFrameConstants.viewProjectionMatrix = gPerFrameConstants.viewMatrix * gPerFrameConstants.projectionMatrix;
 
@@ -142,7 +142,7 @@ namespace DX11
 			if (FAILED(mEngine->GetDevice()->CreateShaderResourceView(mShadowMap, &srvDesc, &mShadowMapSRV))) { throw std::runtime_error("Error creating shadow map shader resource view"); }
 		}
 
-	void CDX11SpotLight::LoadNewMesh(std::string newMesh) { CDX11Light::LoadNewMesh(newMesh); }
+	void CDX11SpotLight::LoadNewMesh(std::string newMesh) { LoadNewMesh(newMesh); }
 
 	CDX11SpotLight::~CDX11SpotLight() { Release(); }
 

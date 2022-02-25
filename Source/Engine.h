@@ -9,6 +9,7 @@
 
 // Forward declarations
 
+class CGui;
 class CPlant;
 class CSky;
 class CPointLight;
@@ -25,16 +26,14 @@ public:
 
 	//*******************************
 	//**** Virtual Functions 
-	 
+
 	virtual bool Update() = 0;
 
 	virtual void Resize(UINT x, UINT y) = 0;
 
 	virtual void FinalizeFrame() = 0;
 
-	virtual CScene* CreateScene(std::string fileName) = 0;
-
-	virtual CScene* CreateScene() = 0;
+	virtual void CreateScene(std::string fileName = "") = 0;
 
 	virtual CGameObject* CreateObject(
 		const std::string& mesh,
@@ -42,7 +41,7 @@ public:
 		const std::string& diffuseMap,
 		CVector3           position = { 0,0,0 },
 		CVector3           rotation = { 0,0,0 },
-		float              scale    = 1) = 0;
+		float              scale = 1) = 0;
 
 	virtual CSky* CreateSky(
 		const std::string& mesh,
@@ -64,51 +63,51 @@ public:
 		const std::string& name,
 		CVector3           position = { 0,0,0 },
 		CVector3           rotation = { 0,0,0 },
-		float              scale    = 1) = 0;
+		float              scale = 1) = 0;
 
 	virtual CLight* CreateLight(
 		const std::string& mesh,
 		const std::string& name,
 		const std::string& diffuseMap,
-		const CVector3&    colour,
-		const float&       strength,
+		const CVector3& colour,
+		const float& strength,
 		CVector3           position = { 0,0,0 },
 		CVector3           rotation = { 0,0,0 },
-		float              scale    = 1) = 0;
+		float              scale = 1) = 0;
 
 	virtual CSpotLight* CreateSpotLight(
 		const std::string& mesh,
 		const std::string& name,
 		const std::string& diffuseMap,
-		const CVector3&    colour,
-		const float&       strength,
+		const CVector3& colour,
+		const float& strength,
 		CVector3           position = { 0,0,0 },
 		CVector3           rotation = { 0,0,0 },
-		float              scale    = 1) = 0;
+		float              scale = 1) = 0;
 
 	virtual CDirectionalLight* CreateDirectionalLight(
 		const std::string& mesh,
 		const std::string& name,
 		const std::string& diffuseMap,
-		const CVector3&    colour,
-		const float&       strength,
+		const CVector3& colour,
+		const float& strength,
 		CVector3           position = { 0,0,0 },
 		CVector3           rotation = { 0,0,0 },
-		float              scale    = 1) = 0;
+		float              scale = 1) = 0;
 
 	virtual CPointLight* CreatePointLight(
 		const std::string& mesh,
 		const std::string& name,
 		const std::string& diffuseMap,
-		const CVector3&    colour,
-		const float&       strength,
+		const CVector3& colour,
+		const float& strength,
 		CVector3           position = { 0,0,0 },
 		CVector3           rotation = { 0,0,0 },
-		float              scale    = 1) = 0;
-	 
+		float              scale = 1) = 0;
+
 	//*******************************
 	//**** Setters / Getters
-	
+
 	auto GetTimer() const
 	{
 		return mTimer;
@@ -119,12 +118,17 @@ public:
 		return mWindow.get();
 	}
 
+	auto GetScene() const
+	{
+		return mScene.get();
+	}
+
 
 	auto& GetMediaFolder()
 	{
 		return mMediaFolder;
 	}
-	
+
 	virtual ~IEngine() = default;
 
 protected:
@@ -133,6 +137,10 @@ protected:
 	//**** Data
 
 	Timer mTimer;
+
+	std::unique_ptr<CScene> mScene;
+
+	std::unique_ptr<CGui> mGui;
 
 	std::unique_ptr<CWindow> mWindow;
 

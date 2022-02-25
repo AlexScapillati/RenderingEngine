@@ -1,6 +1,6 @@
 #include "CGameObjectManager.h"
 
-#include "CGameObject.h"
+#include "CLight.h"
 
 CGameObjectManager::CGameObjectManager(IEngine* engine)
 {

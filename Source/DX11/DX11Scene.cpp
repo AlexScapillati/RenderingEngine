@@ -3,12 +3,7 @@
 // Scene rendering & update
 //--------------------------------------------------------------------------------------
 
-#pragma once
-
 #include "DX11Scene.h"
-#include <dxgidebug.h>
-#include <utility>
-#include <sstream>
 
 #include "DX11Common.h"
 #include "Objects/DX11SpotLight.h"
@@ -19,9 +14,6 @@
 
 #include "../Common/LevelImporter.h"
 #include "..\Window.h"
-#include "..\External\imgui\imgui.h"
-#include "..\External\imgui\FileBrowser\ImGuiFileBrowser.h"
-#include "../Utility/Input.h"
 
 namespace DX11
 {
@@ -55,78 +47,51 @@ namespace DX11
 	PostProcessingConstants gPostProcessingConstants;
 	ComPtr<ID3D11Buffer>    gPostProcessingConstBuffer;
 
-	CDX11Scene::CDX11Scene(CDX11Engine* engine, std::string fileName) : CScene(engine, fileName)
-	{
-		mEngine = engine;
-
-		//--------------------------------------------------------------------------------------
-		// Initialise scene DX11 stuff
-		//--------------------------------------------------------------------------------------
-
-		try
+	CDX11Scene::CDX11Scene(CDX11Engine* engine, std::string fileName)
+		:
+		CScene(engine,fileName)
 		{
-			//create all the textures needed for the scene rendering
-			InitTextures();
+			mEngine = engine;
+
+			//--------------------------------------------------------------------------------------
+			// Initialise scene DX11 stuff
+			//--------------------------------------------------------------------------------------
+
+			try
+			{
+				//create all the textures needed for the scene rendering
+				InitTextures();
+			}
+			catch (const std::runtime_error& e) { throw std::runtime_error(e.what()); }
+
+
+			////--------------- Load meshes ---------------////
+
+			// Load mesh geometry data
+
+			try { LoadPostProcessingImages(); }
+			catch (const std::exception& e) { throw std::runtime_error(e.what()); }
+
+			////--------------- GPU states ---------------////
+
+			// Create all filtering modes, blending modes etc. used by the app (see State.cpp/.h)
+			if (!mEngine->CreateStates()) { throw std::runtime_error("Error creating DirectX states"); }
+
+			// Create GPU-side constant buffers to receive the gPerFrameConstants and gPerModelConstants structures above
+			// These allow us to pass data from CPU to shaders such as lighting information or matrices
+			// See the comments above where these variable are declared and also the UpdateScene function
+			gPerFrameConstantBuffer.Attach(mEngine->CreateConstantBuffer(sizeof(gPerFrameConstants)));
+			gPerModelConstantBuffer.Attach(mEngine->CreateConstantBuffer(sizeof(gPerModelConstants)));
+			gPerFrameLightsConstBuffer.Attach(mEngine->CreateConstantBuffer(sizeof(gPerFrameLightsConstants)));
+			gPerFrameSpotLightsConstBuffer.Attach(mEngine->CreateConstantBuffer(sizeof(gPerFrameSpotLightsConstants)));
+			gPerFrameDirLightsConstBuffer.Attach(mEngine->CreateConstantBuffer(sizeof(gPerFrameDirLightsConstants)));
+			gPerFramePointLightsConstBuffer.Attach(mEngine->CreateConstantBuffer(sizeof(gPerFramePointLightsConstants)));
+			gPostProcessingConstBuffer.Attach(mEngine->CreateConstantBuffer(sizeof(gPostProcessingConstants)));
+
+			if (!gPerFrameConstantBuffer || !gPerModelConstantBuffer || !gPerFrameDirLightsConstBuffer || !gPerFrameLightsConstBuffer || !gPerFrameSpotLightsConstBuffer || !gPerFramePointLightsConstBuffer || !gPostProcessingConstBuffer) { throw std::runtime_error("Error creating constant buffers"); }
 		}
-		catch (const std::runtime_error& e)
-		{
-			throw std::runtime_error(e.what());
-		}
 
-
-		////--------------- Load meshes ---------------////
-
-		// Load mesh geometry data
-
-		try
-		{
-			//load default shaders
-			mEngine->LoadDefaultShaders();
-
-			LoadPostProcessingImages();
-
-		}
-		catch (const std::exception& e)
-		{
-			throw std::runtime_error(e.what());
-		}
-
-		////--------------- GPU states ---------------////
-
-		// Create all filtering modes, blending modes etc. used by the app (see State.cpp/.h)
-		if (!mEngine->CreateStates())
-		{
-			throw std::runtime_error("Error creating DirectX states");
-		}
-
-		// Create GPU-side constant buffers to receive the gPerFrameConstants and gPerModelConstants structures above
-		// These allow us to pass data from CPU to shaders such as lighting information or matrices
-		// See the comments above where these variable are declared and also the UpdateScene function
-		gPerFrameConstantBuffer.Attach(mEngine->CreateConstantBuffer(sizeof(gPerFrameConstants)));
-		gPerModelConstantBuffer.Attach(mEngine->CreateConstantBuffer(sizeof(gPerModelConstants)));
-		gPerFrameLightsConstBuffer.Attach(mEngine->CreateConstantBuffer(sizeof(gPerFrameLightsConstants)));
-		gPerFrameSpotLightsConstBuffer.Attach(mEngine->CreateConstantBuffer(sizeof(gPerFrameSpotLightsConstants)));
-		gPerFrameDirLightsConstBuffer.Attach(mEngine->CreateConstantBuffer(sizeof(gPerFrameDirLightsConstants)));
-		gPerFramePointLightsConstBuffer.Attach(mEngine->CreateConstantBuffer(sizeof(gPerFramePointLightsConstants)));
-		gPostProcessingConstBuffer.Attach(mEngine->CreateConstantBuffer(sizeof(gPostProcessingConstants)));
-
-
-		if (!gPerFrameConstantBuffer ||
-			!gPerModelConstantBuffer ||
-			!gPerFrameDirLightsConstBuffer ||
-			!gPerFrameLightsConstBuffer ||
-			!gPerFrameSpotLightsConstBuffer ||
-			!gPerFramePointLightsConstBuffer ||
-			!gPostProcessingConstBuffer)
-		{
-			throw std::runtime_error("Error creating constant buffers");
-		}
-	}
-
-	CDX11Scene::CDX11Scene(CDX11Engine* e) : CScene(e)
-	{
-	}
-
+	
 	//--------------------------------------------------------------------------------------
 	// Scene Rendering
 	//--------------------------------------------------------------------------------------
@@ -158,7 +123,7 @@ namespace DX11
 		mEngine->GetContext()->OMSetDepthStencilState(mEngine->mUseDepthBufferState.Get(), 0);
 		mEngine->GetContext()->RSSetState(mEngine->mCullBackState.Get());
 
-		mEngine->GetContext()->PSSetSamplers(0, 1, &mEngine->mAnisotropic4XSampler);
+		mEngine->GetContext()->PSSetSamplers(0, 1, mEngine->mAnisotropic4XSampler.GetAddressOf());
 
 		//Render All Objects, if something went wrong throw an exception
 		mObjManager->RenderAllObjects();
@@ -223,17 +188,17 @@ namespace DX11
 		mEngine->GetContext()->VSSetConstantBuffers(2, 4, frameCBuffers);
 
 		// Set the sampler for the material textures
-		mEngine->GetContext()->PSSetSamplers(0, 1, &mEngine->mAnisotropic4XSampler);
+		mEngine->GetContext()->PSSetSamplers(0, 1, mEngine->mAnisotropic4XSampler.GetAddressOf());
 
 		// Set Sampler for the Shadow Maps
-		mEngine->GetContext()->PSSetSamplers(1, 1, &mEngine->mPointSamplerBorder);
+		mEngine->GetContext()->PSSetSamplers(1, 1, mEngine->mPointSamplerBorder.GetAddressOf());
 
 		////----- Render form the lights point of view ----------////
 
 		for (const auto it : mObjManager->mSpotLights)
 		{
 			auto l = dynamic_cast<CDX11SpotLight*>(it);
-			if (*l->Enabled())
+			if (*it->Enabled())
 			{
 				auto tmp = l->RenderFromThis();
 
@@ -244,7 +209,7 @@ namespace DX11
 		for (const auto it : mObjManager->mDirLights)
 		{
 			auto l = dynamic_cast<CDX11DirLight*>(it);
-			if (*l->Enabled())
+			if (*it->Enabled())
 			{
 				auto tmp = l->RenderFromThis();
 
@@ -255,7 +220,7 @@ namespace DX11
 		for (const auto it : mObjManager->mPointLights)
 		{
 			auto l = dynamic_cast<CDX11PointLight*>(it);
-			if (*l->Enabled())
+			if (*it->Enabled())
 			{
 				auto tmp = l->RenderFromThis();
 

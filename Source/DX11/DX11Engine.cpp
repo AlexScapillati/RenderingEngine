@@ -143,17 +143,17 @@ namespace DX11
 		{
 			// Initialise Direct3D
 			InitDirect3D();
-		}
-		catch (const std::runtime_error& e) { throw std::runtime_error(e.what()); }
 
-		try
+			//load default shaders
+			LoadDefaultShaders();
+
+			mGui = std::make_unique<CDX11Gui>(this);
+		}
+		catch (const std::exception& e)
 		{
-			// Create scene
-			mMainScene = std::make_unique<CDX11Scene>(this, "Scene1.xml");
+			throw std::runtime_error(e.what());
 		}
-		catch (const std::exception& e) { throw std::runtime_error(e.what()); }
 
-		mGui = std::make_unique<CDX11Gui>(this);
 
 		// Will use a timer class to help in this tutorial (not part of DirectX). It's like a stopwatch - start it counting now
 		mTimer.Start();
@@ -179,20 +179,22 @@ namespace DX11
 				// Update the scene by the amount of time since the last frame
 				auto frameTime = mTimer.GetLapTime();
 
-				mGui->Begin(frameTime);
+				mGui->Begin();
 
-				mMainScene->UpdateScene(frameTime);
+				mScene->UpdateScene(frameTime);
 
 				// Draw the scene
-				mMainScene->RenderScene(frameTime);
+				mScene->RenderScene(frameTime);
 
 				mGui->Show(frameTime);
+
+				mGui->End();
 
 				////--------------- Scene completion ---------------////
 
 				// When drawing to the off-screen back buffer is complete, we "present" the image to the front buffer (the screen)
 				// Set first parameter to 1 to lock to vsync
-				if (mSwapChain->Present(mMainScene->GetLockFps(), 0) == DXGI_ERROR_DEVICE_REMOVED)
+				if (mSwapChain->Present(mScene->GetLockFps(), 0) == DXGI_ERROR_DEVICE_REMOVED)
 				{
 					const auto reason = mD3DDevice->GetDeviceRemovedReason();
 
@@ -205,7 +207,7 @@ namespace DX11
 					//ImGui::OpenPopup("Save?");
 
 					// Save automatically
-					mMainScene->Save();
+					//mScene->Save();
 
 					return false;
 				}
@@ -222,7 +224,7 @@ namespace DX11
 		mD3DContext->OMSetRenderTargets(1, mBackBufferRenderTarget.GetAddressOf(), mDepthStencil.Get());
 
 		// Clear the back buffer to a fixed colour and the depth buffer to the far distance
-		mD3DContext->ClearRenderTargetView(mBackBufferRenderTarget.Get(), &mMainScene->GetBackgroundCol().r);
+		mD3DContext->ClearRenderTargetView(mBackBufferRenderTarget.Get(), &mScene->GetBackgroundCol().r);
 		mD3DContext->ClearDepthStencilView(mDepthStencil.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
 	}
 
@@ -240,7 +242,7 @@ namespace DX11
 
 				mWindow->SetWindowSize(rc.right, rc.bottom);
 
-				mMainScene->Resize(x, y);
+				mScene->Resize(x, y);
 
 				HRESULT hr;
 
@@ -322,17 +324,7 @@ namespace DX11
 	{
 		return mD3DContext.Get();
 	}
-
-	CDX11Scene* CDX11Engine::GetScene() const
-	{
-		return mMainScene.get();
-	}
-
-	CDX11Gui* CDX11Engine::GetGui() const
-	{
-		return mGui.get();
-	}
-
+	
 
 	CDX11Engine::~CDX11Engine()
 	{
@@ -348,14 +340,10 @@ namespace DX11
 	}
 
 
-	CScene* CDX11Engine::CreateScene(std::string fileName)
+	void CDX11Engine::CreateScene(std::string fileName)
 	{
-		return new CDX11Scene(this, fileName);
-	}
-
-	CScene* CDX11Engine::CreateScene()
-	{
-		return new CDX11Scene(this);
+		if (mScene) mScene = nullptr;
+		mScene = std::make_unique<CDX11Scene>(this,fileName);
 	}
 
 	CGameObject* CDX11Engine::CreateObject(const std::string& mesh, const std::string& name, const std::string& diffuseMap, CVector3 position, CVector3 rotation, float scale)

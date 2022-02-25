@@ -5,10 +5,8 @@
 #include <utility>
 
 #include "../../Utility/HelperFunctions.h"
-#include "../../Utility/Input.h"
 
 #include "../DX12Mesh.h"
-#include "../CDX12Material.h"
 
 namespace DX12
 {

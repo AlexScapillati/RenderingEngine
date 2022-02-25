@@ -58,7 +58,7 @@ namespace DX12
 
 		~CDX12RenderTarget() override;
 
-		SHandle mRTVHandle;
+		SHandle mRTVHandle{};
 
 		INT mRTVDescriptorIndex;
 	};

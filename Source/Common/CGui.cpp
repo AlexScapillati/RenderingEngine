@@ -9,6 +9,7 @@
 #include "ImGuiFileBrowser.h"
 
 #include "CGameObject.h"
+#include "CLight.h"
 #include "ImGuizmo.h"
 #include "../Utility/Input.h"
 #include "../Common.h"
@@ -17,9 +18,42 @@
 #include "../Common/CScene.h"
 #include "../DX11/Objects/DX11GameObject.h"
 
-void CGui::Begin(float& frameTime)
+
+std::string ChooseTexture(bool& selected, imgui_addons::ImGuiFileBrowser fileDialog)
 {
+	if (fileDialog.showFileDialog("Select Texture", imgui_addons::ImGuiFileBrowser::DialogMode::OPEN, ImVec2(700, 310), ".jpg,.dds,.png"))
+	{
+		selected = false;
+		return fileDialog.selected_fn;
+	}
+	return {};
 }
+
+
+
+CGui::CGui(IEngine* engine)
+	{
+	mEngine = engine;
+
+	//initialize ImGui
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+
+	ImGuiIO& io = ImGui::GetIO(); (void)io;
+	//io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;       // Enable Keyboard Controls
+	//io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable; // Enable Docking
+	//io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;       // Enable Multi-Viewport / Platform Windows //super broken
+
+	io.ConfigDockingWithShift = false;
+	io.ConfigWindowsMoveFromTitleBarOnly = true;
+	//io.Fonts->AddFontFromFileTTF("External\\imgui\\misc\\fonts\\Roboto-Light.ttf", 15);
+
+	// Setup Platform/Renderer bindings
+	// Setup Dear ImGui style
+	ImGui::StyleColorsDark();
+
+	}
 
 void CGui::Show(float& frameTime)
 {
@@ -63,9 +97,9 @@ void CGui::Show(float& frameTime)
 
 		if (fileDialog.showFileDialog("OpenScene", imgui_addons::ImGuiFileBrowser::DialogMode::OPEN, ImVec2(700, 310), ".xml"))
 		{
-			delete mScene;
+			delete mEngine->GetScene();
 
-			mScene = mEngine->CreateScene(fileDialog.selected_fn);
+			mEngine->CreateScene(fileDialog.selected_fn);
 
 			open = false;
 		}
@@ -77,7 +111,7 @@ void CGui::Show(float& frameTime)
 
 		if (fileDialog.showFileDialog("SaveScene", imgui_addons::ImGuiFileBrowser::DialogMode::SAVE, ImVec2(700, 310), ".xml"))
 		{
-			mScene->Save(fileDialog.selected_fn);
+			mEngine->GetScene()->Save(fileDialog.selected_fn);
 			save = false;
 		}
 
@@ -86,16 +120,14 @@ void CGui::Show(float& frameTime)
 
 	DisplayShadowMaps();
 
-	mScene->DisplayPostProcessingEffects();
+	mEngine->GetScene()->DisplayPostProcessingEffects();
 
-
-	auto vp = ImGui::GetMainViewport();
 	ImGui::SetNextWindowPos({ 0,0 });
-	ImGui::SetNextWindowSize({ (float)mEngine->GetWindow()->GetWindowWidth(),(float)mEngine->GetWindow()->GetWindowHeight() });
+	ImGui::SetNextWindowSize({ (float)mEngine->GetWindow()->GetWindowWidth(),(float)mEngine->GetWindow()->GetWindowHeight() - 10 });
 
-	if (ImGui::Begin("Engine", 0, ImGuiWindowFlags_NoBringToFrontOnFocus))
+	if (ImGui::Begin("Engine", nullptr, ImGuiWindowFlags_NoBringToFrontOnFocus))
 	{
-		if (ImGui::Begin("Viewport", 0,
+		if (ImGui::Begin("Viewport", nullptr,
 			ImGuiWindowFlags_NoScrollbar |
 			ImGuiWindowFlags_NoCollapse |
 			ImGuiWindowFlags_MenuBar))
@@ -132,7 +164,7 @@ void CGui::Show(float& frameTime)
 								else
 					*/
 
-					mScene->GetCamera()->ControlMouse(frameTime, delta, Key_W, Key_S, Key_A, Key_D);
+					mEngine->GetScene()->GetCamera()->ControlMouse(frameTime, delta, Key_W, Key_S, Key_A, Key_D);
 
 					ImGui::ResetMouseDragDelta(1);
 				}
@@ -154,14 +186,14 @@ void CGui::Show(float& frameTime)
 			}
 
 			//compare it with the scene viewport
-			if ((size.x != mScene->GetViewportX() || size.y != mScene->GetViewportY()) && (size.x != 0 && size.y != 0))
+			if ((size.x != mEngine->GetScene()->GetViewportX() || size.y != mEngine->GetScene()->GetViewportY()) && (size.x != 0 && size.y != 0))
 			{
 				//if they are different, resize the scene viewport
-				mScene->Resize(UINT(size.x), UINT(size.y));
+				mEngine->GetScene()->Resize(UINT(size.x), UINT(size.y));
 			}
 
 			//render the scene image to ImGui
-			ImGui::Image(mScene->GetTextureSRV(), size);
+			ImGui::Image(mEngine->GetScene()->GetTextureSRV(), size);
 
 			mViewportWindowPos.x = ImGui::GetWindowPos().x;
 			mViewportWindowPos.y = ImGui::GetWindowPos().y;
@@ -336,7 +368,7 @@ void CGui::AddObjectsMenu() const
 					if (!mesh.empty() && !tex.empty())
 					{
 						const auto newObj = mEngine->CreateObject(mesh, name, tex);
-						mScene->GetObjectManager()->AddObject(newObj);
+						mEngine->GetScene()->GetObjectManager()->AddObject(newObj);
 
 						addObj = false;
 					}
@@ -348,7 +380,7 @@ void CGui::AddObjectsMenu() const
 					if (!mesh.empty())
 					{
 						const auto newObj = mEngine->CreateObject(mesh, name);
-						mScene->GetObjectManager()->AddObject(newObj);
+						mEngine->GetScene()->GetObjectManager()->AddObject(newObj);
 
 						addObj = false;
 					}
@@ -359,7 +391,7 @@ void CGui::AddObjectsMenu() const
 					if (!mesh.empty() && !tex.empty())
 					{
 						const auto newObj = mEngine->CreateSky(mesh, name, tex);
-						mScene->GetObjectManager()->AddSky(newObj);
+						mEngine->GetScene()->GetObjectManager()->AddSky(newObj);
 
 						addObj = false;
 					}
@@ -370,7 +402,7 @@ void CGui::AddObjectsMenu() const
 					{
 						const auto newObj = mEngine->CreatePlant(mesh, name);
 
-						mScene->GetObjectManager()->AddPlant(newObj);
+						mEngine->GetScene()->GetObjectManager()->AddPlant(newObj);
 
 						addObj = false;
 					}
@@ -382,7 +414,7 @@ void CGui::AddObjectsMenu() const
 					if (!mesh.empty() & !tex.empty())
 					{
 						const auto newObj = mEngine->CreateLight(mesh, name, tex, col, strenght);
-						mScene->GetObjectManager()->AddLight(newObj);
+						mEngine->GetScene()->GetObjectManager()->AddLight(newObj);
 
 						addObj = false;
 					}
@@ -394,7 +426,7 @@ void CGui::AddObjectsMenu() const
 					if (!mesh.empty() & !tex.empty())
 					{
 						const auto newObj = mEngine->CreateSpotLight(mesh, name, tex, col, strenght);
-						mScene->GetObjectManager()->AddSpotLight(newObj);
+						mEngine->GetScene()->GetObjectManager()->AddSpotLight(newObj);
 
 						addObj = false;
 					}
@@ -406,7 +438,7 @@ void CGui::AddObjectsMenu() const
 					if (!mesh.empty() & !tex.empty())
 					{
 						const auto newObj = mEngine->CreateDirectionalLight(mesh, name, tex, col, strenght);
-						mScene->GetObjectManager()->AddDirLight(newObj);
+						mEngine->GetScene()->GetObjectManager()->AddDirLight(newObj);
 
 						addObj = false;
 					}
@@ -418,7 +450,7 @@ void CGui::AddObjectsMenu() const
 					if (!mesh.empty() & !tex.empty())
 					{
 						const auto newObj = mEngine->CreatePointLight(mesh, name, tex, col, strenght);
-						mScene->GetObjectManager()->AddPointLight(newObj);
+						mEngine->GetScene()->GetObjectManager()->AddPointLight(newObj);
 
 						addObj = false;
 					}
@@ -506,26 +538,26 @@ void CGui::DisplayPropertiesWindow() const
 			{
 				if (auto light = dynamic_cast<CLight*>(mSelectedObj))
 				{
-					if (auto spotLight = dynamic_cast<CSpotLight*>(mSelectedObj))
+					if (dynamic_cast<CSpotLight*>(mSelectedObj))
 					{
 						//TODO
 						auto o = mEngine->CreateSpotLight(mSelectedObj->MeshFileNames(), mSelectedObj->Name(), "", light->GetColour(), light->GetStrength());
-						mScene->GetObjectManager()->AddSpotLight(o);
+						mEngine->GetScene()->GetObjectManager()->AddSpotLight(o);
 					}
-					else if (auto dirLight = dynamic_cast<CDirectionalLight*>(mSelectedObj))
+					else if (dynamic_cast<CDirectionalLight*>(mSelectedObj))
 					{
 						auto obj = mEngine->CreateDirectionalLight(mSelectedObj->MeshFileNames(), mSelectedObj->Name(), "", light->GetColour(), light->GetStrength());
-						mScene->GetObjectManager()->AddDirLight(obj);
+						mEngine->GetScene()->GetObjectManager()->AddDirLight(obj);
 					}
-					else if (auto omniLight = dynamic_cast<CPointLight*>(mSelectedObj))
+					else if (dynamic_cast<CPointLight*>(mSelectedObj))
 					{
 						auto obj = mEngine->CreatePointLight(mSelectedObj->MeshFileNames(), mSelectedObj->Name(), "", light->GetColour(), light->GetStrength());
-						mScene->GetObjectManager()->AddPointLight(obj);
+						mEngine->GetScene()->GetObjectManager()->AddPointLight(obj);
 					}
 					else
 					{
 						auto obj = mEngine->CreateLight(mSelectedObj->MeshFileNames(), mSelectedObj->Name(), "", light->GetColour(), light->GetStrength());
-						mScene->GetObjectManager()->AddLight(obj);
+						mEngine->GetScene()->GetObjectManager()->AddLight(obj);
 					}
 				}
 				else
@@ -533,17 +565,17 @@ void CGui::DisplayPropertiesWindow() const
 					if (auto plant = dynamic_cast<CPlant*>(mSelectedObj))
 					{
 						auto obj = mEngine->CreatePlant(mSelectedObj->MeshFileNames(), mSelectedObj->Name());
-						mScene->GetObjectManager()->AddPlant(obj);
+						mEngine->GetScene()->GetObjectManager()->AddPlant(obj);
 					}
 					else if (auto sky = dynamic_cast<CSky*>(mSelectedObj))
 					{
 						auto obj = mEngine->CreateSky(mSelectedObj->MeshFileNames(), mSelectedObj->Name(), "");
-						mScene->GetObjectManager()->AddSky(obj);
+						mEngine->GetScene()->GetObjectManager()->AddSky(obj);
 					}
 					else
 					{
 						auto obj = mEngine->CreateObject(mSelectedObj->MeshFileNames(), mSelectedObj->Name(), "");
-						mScene->GetObjectManager()->AddObject(obj);
+						mEngine->GetScene()->GetObjectManager()->AddObject(obj);
 					}
 				}
 			}
@@ -736,20 +768,60 @@ void CGui::DisplayPropertiesWindow() const
 	ImGui::End();
 
 	const auto pos = mViewportWindowPos;
+	
 
-	ImGui::GetWindowPos();
-
-	ImGuizmo::SetRect(pos.x, pos.y, mScene->GetViewportSize().x, mScene->GetViewportSize().y);
-
+	ImGuizmo::Enable(true);
+	ImGuizmo::SetImGuiContext(ImGui::GetCurrentContext());
 	ImGuizmo::SetDrawlist(ImGui::GetForegroundDrawList());
+	ImGuizmo::SetRect(pos.x, pos.y, mEngine->GetScene()->GetViewportSize().x, mEngine->GetScene()->GetViewportSize().y);
 
-	static float bounds[] =
+	ImGuizmo::Manipulate(mEngine->GetScene()->GetCamera()->ViewMatrix().GetArray(), mEngine->GetScene()->GetCamera()->ProjectionMatrix().GetArray(),
+		mCurrentGizmoOperation, ImGuizmo::WORLD, mSelectedObj->WorldMatrix().GetArray());
+
+}
+
+void CGui::DisplayObjects()
+{
+	if (ImGui::Begin("Objects", nullptr, ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_MenuBar))
 	{
-		0.0f,0.0f,0.0f,
-		1.f, 1.f, 1.f
-	};
+		AddObjectsMenu();
+		ImGui::Separator();
+		//display for each model a button
+		const auto objManager = mEngine->GetScene()->GetObjectManager();
+		DisplayDeque(objManager->mObjects);
+		DisplayDeque(objManager->mLights);
+	}
+	ImGui::End();
+	if (mSelectedObj != nullptr)
+	{
+		DisplayPropertiesWindow();
+	}
+}
 
-	ImGuizmo::Manipulate(mScene->GetCamera()->ViewMatrix().GetArray(), mScene->GetCamera()->ProjectionMatrix().GetArray(),
-		mCurrentGizmoOperation, ImGuizmo::WORLD, mSelectedObj->WorldMatrix().GetArray(), 0, 0, showBounds ? bounds : 0);
+void CGui::DisplaySceneSettings(bool& b) const
+{
+	if (ImGui::Begin("Scene Properties", &b))
+	{
+		ImGui::Checkbox("VSync", &mEngine->GetScene()->GetLockFps());
+	}
+	ImGui::End();
+}
 
+void CGui::DisplayShadowMaps() const
+{
+	if (ImGui::Begin("ShadowMaps", 0, ImGuiWindowFlags_NoBringToFrontOnFocus))
+	{
+		/*if (ImGui::BeginTable("", 6))
+		{
+			for (const auto tx : mScene->GetObjectManager())
+			{
+				const ImTextureID texId = tx;
+				ImGui::TableNextColumn();
+				ImGui::Image((void*)texId, { 256, 256 });
+			}
+			ImGui::EndTable();
+		}*/
+	}
+	ImGui::End();
+		
 }

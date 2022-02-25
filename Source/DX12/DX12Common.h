@@ -16,18 +16,13 @@
 #include <stdexcept>
 #include <string>
 #include <wrl/client.h>
-#include <sstream>
 
 #include "..\Math/CVector2.h"
 #include "..\Math/CVector3.h"
 #include "..\Math/CVector4.h"
 #include "..\Math/CMatrix4x4.h"
-#include "..\..\Utility/ColourRGBA.h"
 
 #include <stdexcept>
-
-#include <imgui.h>
-#include <stb_image.h>
 
 #include "../External/DirectXTK12/Inc/CommonStates.h"
 
