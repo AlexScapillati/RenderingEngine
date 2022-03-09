@@ -30,8 +30,6 @@ namespace DX12
 
 		INT Top() const;
 
-		void Remove(UINT pos);
-
 	private:
 
 		CDX12Engine* mEngine;

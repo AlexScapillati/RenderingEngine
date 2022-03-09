@@ -25,6 +25,17 @@ namespace DX12
 
 	void CDX12Scene::InitFrameDependentStuff()
 	{
+			// Create descriptors
+		{
+			D3D12_DESCRIPTOR_HEAP_DESC desc{};
+			desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
+			desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
+			desc.NumDescriptors = 3;
+
+			mDSVDescriptorHeap = std::make_unique<CDX12DescriptorHeap>(mEngine, desc);
+			mDSVDescriptorHeap->mDescriptorHeap->SetName(L"DSVDescriptorHeap");
+		}
+
 		// Create scene texture
 		{
 			const CD3DX12_RESOURCE_DESC desc(
@@ -63,33 +74,10 @@ namespace DX12
 				D3D12_RESOURCE_FLAG_DENY_SHADER_RESOURCE
 				);
 
-			D3D12_CLEAR_VALUE clear_value;
-			clear_value.Format               = DXGI_FORMAT_D32_FLOAT;
-			clear_value.DepthStencil.Depth   = 1.0f;
-			clear_value.DepthStencil.Stencil = 0;
-
-
-			const auto heapProperties = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
 			for (int i = 0; i < CDX12Engine::mNumFrames; i++)
 			{
-				const auto result = mEngine->mDevice->CreateCommittedResource(
-					&heapProperties,
-					D3D12_HEAP_FLAG_NONE,
-					&depth_texture,
-					D3D12_RESOURCE_STATE_DEPTH_WRITE,
-					&clear_value,
-					IID_PPV_ARGS(&mEngine->mDepthStencils[i])
-					);
-
-				NAME_D3D12_OBJECT_INDEXED(mEngine->mDepthStencils, i);
-
-				assert(result == S_OK && "CREATING THE DEPTH STENCIL FAILED");
-
-				const auto dsv = mEngine->mDSVDescriptorHeap->Add().mCpu;
-
-				mEngine->mDevice->CreateDepthStencilView(mEngine->mDepthStencils[i].Get(), nullptr, dsv);
-
-				mEngine->mDevice->Release();
+				mDepthStencils[i] = std::make_unique<CDX12DepthStencil>(mEngine, depth_texture, mEngine->mSRVDescriptorHeap.get(), mDSVDescriptorHeap.get());
+				mDepthStencils[i]->mResource->SetName(L"DepthStencil");
 			}
 		}
 	}
@@ -99,11 +87,14 @@ namespace DX12
 	{
 		const FLOAT clearColor[] = { 0.4f,0.6f,0.9f,1.0f };
 
+		mEngine->mSRVDescriptorHeap->Set();
+
 		const auto rtv = mSceneTexture->mRTVHandle.mCpu;
 
-		const auto dsv = mEngine->mDSVDescriptorHeap->Get(mEngine->mCurrentBackBufferIndex).mCpu;
+		const auto dsv = mDSVDescriptorHeap->Get(mEngine->mCurrentBackBufferIndex).mCpu;
 
 		mSceneTexture->Barrier(D3D12_RESOURCE_STATE_RENDER_TARGET);
+		mDepthStencils[mEngine->mCurrentBackBufferIndex]->Barrier(D3D12_RESOURCE_STATE_DEPTH_WRITE);
 
 		const auto vp = CD3DX12_VIEWPORT(
 			0.0f,
@@ -128,6 +119,7 @@ namespace DX12
 		RenderSceneFromCamera(mCamera.get());
 
 		mSceneTexture->Barrier(D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+		mDepthStencils[mEngine->mCurrentBackBufferIndex]->Barrier(D3D12_RESOURCE_STATE_DEPTH_READ);
 	}
 
 	void CDX12Scene::RenderSceneFromCamera(CCamera* camera)
@@ -171,8 +163,6 @@ namespace DX12
 		return;
 		mEngine->Flush();
 
-		mSceneTexture->Barrier(D3D12_RESOURCE_STATE_COMMON);
-
 		ThrowIfFailed(mEngine->mCommandList->Close());
 
 		mCamera->SetAspectRatio(float(newX) / float(newY));
@@ -180,12 +170,14 @@ namespace DX12
 		mViewportX = newX;
 		mViewportY = newY;
 
-		mSceneTexture = nullptr;
 
 		for (int i = 0; i < CDX12Engine::mNumFrames; ++i)
 		{
 			mEngine->mDepthStencils[i] = nullptr;
 		}
+
+		mSceneTexture = nullptr;
+		mDSVDescriptorHeap = nullptr;
 
 		InitFrameDependentStuff();
 
@@ -195,7 +187,6 @@ namespace DX12
 		ThrowIfFailed(mEngine->mCommandList->Reset(mEngine->mCommandAllocators[mEngine->mCurrentBackBufferIndex].Get(), nullptr));
 
 		mEngine->mBackBuffers[mEngine->mCurrentBackBufferIndex]->mCurrentResourceState = D3D12_RESOURCE_STATE_COMMON;
-
 	}
 
 	CDX12Scene::~CDX12Scene()

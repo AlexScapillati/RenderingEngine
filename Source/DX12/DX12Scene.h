@@ -7,7 +7,8 @@
 
 namespace DX12
 {
-class CDX12GameObject;
+	class CDX12DepthStencil;
+	class CDX12GameObject;
 
 	class CDX12Scene : public CScene
 	{
@@ -60,8 +61,10 @@ class CDX12GameObject;
 		void DisplayPostProcessingEffects() override;
 
 		std::unique_ptr<CDX12RenderTarget> mSceneTexture;
-
-		std::unique_ptr<CDX12PBRPSO> mPso;
+		std::unique_ptr<CDX12DepthStencil> mDepthStencils[CDX12Engine::mNumFrames];
+		
+		std::unique_ptr<CDX12DescriptorHeap> mDSVDescriptorHeap;
+			
 
 	private:
 		//--------------------------------------------------------------------------------------

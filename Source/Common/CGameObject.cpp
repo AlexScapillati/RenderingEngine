@@ -35,6 +35,7 @@ void CGameObject::GetFilesInFolder(IEngine* engine, std::string& dirPath, std::v
 
 std::string CGameObject::TextureFileName()
 {
+		if(!mTextureFiles.empty())
 	return mTextureFiles.front();
 }
 

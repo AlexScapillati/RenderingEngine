@@ -135,6 +135,8 @@ namespace DX12
 
 	void CDX12Engine::MidFrame()
 	{
+		mSRVDescriptorHeap->Set();
+
 		// Set the viewport
 		mCommandList->RSSetViewports(1, &mViewport);
 		mCommandList->RSSetScissorRects(1, &mScissorRect);
@@ -158,8 +160,7 @@ namespace DX12
 		mCommandAllocators[mCurrentBackBufferIndex]->Reset();
 
 		ThrowIfFailed(mCommandList->Reset(mCommandAllocators[mCurrentBackBufferIndex].Get(), nullptr));
-
-		mSRVDescriptorHeap->Set();
+		
 	}
 
 	void CDX12Engine::FinalizeFrame()
