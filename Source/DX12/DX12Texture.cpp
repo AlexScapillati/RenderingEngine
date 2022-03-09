@@ -17,28 +17,33 @@ namespace DX12
 		r.Swap(mResource);
 	}
 
-	CDX12Texture::CDX12Texture(CDX12Engine* engine, std::string& filename)
-	{
+	CDX12Texture::CDX12Texture(CDX12Engine* engine,
+			std::string& filename,
+			CDX12DescriptorHeap* heap)
+		{
 		mPtrEngine = engine;
 
-		mDescriptorIndex = mPtrEngine->mSRVDescriptorHeap->Top();
-		mHandle = mPtrEngine->mSRVDescriptorHeap->Add();
+		mDescriptorIndex = heap->Top();
+		mHandle = heap->Add();
 
 		LoadTexture(filename);
-	}
-
-	CDX12Texture::CDX12Texture(CDX12Engine* engine, D3D12_RESOURCE_DESC desc)
+		}
+	
+	CDX12Texture::CDX12Texture(CDX12Engine* engine, D3D12_RESOURCE_DESC desc,
+		CDX12DescriptorHeap* heap)
 	{
 		mPtrEngine = engine;
 
-		mDescriptorIndex = mPtrEngine->mSRVDescriptorHeap->Top();
-		mHandle = mPtrEngine->mSRVDescriptorHeap->Add();
+		mDescriptorIndex = heap->Top();
+		mHandle = heap->Add();
 
 		CreateTexture(desc);
 	}
 
 	CDX12Texture::~CDX12Texture()
 	{
+		if (mResource)
+			mResource->Release();
 	}
 
 
@@ -162,7 +167,7 @@ namespace DX12
 		device->Release();
 	}
 
-	CDX12RenderTarget::CDX12RenderTarget(CDX12Engine* engine, D3D12_RESOURCE_DESC desc) : CDX12Texture(engine, desc)
+	CDX12RenderTarget::CDX12RenderTarget(CDX12Engine* engine, D3D12_RESOURCE_DESC desc,CDX12DescriptorHeap* heap) : CDX12Texture(engine, desc,heap)
 	{
 		mRTVDescriptorIndex = mPtrEngine->mRTVDescriptorHeap->Top();
 		mRTVHandle = mPtrEngine->mRTVDescriptorHeap->Add();

@@ -33,7 +33,7 @@ namespace DX12
 			~ CDX12Light() override = default ;
 	};
 	
-	class CDX12DirectionalLight : public CDX12GameObject, public CDirectionalLight
+	class CDX12DirectionalLight : virtual public CDX12GameObject, virtual public CDirectionalLight
 	{
 		public :
 			CDX12DirectionalLight(CDX12Engine*       engine,
@@ -64,7 +64,7 @@ namespace DX12
 			void SetShadowMapSize(int s) override;
 	};
 
-	class CDX12PointLight final : public CDX12GameObject, public CPointLight
+	class CDX12PointLight final : virtual public CDX12GameObject, virtual public CPointLight
 	{
 		public :
 			CDX12PointLight(CDX12Engine*       engine,
@@ -91,7 +91,7 @@ namespace DX12
 			void SetShadowMapSize(int size) override;
 	};
 
-	class CDX12SpotLight final : public CDX12GameObject, public CSpotLight
+	class CDX12SpotLight final : virtual public CDX12GameObject, virtual public CSpotLight
 	{
 		public :
 			CDX12SpotLight(CDX12Engine*       engine,

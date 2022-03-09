@@ -18,7 +18,6 @@ namespace DX12
 		CDX12DescriptorHeap& operator=(const CDX12DescriptorHeap&) = delete;
 		CDX12DescriptorHeap& operator=(const CDX12DescriptorHeap&&) = delete;
 
-
 		ComPtr<ID3D12DescriptorHeap> mDescriptorHeap;
 
 		D3D12_DESCRIPTOR_HEAP_DESC GetDesc() const;

@@ -17,6 +17,14 @@ namespace DX12
 		//load all the textures
 		try
 		{
+
+			D3D12_DESCRIPTOR_HEAP_DESC desc{};
+			desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+			desc.NumDescriptors = 6;
+			desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+
+			mMapsDescriptorHeap = std::make_unique<CDX12DescriptorHeap>(mEngine, desc);
+
 			LoadMaps(fileMaps);
 		}
 		catch (const std::runtime_error& e)
@@ -45,13 +53,14 @@ namespace DX12
 
 	CDX12Material::~CDX12Material()
 	{
+		mMapsDescriptorHeap = nullptr;
 	}
 
 	void CDX12Material::RenderMaterial() const
 	{
 		// Set textures to the pixel shader
 		{
-			mEngine->mSRVDescriptorHeap->Set();
+			mMapsDescriptorHeap->Set();
 
 			if (mAlbedo)		mAlbedo->Set(3);
 			if (mRoughness)		mRoughness->Set(4);
@@ -88,7 +97,7 @@ namespace DX12
 		if (fileMaps.size() == 1)
 		{
 			//assume it is an diffuse specular map
-			mAlbedo = std::make_unique<CDX12Texture>(mEngine, fileMaps.front());
+			mAlbedo = std::make_unique<CDX12Texture>(mEngine, fileMaps.front(),mMapsDescriptorHeap.get());
 		}
 		else
 		{
@@ -101,34 +110,34 @@ namespace DX12
 
 				if (fileName.find("Albedo") != std::string::npos)
 				{
-					mAlbedo = std::make_unique<CDX12Texture>(mEngine, originalFileName);
+					mAlbedo = std::make_unique<CDX12Texture>(mEngine, originalFileName, mMapsDescriptorHeap.get());
 				}
 				else if (fileName.find("Roughness") != std::string::npos)
 				{
 					//roughness map
-					mRoughness = std::make_unique<CDX12Texture>(mEngine, originalFileName);
+					mRoughness = std::make_unique<CDX12Texture>(mEngine, originalFileName, mMapsDescriptorHeap.get());
 				}
 				else if (fileName.find("AO") != std::string::npos)
 				{
 					//ambient occlusion map
-					mAo = std::make_unique<CDX12Texture>(mEngine, originalFileName);
+					mAo = std::make_unique<CDX12Texture>(mEngine, originalFileName, mMapsDescriptorHeap.get());
 				}
 				else if (fileName.find("Displacement") != std::string::npos)
 				{
 					//found displacement map
-					mDisplacement = std::make_unique<CDX12Texture>(mEngine, originalFileName);
+					mDisplacement = std::make_unique<CDX12Texture>(mEngine, originalFileName, mMapsDescriptorHeap.get());
 				}
 				else if (fileName.find("Normal") != std::string::npos)
 				{
 					//normal map
-					mNormal = std::make_unique<CDX12Texture>(mEngine, originalFileName);
+					mNormal = std::make_unique<CDX12Texture>(mEngine, originalFileName, mMapsDescriptorHeap.get());
 
 					mHasNormals = true;
 				}
 				else if (fileName.find("Metalness") != std::string::npos)
 				{
 					// Metalness Map
-					mMetalness = std::make_unique<CDX12Texture>(mEngine, originalFileName);
+					mMetalness = std::make_unique<CDX12Texture>(mEngine, originalFileName, mMapsDescriptorHeap.get());
 				}
 			}
 		}

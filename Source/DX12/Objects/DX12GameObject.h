@@ -20,7 +20,7 @@ namespace DX12
 class CDX12Material;
 class CDX12Engine;
 
-	class CDX12GameObject : public CGameObject
+	class CDX12GameObject : virtual public CGameObject
 	{
 	public:
 		~CDX12GameObject() override = default;

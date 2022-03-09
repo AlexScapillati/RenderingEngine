@@ -52,9 +52,4 @@ namespace DX12
 	{
 		return mTop;
 	}
-
-	void CDX12DescriptorHeap::Remove(UINT pos)
-	{
-
-	}
 }

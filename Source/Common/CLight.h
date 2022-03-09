@@ -8,8 +8,7 @@ class CLight : virtual public CGameObject
 	public:
 		~CLight() override = default;
 
-
-		CLight(const CVector3& col = {1,1,1}, const float& s = 1000) : mColour(col), mStrength(s) {}
+	CLight(const CVector3& col = {1,1,1}, const float& s = 1000) : mColour(col), mStrength(s) {}
 
 		void      SetColour(CVector3 colour) { mColour = colour; }
 		void      SetStrength(float strength) { mStrength = strength; }
@@ -46,7 +45,7 @@ class CSpotLight : public CLight
 };
 
 
-class CDirectionalLight : public CLight
+class CDirectionalLight :  public CLight
 {
 	public:
 
@@ -88,7 +87,7 @@ class CDirectionalLight : public CLight
 };
 
 
-class CPointLight : public CLight
+class CPointLight :  public CLight
 {
 	public:
 

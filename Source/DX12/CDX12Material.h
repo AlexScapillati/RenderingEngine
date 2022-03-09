@@ -54,6 +54,8 @@ namespace DX12
 		
 		void               LoadMaps(std::vector<std::string>& fileMaps);
 
+		std::unique_ptr<CDX12DescriptorHeap> mMapsDescriptorHeap;
+		
 	};
 
 

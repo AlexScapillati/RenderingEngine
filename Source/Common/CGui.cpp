@@ -32,7 +32,7 @@ std::string ChooseTexture(bool& selected, imgui_addons::ImGuiFileBrowser fileDia
 
 
 CGui::CGui(IEngine* engine)
-	{
+{
 	mEngine = engine;
 
 	//initialize ImGui
@@ -53,7 +53,7 @@ CGui::CGui(IEngine* engine)
 	// Setup Dear ImGui style
 	ImGui::StyleColorsDark();
 
-	}
+}
 
 void CGui::Show(float& frameTime)
 {
@@ -750,25 +750,33 @@ void CGui::DisplayPropertiesWindow() const
 		ImGui::Text("Ambient Map");
 		ImGui::Separator();
 
-		ImGui::Checkbox("Toggle ambient Map", &dynamic_cast<DX11::CDX11GameObject*>(mSelectedObj)->AmbientMapEnabled());
 
 		//display the ambient map (if any)
-		if (dynamic_cast<DX11::CDX11GameObject*>(mSelectedObj)->AmbientMapEnabled())
+		auto obj = dynamic_cast<DX11::CDX11GameObject*>(mSelectedObj);
+		if (obj)
 		{
-			ImGui::NewLine();
-			ImGui::Text("AmbientMap");
-
-			static int size = (int)std::log2(dynamic_cast<DX11::CDX11GameObject*>(mSelectedObj)->AmbientMap()->Size());
-			if (ImGui::DragInt("Size (base 2)", &size, 1, 1, 12))
+			ImGui::Checkbox("Toggle ambient Map", &dynamic_cast<DX11::CDX11GameObject*>(mSelectedObj)->AmbientMapEnabled());
+			if (obj->AmbientMapEnabled())
 			{
-				dynamic_cast<DX11::CDX11GameObject*>(mSelectedObj)->AmbientMap()->SetSize((UINT)pow(2, size));
+				ImGui::NewLine();
+				ImGui::Text("AmbientMap");
+
+				static int size = (int)std::log2(dynamic_cast<DX11::CDX11GameObject*>(mSelectedObj)->AmbientMap()->Size());
+				if (ImGui::DragInt("Size (base 2)", &size, 1, 1, 12))
+				{
+					dynamic_cast<DX11::CDX11GameObject*>(mSelectedObj)->AmbientMap()->SetSize((UINT)pow(2, size));
+				}
 			}
+		}
+		else
+		{
+			ImGui::Text("Not supported in DX12");
 		}
 	}
 	ImGui::End();
 
 	const auto pos = mViewportWindowPos;
-	
+
 
 	ImGuizmo::Enable(true);
 	ImGuizmo::SetImGuiContext(ImGui::GetCurrentContext());
@@ -823,5 +831,5 @@ void CGui::DisplayShadowMaps() const
 		}*/
 	}
 	ImGui::End();
-		
+
 }

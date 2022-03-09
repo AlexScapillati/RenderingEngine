@@ -41,7 +41,7 @@ namespace DX12
 				D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET
 				);
 
-			mSceneTexture = std::make_unique <CDX12RenderTarget>(mEngine, desc);
+			mSceneTexture = std::make_unique <CDX12RenderTarget>(mEngine, desc,mEngine->mSRVDescriptorHeap.get());
 
 			NAME_D3D12_OBJECT(mSceneTexture->mResource);
 		}

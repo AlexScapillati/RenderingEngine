@@ -300,11 +300,25 @@ namespace DX12
 				textures.push_back(scene->mTextures[i]->mFilename.C_Str());
 			}
 
-			mMaterial = std::make_unique<CDX12Material>(textures, mEngine);
+			try
+			{
+				mMaterial = std::make_unique<CDX12Material>(textures, mEngine);
+			}
+			catch (const std::exception& e)
+			{
+				throw std::runtime_error(e.what());
+			}
 		}
 		else
 		{
+			try
+			{
 			mMaterial = std::make_unique<CDX12Material>(tex, mEngine);
+			}
+			catch (const std::exception& e)
+			{
+				throw std::runtime_error(e.what());
+			}
 		}
 	}
 

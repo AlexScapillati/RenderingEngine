@@ -4,6 +4,7 @@
 
 namespace DX12
 {
+	class CDX12DescriptorHeap;
 	class CDX12Engine;
 
 	class CDX12Texture
@@ -25,9 +26,9 @@ namespace DX12
 
 		CDX12Texture(CDX12Engine* engine,Resource r);
 
-		CDX12Texture(CDX12Engine* engine, std::string& filename);
+		CDX12Texture(CDX12Engine* engine, std::string& filename, CDX12DescriptorHeap* heap);
 
-		CDX12Texture(CDX12Engine* engine, D3D12_RESOURCE_DESC desc);
+		CDX12Texture(CDX12Engine* engine, D3D12_RESOURCE_DESC desc, CDX12DescriptorHeap* heap);
 		
 		virtual ~CDX12Texture();
 
@@ -54,7 +55,7 @@ namespace DX12
 
 		CDX12RenderTarget(CDX12Engine* engine,Resource r);
 
-		CDX12RenderTarget(CDX12Engine* engine, D3D12_RESOURCE_DESC desc);
+		CDX12RenderTarget(CDX12Engine* engine, D3D12_RESOURCE_DESC desc,CDX12DescriptorHeap* heap);
 
 		~CDX12RenderTarget() override;
 
