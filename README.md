@@ -26,7 +26,8 @@ Can import and export scenes, it will save the object's position, rotation and s
 - TinyXML
 - DirectXTK
 
-### How to build
+### How to
+- Download Media folder [Here](https://msuclanac-my.sharepoint.com/:f:/g/personal/ascapillati_uclan_ac_uk/EqRhVGrRGaNFtFnCQXclRZMBth0r8Dwb7IT48iVw3P1jbg?e=BY6D1M)
 - Open the .sln with Visual Studio
 - Let me know if it doesn't work
 
