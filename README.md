@@ -3,6 +3,7 @@
 This project proposes a DirectX based real time rendering engine with a scene manager. Submitted as 3rd year project at University of Central Lancashire.
 
 Supports: DirectX11 and DirectX12 (currently in development)
+![projectScreen](https://user-images.githubusercontent.com/55553007/157924155-b7834d93-874a-4498-8be8-bbfed3515c5d.png)
 
 # Features
 ### Scene manager
@@ -13,10 +14,14 @@ Can import and export scenes, it will save the object's position, rotation and s
 - Lighting (Simple, Directional, Spot, Omnidirectional lights)
 - PBR
 - Real time Cube Reflection Map
-- Post processing (SSAO, Chromati aberration, God Rays, Blur, Bloom and others)
+- Post processing (SSAO, Chromatic aberration, God Rays, Blur, Bloom and others)
+
+![projectScreen2](https://user-images.githubusercontent.com/55553007/157924246-dc9357d8-13aa-4d00-98aa-f6db986bca43.png)
 
 ### Dependencies
 - ImGui (Docking)
+- ImGuizmo
+- ImGuiFileExplorer
 - Assimp
 - TinyXML
 - DirectXTK
