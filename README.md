@@ -1,4 +1,4 @@
-# RenderingEngineRaytracing
+# RenderingEngine
 
 This project proposes a DirectX based real time rendering engine with a scene manager. Submitted as 3rd year project at University of Central Lancashire.
 
