@@ -25,5 +25,8 @@ Can import and export scenes, it will save the object's position, rotation and s
 - Open the .sln with Visual Studio
 - Let me know if it doesn't work
 
+### Future updates
+- Raytracing 
+
 ### Poster
 [PosterScapillatiAlex.pdf](https://github.com/AlexScapillati/RenderingEngineRaytracing/files/8232730/PosterScapillatiAlex.pdf)
