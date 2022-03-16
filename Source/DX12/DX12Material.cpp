@@ -6,7 +6,7 @@
 
 namespace DX12
 {
-	CDX12Material::CDX12Material(std::vector<std::string> fileMaps, CDX12Engine* engine)
+	CDX12Material::CDX12Material(std::vector<std::string>& fileMaps, CDX12Engine* engine)
 	{
 		mEngine = engine;
 
@@ -20,7 +20,7 @@ namespace DX12
 
 			D3D12_DESCRIPTOR_HEAP_DESC desc{};
 			desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
-			desc.NumDescriptors = 6;
+			desc.NumDescriptors = static_cast<UINT>(fileMaps.size());
 			desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
 
 			mMapsDescriptorHeap = std::make_unique<CDX12DescriptorHeap>(mEngine, desc);
@@ -62,12 +62,14 @@ namespace DX12
 		{
 			mMapsDescriptorHeap->Set();
 
-			if (mAlbedo)		mAlbedo->Set(3);
-			if (mRoughness)		mRoughness->Set(4);
-			if (mAo)			mAo->Set(5);
-			if (mDisplacement)	mDisplacement->Set(6);
-			if (mHasNormals)	mNormal->Set(7);
-			if (mMetalness)		mMetalness->Set(8);
+			// different pso will have different root parameter index
+			
+			if (mAlbedo)		mAlbedo->Set(6);
+			if (mRoughness)		mRoughness->Set(7);
+			if (mAo)			mAo->Set(8);
+			if (mDisplacement)	mDisplacement->Set(9);
+			if (mHasNormals)	mNormal->Set(10);
+			if (mMetalness)		mMetalness->Set(11);
 		}
 	}
 
@@ -102,42 +104,40 @@ namespace DX12
 		else
 		{
 			//for each file in the vector with the same name as the mesh one
-			for (const auto& fileName : fileMaps)
+			for (std::string& fileName : fileMaps)
 			{
-				auto originalFileName = fileName;
-
 				////load it
 
 				if (fileName.find("Albedo") != std::string::npos)
 				{
-					mAlbedo = std::make_unique<CDX12Texture>(mEngine, originalFileName, mMapsDescriptorHeap.get());
+					mAlbedo = std::make_unique<CDX12Texture>(mEngine, fileName, mMapsDescriptorHeap.get());
 				}
 				else if (fileName.find("Roughness") != std::string::npos)
 				{
 					//roughness map
-					mRoughness = std::make_unique<CDX12Texture>(mEngine, originalFileName, mMapsDescriptorHeap.get());
+					mRoughness = std::make_unique<CDX12Texture>(mEngine, fileName, mMapsDescriptorHeap.get());
 				}
 				else if (fileName.find("AO") != std::string::npos)
 				{
 					//ambient occlusion map
-					mAo = std::make_unique<CDX12Texture>(mEngine, originalFileName, mMapsDescriptorHeap.get());
+					mAo = std::make_unique<CDX12Texture>(mEngine, fileName, mMapsDescriptorHeap.get());
 				}
 				else if (fileName.find("Displacement") != std::string::npos)
 				{
 					//found displacement map
-					mDisplacement = std::make_unique<CDX12Texture>(mEngine, originalFileName, mMapsDescriptorHeap.get());
+					mDisplacement = std::make_unique<CDX12Texture>(mEngine, fileName, mMapsDescriptorHeap.get());
 				}
 				else if (fileName.find("Normal") != std::string::npos)
 				{
 					//normal map
-					mNormal = std::make_unique<CDX12Texture>(mEngine, originalFileName, mMapsDescriptorHeap.get());
+					mNormal = std::make_unique<CDX12Texture>(mEngine, fileName, mMapsDescriptorHeap.get());
 
 					mHasNormals = true;
 				}
 				else if (fileName.find("Metalness") != std::string::npos)
 				{
 					// Metalness Map
-					mMetalness = std::make_unique<CDX12Texture>(mEngine, originalFileName, mMapsDescriptorHeap.get());
+					mMetalness = std::make_unique<CDX12Texture>(mEngine, fileName, mMapsDescriptorHeap.get());
 				}
 			}
 		}

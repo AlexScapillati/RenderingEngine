@@ -22,7 +22,7 @@ class CLight : virtual public CGameObject
 		float    mStrength  =1;
 };
 
-class CSpotLight : public CLight
+class CSpotLight : virtual public CLight
 {
 	public:
 
@@ -45,7 +45,7 @@ class CSpotLight : public CLight
 };
 
 
-class CDirectionalLight :  public CLight
+class CDirectionalLight : virtual public CLight
 {
 	public:
 
@@ -87,7 +87,7 @@ class CDirectionalLight :  public CLight
 };
 
 
-class CPointLight :  public CLight
+class CPointLight : virtual public CLight
 {
 	public:
 

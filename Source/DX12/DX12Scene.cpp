@@ -105,8 +105,8 @@ namespace DX12
 		const auto sr = CD3DX12_RECT(
 			0,
 			0,
-			(mViewportX),
-			(mViewportY));
+			mViewportX,
+			mViewportY);
 
 		// Set the viewport
 		mEngine->mCommandList->RSSetViewports(1, &vp);
@@ -133,22 +133,15 @@ namespace DX12
 		perFrameConstants.viewMatrix           = camera->ViewMatrix();
 		perFrameConstants.projectionMatrix     = camera->ProjectionMatrix();
 		perFrameConstants.viewProjectionMatrix = camera->ViewProjectionMatrix();
-		perFrameConstants.ambient              = gAmbientColour;
+		perFrameConstants.ambientColour        = gAmbientColour;
 
-		// todo: mGameobjectManager->updateLightsbuffers
-
-		if (!mObjManager->mLights.empty())
-		{
-			const auto   light                 = mObjManager->mLights.front();
-			const SLight lightInfo             = { light->Position(),static_cast<float>(*light->Enabled()),light->GetColour(), light->GetStrength() };
-			mEngine->mPerFrameLights.lights[0] = lightInfo;
-		}
+		mEngine->UpdateLightsBuffers();
 
 		mEngine->CopyBuffers();
 
 		PIXBeginEvent(mEngine->mCommandList.Get(), 0, "Rendering");
 
-		mObjManager->RenderAllObjects();
+		mEngine->GetObjManager()->RenderAllObjects();
 
 		PIXEndEvent(mEngine->mCommandList.Get());
 	}
@@ -161,6 +154,7 @@ namespace DX12
 	void CDX12Scene::Resize(UINT newX, UINT newY)
 	{
 		return;
+
 		mEngine->Flush();
 
 		ThrowIfFailed(mEngine->mCommandList->Close());

@@ -152,6 +152,7 @@
     <ClCompile Include="Source\DX11\State.cpp" />
     <ClCompile Include="Source\DX12\DX12Engine.cpp" />
     <ClCompile Include="Source\DX12\DX12Gui.cpp" />
+    <ClCompile Include="Source\DX12\Objects\DX12Light.cpp" />
     <ClCompile Include="Source\External\imgui\backends\imgui_impl_dx11.cpp" />
     <ClCompile Include="Source\External\imgui\backends\imgui_impl_dx12.cpp" />
     <ClCompile Include="Source\External\imgui\backends\imgui_impl_win32.cpp" />

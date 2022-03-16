@@ -1,4 +1,7 @@
 #include "DX11PointLight.h"
+
+#include <stdexcept>
+
 #include "..\DX11Scene.h"
 
 namespace DX11
@@ -87,7 +90,7 @@ namespace DX11
 			mEngine->GetContext()->PSSetConstantBuffers(1, 1, &gPerFrameConstantBuffer);
 
 			//render just the objects that can cast shadows
-			for (const auto it : mEngine->GetScene()->GetObjectManager()->mObjects)
+			for (const auto it : mEngine->GetObjManager()->mObjects)
 			{
 				//basic geometry rendered, that means just render the model's geometry, leaving all the fancy shaders
 				it->Render(true);

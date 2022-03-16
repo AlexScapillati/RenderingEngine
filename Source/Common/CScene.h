@@ -60,8 +60,7 @@ class CScene
 		//--------------------------------------------------------------------------------------
 		// Getters 
 		//--------------------------------------------------------------------------------------
-
-		auto  GetObjectManager() const { return mObjManager.get(); }
+		
 		auto  GetViewportSize() const { return CVector2((float)mViewportX, (float)mViewportY); }
 		auto  GetViewportX() const { return mViewportX; }
 		auto  GetViewportY() const { return mViewportY; }
@@ -77,8 +76,7 @@ class CScene
 		//--------------------------------------------------------------------------------------
 		// Private Variables
 		//--------------------------------------------------------------------------------------
-
-		std::unique_ptr<CGameObjectManager> mObjManager;
+		
 		std::unique_ptr<CCamera>            mCamera;
 
 		// Lock FPS to monitor refresh rate, which will typically set it to 60fps. Press 'p' to toggle to full fps

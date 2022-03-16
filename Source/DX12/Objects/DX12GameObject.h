@@ -12,18 +12,17 @@
 #include "../../Math/CVector3.h"
 
 #include "../DX12Mesh.h"
+#include "../CDX12Material.h"
 
 enum KeyCode;
 
 namespace DX12
 {
-class CDX12Material;
 class CDX12Engine;
 
 	class CDX12GameObject : virtual public CGameObject
 	{
 	public:
-		~CDX12GameObject() override = default;
 
 		//-------------------------------------
 		// Construction / Usage
@@ -75,8 +74,13 @@ class CDX12Engine;
 
 		CDX12Engine* mEngine;
 
-		// The acutual mesh class
+		// The actual mesh class
 		std::unique_ptr<CDX12Mesh> mMesh;
+
+		// The material
+		// It will hold all the textures and send them to the shader with RenderMaterial()
+		std::unique_ptr<CDX12Material> mMaterial;
+
 	};
 
 	class CDX12Plant : public CDX12GameObject, public CPlant

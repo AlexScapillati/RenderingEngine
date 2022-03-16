@@ -1,16 +1,16 @@
 #pragma once
 
-#include "..\Engine.h"
-
 #include "DX12Common.h"
 #include "imgui.h"
+#include "..\Engine.h"
 
 // https://www.3dgep.com/learning-directx-12-1/#GPU_Synchronization
 
 
 namespace DX12
 {
-
+	class CDX12SkyPSO;
+	class CDX12PBRPSO;
 	class CDX12RenderTarget;
 	class CDX12DescriptorHeap;
 	class CDX12ConstantBuffer;
@@ -22,12 +22,11 @@ namespace DX12
 	{
 	public:
 
-		CDX12Engine() = delete;
-		CDX12Engine(const CDX12Engine&) = delete;
-		CDX12Engine(const CDX12Engine&&) = delete;
-		CDX12Engine& operator=(const CDX12Engine&) = delete;
+		CDX12Engine()                               = delete;
+		CDX12Engine(const CDX12Engine&)             = delete;
+		CDX12Engine(const CDX12Engine&&)            = delete;
+		CDX12Engine& operator=(const CDX12Engine&)  = delete;
 		CDX12Engine& operator=(const CDX12Engine&&) = delete;
-
 
 		CDX12Engine(HINSTANCE hInstance, int nCmdShow);
 
@@ -38,6 +37,7 @@ namespace DX12
 
 		// Inherited via IEngine
 		void Resize(UINT x, UINT y) override;
+		void CreatePipelineStateObjects();
 
 		void FinalizeFrame() override;
 		void Present();
@@ -159,26 +159,42 @@ namespace DX12
 
 		PerFrameConstants mPerFrameConstants;
 		PerFrameLights mPerFrameLights;
+		PerFramePointLights mPerFramePointLights;
+		PerFrameSpotLights mPerFrameSpotLights;
+		PerFrameDirLights mPerFrameDirLights;
 
 		std::unique_ptr<CDX12ConstantBuffer> mPerFrameConstantBuffer;
 		std::unique_ptr<CDX12ConstantBuffer> mPerFrameLightsConstantBuffer;
+		std::unique_ptr<CDX12ConstantBuffer> mPerFrameSpotLightsConstantBuffer;
+		std::unique_ptr<CDX12ConstantBuffer> mPerFrameDirLightsConstantBuffer;
+		std::unique_ptr<CDX12ConstantBuffer> mPerFramePointLightsConstantBuffer;
 
 		void CopyBuffers();
+
+		void UpdateLightsBuffers();
+
+
+		//----------------------------------------
+		// Pipeline State Objects
+		//-----------------------------------------
+
+		std::unique_ptr<CDX12PBRPSO> mPbrPso;
+		std::unique_ptr<CDX12SkyPSO> mSkyPso;
 
 		//----------------------------------------
 		// Shaders
 		//-----------------------------------------
 
-		SShader mPbrPixelShader;
-		SShader mPbrVertexShader;
-		SShader mPbrNormalPixelShader;
-		SShader mPbrNormalVertexShader;
-		SShader mDepthOnlyPixelShader;
-		SShader mDepthOnlyNormalPixelShader;
-		SShader mBasicTransformVertexShader;
-		SShader mTintedTexturePixelShader;
-		SShader mSkyPixelShader;
-		SShader mSkyVertexShader;
+		std::unique_ptr<CDX12Shader> mPbrPixelShader;
+		std::unique_ptr<CDX12Shader> mPbrVertexShader;
+		std::unique_ptr<CDX12Shader> mPbrNormalPixelShader;
+		std::unique_ptr<CDX12Shader> mPbrNormalVertexShader;
+		std::unique_ptr<CDX12Shader> mDepthOnlyPixelShader;
+		std::unique_ptr<CDX12Shader> mDepthOnlyNormalPixelShader;
+		std::unique_ptr<CDX12Shader> mBasicTransformVertexShader;
+		std::unique_ptr<CDX12Shader> mTintedTexturePixelShader;
+		std::unique_ptr<CDX12Shader> mSkyPixelShader;
+		std::unique_ptr<CDX12Shader> mSkyVertexShader;
 
 		std::unique_ptr<CDX12Shader> vs;
 		std::unique_ptr<CDX12Shader> ps;
@@ -190,6 +206,7 @@ namespace DX12
 		void InitD3D();
 
 		void InitFrameDependentResources();
+		void SetConstantBuffers();
 
 		void LoadDefaultShaders();
 

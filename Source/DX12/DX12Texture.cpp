@@ -48,8 +48,6 @@ namespace DX12
 
 	CDX12Texture::~CDX12Texture()
 	{
-		if (mResource)
-			mResource->Release();
 	}
 
 
@@ -87,13 +85,11 @@ namespace DX12
 
 		const auto resourceFlags = D3D12_RESOURCE_FLAG_NONE;
 
-		const bool isSrgb = false; filename.find("Albedo") != std::string::npos;
+		const bool isSrgb = filename.find("Albedo") != std::string::npos;
 
-		auto ddsFlags = isSrgb ? DirectX::DDS_LOADER_FORCE_SRGB : DirectX::DDS_LOADER_DEFAULT;
-		auto wicFlags = isSrgb ? DirectX::WIC_LOADER_FORCE_SRGB : DirectX::WIC_LOADER_DEFAULT;
+		auto ddsFlags = isSrgb ? DirectX::DDS_LOADER_FORCE_SRGB | DirectX::DDS_LOADER_MIP_AUTOGEN : DirectX::DDS_LOADER_DEFAULT;
+		auto wicFlags = isSrgb ? DirectX::WIC_LOADER_FORCE_SRGB | DirectX::WIC_LOADER_MIP_AUTOGEN : DirectX::WIC_LOADER_DEFAULT ;
 
-		ddsFlags |= DirectX::DDS_LOADER_MIP_AUTOGEN;
-		wicFlags |= DirectX::WIC_LOADER_MIP_AUTOGEN;
 
 		// DDS files need a different function from other files
 		std::string dds = ".dds"; // So check the filename extension (case insensitive)
@@ -186,10 +182,10 @@ namespace DX12
 	}
 
 
-	CDX12RenderTarget::CDX12RenderTarget(CDX12Engine* engine, Resource r) : CDX12Texture(engine, r)
+	CDX12RenderTarget::CDX12RenderTarget(CDX12Engine* engine, Resource r, CDX12DescriptorHeap* rtvHeap) : CDX12Texture(engine, r)
 	{
-		mRTVDescriptorIndex = mPtrEngine->mRTVDescriptorHeap->Top();
-		mRTVHandle = mPtrEngine->mRTVDescriptorHeap->Add();
+		mRTVDescriptorIndex = rtvHeap->Top();
+		mRTVHandle = rtvHeap->Add();
 
 		const auto device = mPtrEngine->mDevice.Get();
 

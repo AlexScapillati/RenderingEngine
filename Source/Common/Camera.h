@@ -5,10 +5,10 @@
 
 #pragma once
 
-#include "..\Math\CVector3.h"
-#include "..\Math\CVector2.h"
+#include "../Math/MathHelpers.h"
 #include "..\Math\CMatrix4x4.h"
-#include "..\Math/MathHelpers.h"
+#include "..\Math\CVector2.h"
+#include "..\Math\CVector3.h"
 #include "..\Utility/Input.h"
 
 class CCamera

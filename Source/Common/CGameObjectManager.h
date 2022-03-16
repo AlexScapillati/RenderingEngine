@@ -42,7 +42,7 @@ class CGameObjectManager
 
 	private:
 		IEngine*		 mEngine;
-		CSky*			 mSky;
+		CSky*			 mSky = nullptr;
 		int              mMaxSize;
 		int              mMaxShadowMaps;
 	};

@@ -368,7 +368,7 @@ void CGui::AddObjectsMenu() const
 					if (!mesh.empty() && !tex.empty())
 					{
 						const auto newObj = mEngine->CreateObject(mesh, name, tex);
-						mEngine->GetScene()->GetObjectManager()->AddObject(newObj);
+						mEngine->GetObjManager()->AddObject(newObj);
 
 						addObj = false;
 					}
@@ -380,7 +380,7 @@ void CGui::AddObjectsMenu() const
 					if (!mesh.empty())
 					{
 						const auto newObj = mEngine->CreateObject(mesh, name);
-						mEngine->GetScene()->GetObjectManager()->AddObject(newObj);
+						mEngine->GetObjManager()->AddObject(newObj);
 
 						addObj = false;
 					}
@@ -391,7 +391,7 @@ void CGui::AddObjectsMenu() const
 					if (!mesh.empty() && !tex.empty())
 					{
 						const auto newObj = mEngine->CreateSky(mesh, name, tex);
-						mEngine->GetScene()->GetObjectManager()->AddSky(newObj);
+						mEngine->GetObjManager()->AddSky(newObj);
 
 						addObj = false;
 					}
@@ -402,7 +402,7 @@ void CGui::AddObjectsMenu() const
 					{
 						const auto newObj = mEngine->CreatePlant(mesh, name);
 
-						mEngine->GetScene()->GetObjectManager()->AddPlant(newObj);
+						mEngine->GetObjManager()->AddPlant(newObj);
 
 						addObj = false;
 					}
@@ -414,7 +414,7 @@ void CGui::AddObjectsMenu() const
 					if (!mesh.empty() & !tex.empty())
 					{
 						const auto newObj = mEngine->CreateLight(mesh, name, tex, col, strenght);
-						mEngine->GetScene()->GetObjectManager()->AddLight(newObj);
+						mEngine->GetObjManager()->AddLight(newObj);
 
 						addObj = false;
 					}
@@ -426,7 +426,7 @@ void CGui::AddObjectsMenu() const
 					if (!mesh.empty() & !tex.empty())
 					{
 						const auto newObj = mEngine->CreateSpotLight(mesh, name, tex, col, strenght);
-						mEngine->GetScene()->GetObjectManager()->AddSpotLight(newObj);
+						mEngine->GetObjManager()->AddSpotLight(newObj);
 
 						addObj = false;
 					}
@@ -438,7 +438,7 @@ void CGui::AddObjectsMenu() const
 					if (!mesh.empty() & !tex.empty())
 					{
 						const auto newObj = mEngine->CreateDirectionalLight(mesh, name, tex, col, strenght);
-						mEngine->GetScene()->GetObjectManager()->AddDirLight(newObj);
+						mEngine->GetObjManager()->AddDirLight(newObj);
 
 						addObj = false;
 					}
@@ -450,7 +450,7 @@ void CGui::AddObjectsMenu() const
 					if (!mesh.empty() & !tex.empty())
 					{
 						const auto newObj = mEngine->CreatePointLight(mesh, name, tex, col, strenght);
-						mEngine->GetScene()->GetObjectManager()->AddPointLight(newObj);
+						mEngine->GetObjManager()->AddPointLight(newObj);
 
 						addObj = false;
 					}
@@ -542,22 +542,22 @@ void CGui::DisplayPropertiesWindow() const
 					{
 						//TODO
 						auto o = mEngine->CreateSpotLight(mSelectedObj->MeshFileNames(), mSelectedObj->Name(), "", light->GetColour(), light->GetStrength());
-						mEngine->GetScene()->GetObjectManager()->AddSpotLight(o);
+						mEngine->GetObjManager()->AddSpotLight(o);
 					}
 					else if (dynamic_cast<CDirectionalLight*>(mSelectedObj))
 					{
 						auto obj = mEngine->CreateDirectionalLight(mSelectedObj->MeshFileNames(), mSelectedObj->Name(), "", light->GetColour(), light->GetStrength());
-						mEngine->GetScene()->GetObjectManager()->AddDirLight(obj);
+						mEngine->GetObjManager()->AddDirLight(obj);
 					}
 					else if (dynamic_cast<CPointLight*>(mSelectedObj))
 					{
 						auto obj = mEngine->CreatePointLight(mSelectedObj->MeshFileNames(), mSelectedObj->Name(), "", light->GetColour(), light->GetStrength());
-						mEngine->GetScene()->GetObjectManager()->AddPointLight(obj);
+						mEngine->GetObjManager()->AddPointLight(obj);
 					}
 					else
 					{
 						auto obj = mEngine->CreateLight(mSelectedObj->MeshFileNames(), mSelectedObj->Name(), "", light->GetColour(), light->GetStrength());
-						mEngine->GetScene()->GetObjectManager()->AddLight(obj);
+						mEngine->GetObjManager()->AddLight(obj);
 					}
 				}
 				else
@@ -565,17 +565,17 @@ void CGui::DisplayPropertiesWindow() const
 					if (auto plant = dynamic_cast<CPlant*>(mSelectedObj))
 					{
 						auto obj = mEngine->CreatePlant(mSelectedObj->MeshFileNames(), mSelectedObj->Name());
-						mEngine->GetScene()->GetObjectManager()->AddPlant(obj);
+						mEngine->GetObjManager()->AddPlant(obj);
 					}
 					else if (auto sky = dynamic_cast<CSky*>(mSelectedObj))
 					{
 						auto obj = mEngine->CreateSky(mSelectedObj->MeshFileNames(), mSelectedObj->Name(), "");
-						mEngine->GetScene()->GetObjectManager()->AddSky(obj);
+						mEngine->GetObjManager()->AddSky(obj);
 					}
 					else
 					{
 						auto obj = mEngine->CreateObject(mSelectedObj->MeshFileNames(), mSelectedObj->Name(), "");
-						mEngine->GetScene()->GetObjectManager()->AddObject(obj);
+						mEngine->GetObjManager()->AddObject(obj);
 					}
 				}
 			}
@@ -795,7 +795,7 @@ void CGui::DisplayObjects()
 		AddObjectsMenu();
 		ImGui::Separator();
 		//display for each model a button
-		const auto objManager = mEngine->GetScene()->GetObjectManager();
+		const auto objManager = mEngine->GetObjManager();
 		DisplayDeque(objManager->mObjects);
 		DisplayDeque(objManager->mLights);
 	}

@@ -58,6 +58,12 @@ namespace DX12
 			memcpy(mCBVDataBegin, &data, mSize);
 		}
 
+		template <typename T, typename U>
+		void Copy(T& data, size_t n)
+		{
+			memcpy(mCBVDataBegin, &data, sizeof(U) * n);
+		}
+
 		void Set(UINT RootParameterIndex) const
 		{
 			mEngine->mCommandList->SetGraphicsRootDescriptorTable(RootParameterIndex, mHandle.mGpu);

@@ -81,7 +81,7 @@ namespace DX12
 		// Pass the name of the mesh file to load. Uses assimp (http://www.assimp.org/) to support many file types
 		// Optionally request tangents to be calculated (for normal and parallax mapping - see later lab)
 		// Will throw a std::runtime_error exception on failure (since constructors can't return errors).
-		CDX12Mesh(CDX12Engine* engine, std::string fileName, std::vector<std::string>& tex);
+		CDX12Mesh(CDX12Engine* engine, std::string fileName, bool requireTangents = false);
 
 		CDX12Mesh(const CDX12Mesh&);
 
@@ -98,7 +98,6 @@ namespace DX12
 		virtual void Render(std::vector<CMatrix4x4>& modelMatrices);
 
 		std::string MeshFileName() const { return mFileName; }
-		auto Material() const { return mMaterial.get(); }
 
 		//--------------------------------------------------------------------------------------
 		// Private helper functions
@@ -129,13 +128,8 @@ namespace DX12
 
 		bool mHasBones; // If any submesh has bones, then all submeshes are given bones - makes rendering easier (one shader for the whole mesh)
 
-		std::unique_ptr<CDX12PBRPSO> mPbrPipelineStateObject;
-
 		std::unique_ptr<CDX12ConstantBuffer> mModelConstantBuffer;
 
-		// The material
-		// It will hold all the textures and send them to the shader with RenderMaterial()
-		std::unique_ptr<CDX12Material> mMaterial;
 
 	public:
 

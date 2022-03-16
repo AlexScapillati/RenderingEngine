@@ -24,7 +24,7 @@ namespace DX12
 		// Formats: NAME_RESOLUTION_TYPE.EXTENTION
 		// Types supported: Albedo,AmbientOccusion,Displacement,Roughness,Metallness
 		// It will set automatically the correct shaders depending on the use (Normals = PBR / No Normals = PBRNoNormals)
-		CDX12Material(std::vector<std::string> fileMaps, CDX12Engine* engine);
+		CDX12Material(std::vector<std::string>& fileMaps, CDX12Engine* engine);
 
 		// Copy Constuctor
 		// Deep Copy

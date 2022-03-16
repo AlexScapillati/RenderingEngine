@@ -132,7 +132,7 @@ protected:
 	std::vector<CMatrix4x4> mWorldMatrices;
 };
 
-class CSky : public CGameObject
+class CSky : public virtual CGameObject
 {
 public:
 	virtual void Render(bool basicGeometry = false) override = 0;
@@ -140,7 +140,7 @@ public:
 };
 
 
-class CPlant : public CGameObject
+class CPlant : public virtual CGameObject
 {
 public:
 	virtual void Render(bool basicGeometry = false) override = 0;

@@ -36,7 +36,7 @@ void CGameObjectManager::AddDirLight(CDirectionalLight* obj)
 
 void CGameObjectManager::AddSky(CSky* obj)
 {
-	if (mSky) delete obj;
+	//delete mSky;
 	mSky = obj;
 }
 

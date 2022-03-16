@@ -147,6 +147,8 @@ namespace DX11
 			//load default shaders
 			LoadDefaultShaders();
 
+			mObjManager = std::make_unique<CGameObjectManager>(this);
+
 			mGui = std::make_unique<CDX11Gui>(this);
 		}
 		catch (const std::exception& e)

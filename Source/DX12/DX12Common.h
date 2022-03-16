@@ -83,24 +83,7 @@ namespace DX12
 
 #define ThrowIfFailed(hr)  if(FAILED(hr)) throw std::exception()
 
-
-	struct SShader
-	{
-		std::string mFileName;
-
-		ComPtr<ID3DBlob> mblob;
-
-		void LoadShaderFromFile(std::string fileName)
-		{
-			if (FAILED(D3DReadFileToBlob(ATL::CA2W((fileName + ".cso").c_str()), &mblob)))
-			{
-				throw std::runtime_error("Error Loading " + fileName);
-			}
-
-			mFileName = fileName;
-		}
-	};
-
+	
 
 	struct SHandle
 	{
@@ -122,19 +105,27 @@ namespace DX12
 
 	struct PerModelConstants
 	{
-		CMatrix4x4 modelMatrix;
-		CMatrix4x4 padding[3];
+		CMatrix4x4 worldMatrix;
+
+		CVector3 objectColour;  // Allows each light model to be tinted to match the light colour they cast
+		float    parallaxDepth; // Used in the geometry shader to control how much the polygons are exploded outwards
+
+		float hasOpacityMap;
+		float hasAoMap;
+		float hasRoughnessMap;
+		float hasAmbientMap;
+		float hasMetallnessMap;
+
+		float roughness;
+		float metalness;
+
+		float padding[37];
 	};
+
+	constexpr auto s = sizeof(PerModelConstants);
 
 	constexpr uint64_t MAX_LIGHTS = 64;
 
-	struct SLight
-	{
-		CVector3 position;
-		float    enabled;
-		CVector3 colour;
-		float    intensity;
-	};
 
 	// Data that remains constant for an entire frame, updated from C++ to the GPU shaders *once per frame*
 	// We hold them together in a structure and send the whole thing to a "constant buffer" on the GPU each frame when
@@ -142,24 +133,99 @@ namespace DX12
 	
 	struct PerFrameConstants
 	{
+
 		// These are the matrices used to position the camera
 		CMatrix4x4 cameraMatrix;
 		CMatrix4x4 viewMatrix;
 		CMatrix4x4 projectionMatrix;
 		CMatrix4x4 viewProjectionMatrix; // The above two matrices multiplied together to combine their effects
-		// 256 bytes 
 
-		CVector3 ambient;
-		float roughness;
-		float metalness;
-		float customValues;
-		float padding1[58];
-		//256 bytes
+		CVector3 ambientColour;
+		float    specularPower;
+
+		float parallaxMinSamples = 5;
+		float parallaxMaxSamples = 20;
+		float parallaxPadding;
+
+		float gDepthAdjust = 0.00005f;
+
+		float nLights;
+		float nDirLight;
+		float nSpotLights;
+		float nPointLights;
+
+		uint32_t nPcfSamples;
+		CVector3 padding2;
+
+		CVector3 cameraPosition;
+		float    frameTime; // This app does updates on the GPU so we pass over the frame update time
+
+		float padding[44];
+	};
+
+
+	//--------------------------------------------------------------------------------------
+	// Light Structures
+	//--------------------------------------------------------------------------------------
+
+	struct sLight
+	{
+		CVector3 position;
+		float    enabled;
+		CVector3 colour;
+		float    intensity;
+	};
+
+	struct sSpotLight
+	{
+		CVector3   colour;
+		float      enabled;
+		CVector3   pos;
+		float      intensity;
+		CVector3   facing;       //the direction facing of the light
+		float      cosHalfAngle; //pre calculate this in the c++ side, for performance reasons
+		CMatrix4x4 viewMatrix;   //the light view matrix (as it was a camera)
+		CMatrix4x4 projMatrix;   //--"--
+	};
+
+	struct sDirLight
+	{
+		CVector3   colour;
+		float      enabled;
+		CVector3   facing;
+		float      intensity;
+		CMatrix4x4 viewMatrix; //the light view matrix (as it was a camera)
+		CMatrix4x4 projMatrix; //--"--
+	};
+
+	struct sPointLight
+	{
+		CVector3   colour;
+		float      enabled;
+		CVector3   position;
+		float      intensity;
+		CMatrix4x4 viewMatrices[6]; //the light view matrix (as it was a camera)
+		CMatrix4x4 projMatrix;      //--"--
 	};
 
 	struct PerFrameLights
 	{
-		SLight lights[MAX_LIGHTS];
+		sLight lights[MAX_LIGHTS];
 	};
 
+	struct PerFrameSpotLights
+	{
+		sSpotLight spotLights[MAX_LIGHTS];
+	};
+
+	struct PerFrameDirLights
+	{
+		sDirLight dirLights[MAX_LIGHTS];
+	};
+
+	struct PerFramePointLights
+	{
+		sPointLight pointLights[MAX_LIGHTS];
+	};
+	
 }

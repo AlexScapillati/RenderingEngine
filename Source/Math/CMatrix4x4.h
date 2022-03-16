@@ -170,4 +170,9 @@ CMatrix4x4 MatrixScaling(const float s);
 // Advanced calulation needed to get the view matrix from the camera's positioning matrix
 CMatrix4x4 InverseAffine(const CMatrix4x4& m);
 
+CMatrix4x4 MakeProjectionMatrix(float aspectRatio = 4.0f / 3.0f, float FOVx = ToRadians(60),
+	float nearClip = 0.1f, float farClip = 10000.0f);
+
+CMatrix4x4 MakeOrthogonalMatrix(float width, float height, float nearClip, float farClip);
+
 #endif // _CMATRIX4X4_H_DEFINED_

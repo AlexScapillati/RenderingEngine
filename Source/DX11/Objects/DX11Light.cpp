@@ -1,5 +1,7 @@
 #include "DX11Light.h"
 
+#include "../DX11Material.h"
+
 namespace DX11
 {
 

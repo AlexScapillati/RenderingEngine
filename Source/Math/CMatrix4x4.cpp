@@ -324,3 +324,43 @@ void CMatrix4x4::Transpose()
 	std::swap(e13, e31);
 	std::swap(e23, e32);
 }
+
+
+
+//--------------------------------------------------------------------------------------
+// Camera Helpers
+//--------------------------------------------------------------------------------------
+
+// A "projection matrix" contains properties of a camera. Covered mid-module - the maths is an optional topic (not examinable).
+// - Aspect ratio is screen width / height (like 4:3, 16:9)
+// - FOVx is the viewing angle from left->right (high values give a fish-eye look),
+// - near and far clip are the range of z distances that can be rendered
+CMatrix4x4 MakeProjectionMatrix(float aspectRatio /*= 4.0f / 3.0f*/, float FOVx /*= ToRadians(60)*/,
+	float nearClip /*= 0.1f*/, float farClip /*= 10000.0f*/)
+{
+	const auto tanFOVx = std::tan(FOVx * 0.5f);
+	const auto scaleX = 1.0f / tanFOVx;
+	const auto scaleY = aspectRatio / tanFOVx;
+	const auto scaleZa = farClip / (farClip - nearClip);
+	const auto scaleZb = -nearClip * scaleZa;
+
+	return CMatrix4x4{ scaleX,   0.0f,    0.0f,   0.0f,
+						 0.0f, scaleY,    0.0f,   0.0f,
+						 0.0f,   0.0f, scaleZa,   1.0f,
+						 0.0f,   0.0f, scaleZb,   0.0f };
+}
+
+CMatrix4x4 MakeOrthogonalMatrix(float width, float height, float nearClip, float farClip)
+{
+
+	auto scaleZa = 1 / (nearClip - farClip);
+	auto scaleZb = nearClip / (nearClip - farClip);
+
+	return CMatrix4x4
+	{
+		2 / width, 0.0f,     0.0f,      0.0f,
+		0.0f,    2 / height, 0.0f,      0.0f,
+		0.0f,    0.0f,		 scaleZa,   0.0f,
+		0.0f,    0.0f,		 scaleZb,   1.0f };
+}
+

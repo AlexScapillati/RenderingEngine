@@ -164,6 +164,9 @@
       <Filter>Engine\Common</Filter>
     </ClCompile>
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="Source\DX12\Objects\DX12Light.cpp">
+      <Filter>Engine\DX12\Objects</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="External">
