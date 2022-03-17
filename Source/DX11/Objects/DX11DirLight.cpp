@@ -37,7 +37,7 @@ namespace DX11
 		InitTextures();
 	}
 
-	ID3D11ShaderResourceView* CDX11DirLight::RenderFromThis()
+	void* CDX11DirLight::RenderFromThis()
 	{
 		// Get Previous RSState 
 		ID3D11RasterizerState* prevRS = nullptr;
@@ -67,7 +67,7 @@ namespace DX11
 
 		mEngine->UpdateFrameConstantBuffer(gPerFrameConstantBuffer.Get(), gPerFrameConstants);
 
-		mEngine->GetContext()->VSSetConstantBuffers(1, 1, &gPerFrameConstantBuffer);
+		mEngine->GetContext()->VSSetConstantBuffers(1, 1, gPerFrameConstantBuffer.GetAddressOf());
 
 		//render just the objects that can cast shadows
 		for (auto it : mEngine->GetObjManager()->mObjects)

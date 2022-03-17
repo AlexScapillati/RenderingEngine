@@ -12,8 +12,8 @@
                     "SRV(t2), " \
                     "SRV(t3), " \
                     "SRV(t4), " \
-                    "SRV(t5), " \
-                    "UAV(u6), " \
+                    "SRV(t6), " \
+                    "SRV(t7), " \
                     "StaticSampler(s1)," \
                     "StaticSampler(s2)"
 
@@ -270,6 +270,7 @@ Texture2D DisplacementMap   : register(t3);
 Texture2D NormalMap         : register(t4);
 Texture2D MetalnessMap      : register(t5);
 TextureCube IBLMap          : register(t6);
+Texture2D ShadowMaps        : register(t7);
 
 //--------------------------------------------------------------------------------------
 // Constants

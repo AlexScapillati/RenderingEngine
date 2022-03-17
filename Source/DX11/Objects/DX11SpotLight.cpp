@@ -42,7 +42,7 @@ namespace DX11
 
 	void CDX11SpotLight::Render(bool basicGeometry) { CDX11GameObject::Render(basicGeometry); }
 
-	ID3D11ShaderResourceView* CDX11SpotLight::RenderFromThis()
+	void* CDX11SpotLight::RenderFromThis()
 		{
 			// Store the prev rasterize state
 			ID3D11RasterizerState* prevRS = nullptr;
@@ -72,7 +72,7 @@ namespace DX11
 
 			mEngine->UpdateFrameConstantBuffer(gPerFrameConstantBuffer.Get(), gPerFrameConstants);
 
-			mEngine->GetContext()->VSSetConstantBuffers(1, 1, &gPerFrameConstantBuffer);
+			mEngine->GetContext()->VSSetConstantBuffers(1, 1, gPerFrameConstantBuffer.GetAddressOf());
 
 			//render just the objects that can cast shadows
 			for (CGameObject* it : mEngine->GetObjManager()->mObjects)
@@ -107,6 +107,11 @@ namespace DX11
 			//TODO boundaries
 			mConeAngle = value;
 		}
+
+	void* CDX11SpotLight::GetSRV()
+	{
+		return mShadowMapSRV;
+	}
 
 	void CDX11SpotLight::InitTextures()
 		{

@@ -58,25 +58,6 @@ namespace DX12
 			: mEngine(engine)
 		{
 
-			enum
-			{
-				ModelCB,
-				FrameCB,
-				LightsCB,
-				SpotCB,
-				DirCB,
-				PointCB,
-
-				Albedo,
-				Roughness,
-				AO,
-				IBL,
-				Displacement,
-				Normal,
-				Metalness,
-				Count
-			};
-
 			// Allow input layout and deny unnecessary access to certain pipeline stages.
 			D3D12_ROOT_SIGNATURE_FLAGS rootSignatureFlags =
 				D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT |
@@ -86,7 +67,7 @@ namespace DX12
 
 			constexpr auto numTextures = 6;
 			constexpr auto numConstantBuffers = 6;
-			constexpr auto totRanges = numConstantBuffers + numTextures + 1 ;
+			constexpr auto totRanges = numConstantBuffers + numTextures + 2 ;
 
 			// constant root parameters that are used by the vertex shader.
 			CD3DX12_DESCRIPTOR_RANGE1 ranges[totRanges] = {};
@@ -108,9 +89,9 @@ namespace DX12
 
 				ranges[i].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 6);
 
-				/*i++;
-				ranges[i].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 10, 7);
-				*/
+				i++;
+				ranges[i].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 7);
+				
 
 			}
 
@@ -210,5 +191,68 @@ namespace DX12
 		std::unique_ptr<CDX12RootSignature> mRootSignature;
 	};
 
+	class CDX12DepthOnlyRootSignature
+	{
+	public:
 
+		~CDX12DepthOnlyRootSignature() = default;
+
+		CDX12DepthOnlyRootSignature(CDX12Engine * engine)
+			: mEngine(engine)
+		{
+			// Allow input layout and deny unnecessary access to certain pipeline stages.
+			D3D12_ROOT_SIGNATURE_FLAGS rootSignatureFlags =
+				D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT |
+				D3D12_ROOT_SIGNATURE_FLAG_DENY_HULL_SHADER_ROOT_ACCESS |
+				D3D12_ROOT_SIGNATURE_FLAG_DENY_DOMAIN_SHADER_ROOT_ACCESS |
+				D3D12_ROOT_SIGNATURE_FLAG_DENY_GEOMETRY_SHADER_ROOT_ACCESS;
+
+
+			constexpr auto numTextures = 1;
+			constexpr auto numConstantBuffers = 6;
+			constexpr auto totRanges = numConstantBuffers + numTextures;
+
+			// constant root parameters that are used by the vertex shader.
+			CD3DX12_DESCRIPTOR_RANGE1 ranges[totRanges] = {};
+			CD3DX12_ROOT_PARAMETER1 rootParameters[totRanges] = {};
+
+			// Create descriptor ranges
+			{
+				auto i = 0u;
+				for (; i < numConstantBuffers; ++i)
+				{
+					ranges[i].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, i);
+				}
+
+				for (auto j = 0u; j < numTextures; ++j)
+				{
+					ranges[i].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, j);
+					++i;
+				}
+			}
+
+			// Create root parameters
+			{
+				for (auto i = 0u; i < numConstantBuffers; ++i)
+				{
+					rootParameters[i].InitAsDescriptorTable(1, &ranges[i], D3D12_SHADER_VISIBILITY_ALL);
+				}
+
+				for (auto i = numConstantBuffers; i < totRanges; ++i)
+				{
+					rootParameters[i].InitAsDescriptorTable(1, &ranges[i], D3D12_SHADER_VISIBILITY_PIXEL);
+				}
+			}
+
+			auto samplerDesc = DirectX::CommonStates::StaticAnisotropicWrap(0);
+
+			CD3DX12_VERSIONED_ROOT_SIGNATURE_DESC rootSignatureDescription;
+			rootSignatureDescription.Init_1_1(_countof(rootParameters), rootParameters, 1u, &samplerDesc, rootSignatureFlags);
+
+			mRootSignature = std::make_unique<CDX12RootSignature>(engine, rootSignatureDescription);
+		}
+
+		CDX12Engine* mEngine;
+		std::unique_ptr<CDX12RootSignature> mRootSignature;
+	};
 }

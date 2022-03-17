@@ -270,7 +270,6 @@ const D3D12_RASTERIZER_DESC CommonStates::Wireframe =
     D3D12_CONSERVATIVE_RASTERIZATION_MODE_OFF
 };
 
-
 // --------------------------------------------------------------------------
 // Static sampler States
 // --------------------------------------------------------------------------

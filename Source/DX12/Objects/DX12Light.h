@@ -49,6 +49,7 @@ namespace DX12
 									int      node) override;
 			inline void LoadNewMesh(std::string newMesh) override;
 			inline void Render(bool basicGeometry) override;
+			void* RenderFromThis() override;
 			~ CDX12DirectionalLight() override;
 			void SetShadowMapSize(int s) override;
 	};
@@ -76,32 +77,11 @@ namespace DX12
 							 int      node) override;
 			void LoadNewMesh(std::string newMesh) override;
 			void Render(bool basicGeometry) override;
+			void* RenderFromThis() override;
+
 			~ CDX12PointLight() override;
 			void SetShadowMapSize(int size) override;
-	};
-
-	class CDX12SpotLight final :  public CDX12GameObject,  public CSpotLight
-	{
-		public :
-			CDX12SpotLight(CDX12Engine*       engine,
-						   const std::string& mesh,
-						   const std::string& name,
-						   const std::string& diffuse,
-						   const CVector3&    colour,
-						   float              strength,
-						   const CVector3&    position,
-						   const CVector3&    rotation,
-						   float              scale,
-						   const int&         shadowMapSize = 2048,
-						   const float&       coneAngle = 90.f);
-
-			void SetRotation(CVector3 rotation,
-							 int      node) override;
-			void LoadNewMesh(std::string newMesh) override;
-			void Render(bool basicGeometry) override;
-			~ CDX12SpotLight() override;
-			void SetConeAngle(float value) override;
-			void SetShadowMapsSize(int value) override;
+			
 	};
 
 }

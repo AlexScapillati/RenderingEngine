@@ -217,9 +217,8 @@ namespace DX12
 		//if the model is not enable do not render it
 		if (!mEnabled) return;
 
-
 			// Set the pipeline state object
-		mEngine->mPbrPso->Set(mEngine->mCommandList.Get());
+		if(!basicGeometry) mEngine->mPbrPso->Set(mEngine->mCommandList.Get());
 
 		// Render the material
 		mMaterial->RenderMaterial();

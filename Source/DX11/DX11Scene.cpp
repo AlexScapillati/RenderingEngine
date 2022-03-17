@@ -89,7 +89,9 @@ namespace DX11
 			gPerFramePointLightsConstBuffer.Attach(mEngine->CreateConstantBuffer(sizeof(gPerFramePointLightsConstants)));
 			gPostProcessingConstBuffer.Attach(mEngine->CreateConstantBuffer(sizeof(gPostProcessingConstants)));
 
-			if (!gPerFrameConstantBuffer || !gPerModelConstantBuffer || !gPerFrameDirLightsConstBuffer || !gPerFrameLightsConstBuffer || !gPerFrameSpotLightsConstBuffer || !gPerFramePointLightsConstBuffer || !gPostProcessingConstBuffer) { throw std::runtime_error("Error creating constant buffers"); }
+			if (!gPerFrameConstantBuffer || !gPerModelConstantBuffer || !gPerFrameDirLightsConstBuffer || !
+				gPerFrameLightsConstBuffer || !gPerFrameSpotLightsConstBuffer || !gPerFramePointLightsConstBuffer || !
+				gPostProcessingConstBuffer) { throw std::runtime_error("Error creating constant buffers"); }
 		}
 
 	
@@ -101,9 +103,9 @@ namespace DX11
 	void CDX11Scene::RenderSceneFromCamera(CCamera* camera)
 	{
 		// Set camera matrices in the constant buffer and send over to GPU
-		gPerFrameConstants.cameraMatrix = camera->WorldMatrix();
-		gPerFrameConstants.viewMatrix = camera->ViewMatrix();
-		gPerFrameConstants.projectionMatrix = camera->ProjectionMatrix();
+		gPerFrameConstants.cameraMatrix         = camera->WorldMatrix();
+		gPerFrameConstants.viewMatrix           = camera->ViewMatrix();
+		gPerFrameConstants.projectionMatrix     = camera->ProjectionMatrix();
 		gPerFrameConstants.viewProjectionMatrix = camera->ViewProjectionMatrix();
 
 		// Update the frame constant buffer
@@ -132,7 +134,8 @@ namespace DX11
 		mShadowsMaps.clear();
 
 		// Unbind shadow maps from shaders - prevents warnings from DirectX when we try to render to the shadow maps again next frame
-		const auto nShadowMaps = mEngine->GetObjManager()->mSpotLights.size() + mEngine->GetObjManager()->mDirLights.size() + (mEngine->GetObjManager()->mPointLights.size() * 6);
+		const auto nShadowMaps = mEngine->GetObjManager()->mSpotLights.size() + mEngine->GetObjManager()->mDirLights.size() + (
+			mEngine->GetObjManager()->mPointLights.size() * 6);
 
 		for (int i = 0; i < nShadowMaps; ++i)
 		{
@@ -198,10 +201,9 @@ namespace DX11
 
 		for (const auto it : mEngine->GetObjManager()->mSpotLights)
 		{
-			auto l = dynamic_cast<CDX11SpotLight*>(it);
 			if (*it->Enabled())
 			{
-				auto tmp = l->RenderFromThis();
+				auto tmp = static_cast<ID3D11ShaderResourceView*>(it->RenderFromThis());
 
 				mShadowsMaps.push_back(tmp);
 			}
@@ -209,10 +211,9 @@ namespace DX11
 
 		for (const auto it : mEngine->GetObjManager()->mDirLights)
 		{
-			auto l = dynamic_cast<CDX11DirLight*>(it);
 			if (*it->Enabled())
 			{
-				auto tmp = l->RenderFromThis();
+				auto tmp = static_cast<ID3D11ShaderResourceView*>(it->RenderFromThis());
 
 				mShadowsMaps.push_back(tmp);
 			}
@@ -220,10 +221,9 @@ namespace DX11
 
 		for (const auto it : mEngine->GetObjManager()->mPointLights)
 		{
-			auto l = dynamic_cast<CDX11PointLight*>(it);
 			if (*it->Enabled())
 			{
-				auto tmp = l->RenderFromThis();
+				auto tmp = static_cast<ID3D11ShaderResourceView**>(it->RenderFromThis());
 
 				for (int i = 0; i < 6; ++i)
 				{

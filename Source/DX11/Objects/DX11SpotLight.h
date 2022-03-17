@@ -18,10 +18,11 @@ namespace DX11
 
 		CDX11SpotLight(CDX11SpotLight& s);
 
-		void                      Render(bool basicGeometry = false) override;
-		ID3D11ShaderResourceView* RenderFromThis();
-		void                      SetShadowMapsSize(int value) override;
-		void                      SetConeAngle(float value) override;
+		void  Render(bool basicGeometry = false) override;
+		void* RenderFromThis() override;
+		void  SetShadowMapsSize(int value) override;
+		void  SetConeAngle(float value) override;
+		void* GetSRV() override;
 		~CDX11SpotLight() override;
 		void Release() const;
 

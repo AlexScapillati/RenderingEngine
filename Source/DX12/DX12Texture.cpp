@@ -136,7 +136,7 @@ namespace DX12
 
 	void CDX12Texture::CreateTexture(D3D12_RESOURCE_DESC desc)
 	{
-		D3D12_CLEAR_VALUE clearValue = { DXGI_FORMAT_R8G8B8A8_UNORM, { 0.f, 0.f, 0.f, 0.f } };
+		D3D12_CLEAR_VALUE clearValue = { desc.Format };
 
 		const auto heapProperties = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
 
@@ -193,10 +193,10 @@ namespace DX12
 		device->Release();
 	}
 
-	CDX12RenderTarget::CDX12RenderTarget(CDX12Engine* engine, D3D12_RESOURCE_DESC desc, CDX12DescriptorHeap* heap) : CDX12Texture(engine, desc, heap)
+	CDX12RenderTarget::CDX12RenderTarget(CDX12Engine* engine, D3D12_RESOURCE_DESC desc, CDX12DescriptorHeap* srvHeap, CDX12DescriptorHeap* rtvHeap) : CDX12Texture(engine, desc, srvHeap)
 	{
-		mRTVDescriptorIndex = mPtrEngine->mRTVDescriptorHeap->Top();
-		mRTVHandle = mPtrEngine->mRTVDescriptorHeap->Add();
+		mRTVDescriptorIndex = rtvHeap->Top();
+		mRTVHandle = rtvHeap->Add();
 
 		const auto device = mPtrEngine->mDevice.Get();
 		device->CreateRenderTargetView(mResource.Get(), nullptr, mRTVHandle.mCpu);

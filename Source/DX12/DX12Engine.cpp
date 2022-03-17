@@ -12,6 +12,7 @@
 #include "DX12Texture.h"
 #include "Objects/CDX12Sky.h"
 #include "Objects/DX12Light.h"
+#include "Objects/DX12SpotLight.h"
 
 namespace DX12
 {
@@ -348,7 +349,10 @@ namespace DX12
 										   CVector3           rotation,
 										   float              scale)
 	{
-		return new CDX12GameObject(this, mesh, name, diffuseMap, position, rotation, scale);
+		
+		auto obj =  new CDX12GameObject(this, mesh, name, diffuseMap, position, rotation, scale);
+		mObjManager->AddObject(obj);
+		return obj;
 	}
 
 	CSky* CDX12Engine::CreateSky(const std::string& mesh,
@@ -358,7 +362,9 @@ namespace DX12
 								 CVector3           rotation,
 								 float              scale)
 	{
-		return new CDX12Sky(this, mesh, name, diffuseMap, position, rotation, scale);
+		auto s = new CDX12Sky(this, mesh, name, diffuseMap, position, rotation, scale);
+		mObjManager->AddSky(s);
+		return s;
 	}
 
 	CPlant* CDX12Engine::CreatePlant(const std::string& id,
@@ -367,7 +373,9 @@ namespace DX12
 									 CVector3           rotation,
 									 float              scale)
 	{
-		return new CDX12Plant(this, id, name, position, rotation, scale);
+		auto p = new CDX12Plant(this, id, name, position, rotation, scale);
+		mObjManager->AddPlant(p);
+		return p;
 	}
 
 	CGameObject* CDX12Engine::CreateObject(const std::string& dirPath,
@@ -376,7 +384,9 @@ namespace DX12
 										   CVector3           rotation,
 										   float              scale)
 	{
-		return new CDX12GameObject(this, dirPath, name, position, rotation, scale);
+		auto o = new CDX12GameObject(this, dirPath, name, position, rotation, scale);
+		mObjManager->AddObject(o);
+		return o;
 	}
 
 	CLight* CDX12Engine::CreateLight(const std::string& mesh,
@@ -388,7 +398,7 @@ namespace DX12
 									 CVector3           rotation,
 									 float              scale)
 	{
-		return new CDX12Light(this,
+		auto l = new CDX12Light(this,
 							  mesh,
 							  name,
 							  diffuseMap,
@@ -397,6 +407,8 @@ namespace DX12
 							  position,
 							  rotation,
 							  scale);
+		mObjManager->AddLight(l);
+		return l;
 	}
 
 	CSpotLight* CDX12Engine::CreateSpotLight(const std::string& mesh,
@@ -408,7 +420,7 @@ namespace DX12
 											 CVector3           rotation,
 											 float              scale)
 	{
-		return new CDX12SpotLight(this,
+		auto s = new CDX12SpotLight(this,
 								  mesh,
 								  name,
 								  diffuseMap,
@@ -417,6 +429,8 @@ namespace DX12
 								  position,
 								  rotation,
 								  scale);
+		mObjManager->AddSpotLight(s);
+		return s;
 	}
 
 	CDirectionalLight* CDX12Engine::CreateDirectionalLight(const std::string& mesh,
@@ -428,7 +442,9 @@ namespace DX12
 														   CVector3           rotation,
 														   float              scale)
 	{
-		return new CDX12DirectionalLight(this, mesh, name, diffuseMap, colour, strength, position, rotation, scale);
+		auto d = new CDX12DirectionalLight(this, mesh, name, diffuseMap, colour, strength, position, rotation, scale);
+		mObjManager->AddDirLight(d);
+		return d;
 	}
 
 	CPointLight* CDX12Engine::CreatePointLight(const std::string& mesh,
@@ -440,7 +456,9 @@ namespace DX12
 											   CVector3           rotation,
 											   float              scale)
 	{
-		return new CDX12PointLight(this, mesh, name, diffuseMap, colour, strength, position, rotation, scale);
+		auto p = new CDX12PointLight(this, mesh, name, diffuseMap, colour, strength, position, rotation, scale);
+		mObjManager->AddPointLight(p);
+		return p;
 	}
 
 	void CDX12Engine::Flush()
@@ -508,6 +526,8 @@ namespace DX12
 		{
 			mPbrPso = std::make_unique<CDX12PBRPSO>(this);
 			mSkyPso = std::make_unique<CDX12SkyPSO>(this);
+			mDepthOnlyPso = std::make_unique<CDX12DepthOnlyPSO>(this, false);
+			mDepthOnlyTangentPso = std::make_unique<CDX12DepthOnlyPSO>(this, true);
 		}
 		catch(const std::exception& e)
 		{

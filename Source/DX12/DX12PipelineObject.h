@@ -28,4 +28,16 @@ namespace DX12
 		ComPtr<ID3D12PipelineState> mPipelineState;
 	};
 
+	class CDX12DepthOnlyPSO
+	{
+		public:
+
+			CDX12DepthOnlyPSO(CDX12Engine* engine, bool requireTangents);
+			void Set(ID3D12GraphicsCommandList* commandList);
+
+			CDX12Engine* mEngine;
+			std::unique_ptr<CDX12DepthOnlyRootSignature> mRootSignature;
+			ComPtr<ID3D12PipelineState> mPipelineState;
+	};
+
 }

@@ -24,7 +24,7 @@ namespace DX11
 		void Render(bool basicGeometry = false) override;
 		void SetShadowMapSize(int size) override;
 
-		ID3D11ShaderResourceView** RenderFromThis();
+		void* RenderFromThis() override;
 
 		~CDX11PointLight() override;
 

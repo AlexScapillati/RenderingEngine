@@ -24,17 +24,16 @@ namespace DX11
 
 			CDX11DirLight(CDX11DirLight& l);
 
-			ID3D11ShaderResourceView* RenderFromThis();
-
-			void                      SetShadowMapSize(int s) override;
-
-			~CDX11DirLight() override;
+			void  InitTextures();
+			void  Render(bool basicGeometry) override;
+			void  LoadNewMesh(std::string newMesh) override;
+			void* RenderFromThis() override;
+			void  SetShadowMapSize(int s) override;
 
 			void Release() const;
+			~CDX11DirLight() override;
 
-			void InitTextures();
-			void Render(bool basicGeometry) override;
-			void LoadNewMesh(std::string newMesh) override;
+
 
 		private:
 

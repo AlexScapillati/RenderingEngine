@@ -133,6 +133,8 @@ void CGui::Show(float& frameTime)
 			ImGuiWindowFlags_MenuBar))
 		{
 
+			ImGuizmo::SetDrawlist();
+
 			// Camera control 
 			if (ImGui::IsWindowFocused())
 			{
@@ -414,7 +416,6 @@ void CGui::AddObjectsMenu() const
 					if (!mesh.empty() & !tex.empty())
 					{
 						const auto newObj = mEngine->CreateLight(mesh, name, tex, col, strenght);
-						mEngine->GetObjManager()->AddLight(newObj);
 
 						addObj = false;
 					}
@@ -426,7 +427,6 @@ void CGui::AddObjectsMenu() const
 					if (!mesh.empty() & !tex.empty())
 					{
 						const auto newObj = mEngine->CreateSpotLight(mesh, name, tex, col, strenght);
-						mEngine->GetObjManager()->AddSpotLight(newObj);
 
 						addObj = false;
 					}
@@ -438,7 +438,6 @@ void CGui::AddObjectsMenu() const
 					if (!mesh.empty() & !tex.empty())
 					{
 						const auto newObj = mEngine->CreateDirectionalLight(mesh, name, tex, col, strenght);
-						mEngine->GetObjManager()->AddDirLight(newObj);
 
 						addObj = false;
 					}
@@ -450,8 +449,6 @@ void CGui::AddObjectsMenu() const
 					if (!mesh.empty() & !tex.empty())
 					{
 						const auto newObj = mEngine->CreatePointLight(mesh, name, tex, col, strenght);
-						mEngine->GetObjManager()->AddPointLight(newObj);
-
 						addObj = false;
 					}
 
@@ -542,22 +539,18 @@ void CGui::DisplayPropertiesWindow() const
 					{
 						//TODO
 						auto o = mEngine->CreateSpotLight(mSelectedObj->MeshFileNames(), mSelectedObj->Name(), "", light->GetColour(), light->GetStrength());
-						mEngine->GetObjManager()->AddSpotLight(o);
 					}
 					else if (dynamic_cast<CDirectionalLight*>(mSelectedObj))
 					{
 						auto obj = mEngine->CreateDirectionalLight(mSelectedObj->MeshFileNames(), mSelectedObj->Name(), "", light->GetColour(), light->GetStrength());
-						mEngine->GetObjManager()->AddDirLight(obj);
 					}
 					else if (dynamic_cast<CPointLight*>(mSelectedObj))
 					{
 						auto obj = mEngine->CreatePointLight(mSelectedObj->MeshFileNames(), mSelectedObj->Name(), "", light->GetColour(), light->GetStrength());
-						mEngine->GetObjManager()->AddPointLight(obj);
 					}
 					else
 					{
 						auto obj = mEngine->CreateLight(mSelectedObj->MeshFileNames(), mSelectedObj->Name(), "", light->GetColour(), light->GetStrength());
-						mEngine->GetObjManager()->AddLight(obj);
 					}
 				}
 				else
@@ -565,17 +558,14 @@ void CGui::DisplayPropertiesWindow() const
 					if (auto plant = dynamic_cast<CPlant*>(mSelectedObj))
 					{
 						auto obj = mEngine->CreatePlant(mSelectedObj->MeshFileNames(), mSelectedObj->Name());
-						mEngine->GetObjManager()->AddPlant(obj);
 					}
 					else if (auto sky = dynamic_cast<CSky*>(mSelectedObj))
 					{
 						auto obj = mEngine->CreateSky(mSelectedObj->MeshFileNames(), mSelectedObj->Name(), "");
-						mEngine->GetObjManager()->AddSky(obj);
 					}
 					else
 					{
 						auto obj = mEngine->CreateObject(mSelectedObj->MeshFileNames(), mSelectedObj->Name(), "");
-						mEngine->GetObjManager()->AddObject(obj);
 					}
 				}
 			}
@@ -673,6 +663,10 @@ void CGui::DisplayPropertiesWindow() const
 				{
 					spotLight->SetShadowMapsSize((int)pow<int, int>(2, size));
 				}
+
+				ImGui::Text("ShadowMap:");
+				ImGui::Image(spotLight->GetSRV(), { 128,128 });
+
 			}
 			else if (const auto dirLight = dynamic_cast<CDirectionalLight*>(mSelectedObj))
 			{
@@ -779,10 +773,7 @@ void CGui::DisplayPropertiesWindow() const
 
 
 	ImGuizmo::Enable(true);
-	ImGuizmo::SetImGuiContext(ImGui::GetCurrentContext());
-	ImGuizmo::SetDrawlist(ImGui::GetForegroundDrawList());
 	ImGuizmo::SetRect(pos.x, pos.y, mEngine->GetScene()->GetViewportSize().x, mEngine->GetScene()->GetViewportSize().y);
-
 	ImGuizmo::Manipulate(mEngine->GetScene()->GetCamera()->ViewMatrix().GetArray(), mEngine->GetScene()->GetCamera()->ProjectionMatrix().GetArray(),
 		mCurrentGizmoOperation, ImGuizmo::WORLD, mSelectedObj->WorldMatrix().GetArray());
 
@@ -798,6 +789,9 @@ void CGui::DisplayObjects()
 		const auto objManager = mEngine->GetObjManager();
 		DisplayDeque(objManager->mObjects);
 		DisplayDeque(objManager->mLights);
+		DisplayDeque(objManager->mSpotLights);
+		DisplayDeque(objManager->mDirLights);
+		DisplayDeque(objManager->mPointLights);
 	}
 	ImGui::End();
 	if (mSelectedObj != nullptr)

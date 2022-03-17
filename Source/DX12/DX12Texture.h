@@ -60,8 +60,10 @@ namespace DX12
 		CDX12RenderTarget& operator=(const CDX12RenderTarget&&) = delete;
 
 		CDX12RenderTarget(CDX12Engine* engine, Resource r, CDX12DescriptorHeap* rtvHeap);
-
-		CDX12RenderTarget(CDX12Engine* engine, D3D12_RESOURCE_DESC desc, CDX12DescriptorHeap* heap);
+		CDX12RenderTarget(CDX12Engine*         engine,
+						  D3D12_RESOURCE_DESC  desc,
+						  CDX12DescriptorHeap* srvHeap,
+						  CDX12DescriptorHeap* rtvHeap);
 
 		~CDX12RenderTarget() override;
 

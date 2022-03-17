@@ -69,5 +69,8 @@ namespace DX12
 		// Scene Data
 		//--------------------------------------------------------------------------------------
 		CDX12Engine* mEngine = nullptr;
+
+		std::vector<ImTextureID> mShadowMaps;
+
 	};
 }

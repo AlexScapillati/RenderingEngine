@@ -9,6 +9,7 @@
 
 namespace DX12
 {
+	class CDX12DepthOnlyPSO;
 	class CDX12SkyPSO;
 	class CDX12PBRPSO;
 	class CDX12RenderTarget;
@@ -180,6 +181,8 @@ namespace DX12
 
 		std::unique_ptr<CDX12PBRPSO> mPbrPso;
 		std::unique_ptr<CDX12SkyPSO> mSkyPso;
+		std::unique_ptr<CDX12DepthOnlyPSO> mDepthOnlyPso;
+		std::unique_ptr<CDX12DepthOnlyPSO> mDepthOnlyTangentPso;
 
 		//----------------------------------------
 		// Shaders

@@ -32,6 +32,8 @@ class CSpotLight : virtual public CLight
 
 		virtual void SetConeAngle(float value) = 0;
 		virtual void SetShadowMapsSize(int value) = 0;
+		virtual void* RenderFromThis() = 0;
+		virtual void* GetSRV() = 0;
 
 		int&   GetShadowMapSize() { return mShadowMapSize; }
 		float& GetConeAngle() { return mConeAngle; }
@@ -66,6 +68,7 @@ class CDirectionalLight : virtual public CLight
 		virtual void SetShadowMapSize(int s) = 0;
 		virtual void   Render(bool basicGeometry = false) override = 0;
 		virtual void   LoadNewMesh(std::string newMesh) override = 0;
+		virtual void* RenderFromThis() = 0;
 
 		auto GetNearClip() const { return mNearClip; }
 		auto GetFarClip() const { return mFarClip; }
@@ -96,8 +99,9 @@ class CPointLight : virtual public CLight
 			: CLight(col, s), mShadowMapSize(shadowMapSize) {}
 
 		virtual void SetShadowMapSize(int size) = 0;
-		virtual void   Render(bool basicGeometry = false) override = 0;
-		virtual void   LoadNewMesh(std::string newMesh) override = 0;
+		virtual void Render(bool basicGeometry = false) override = 0;
+		virtual void LoadNewMesh(std::string newMesh) override = 0;
+		virtual void* RenderFromThis() = 0;
 
 		int GetShadowMapSize() const { return mShadowMapSize; }
 

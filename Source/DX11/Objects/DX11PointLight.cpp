@@ -45,7 +45,7 @@ namespace DX11
 		CDX11Light::Render(basicGeometry);
 	}
 
-	ID3D11ShaderResourceView** CDX11PointLight::RenderFromThis()
+	void* CDX11PointLight::RenderFromThis()
 	{
 		// Store original rotation
 		const auto originalOrientation = CDX11GameObject::Rotation();
@@ -86,8 +86,8 @@ namespace DX11
 			mEngine->UpdateFrameConstantBuffer(gPerFrameConstantBuffer.Get(), gPerFrameConstants);
 
 			// Set it to the GPU
-			mEngine->GetContext()->VSSetConstantBuffers(1, 1, &gPerFrameConstantBuffer);
-			mEngine->GetContext()->PSSetConstantBuffers(1, 1, &gPerFrameConstantBuffer);
+			mEngine->GetContext()->VSSetConstantBuffers(1, 1, gPerFrameConstantBuffer.GetAddressOf());
+			mEngine->GetContext()->PSSetConstantBuffers(1, 1, gPerFrameConstantBuffer.GetAddressOf());
 
 			//render just the objects that can cast shadows
 			for (const auto it : mEngine->GetObjManager()->mObjects)

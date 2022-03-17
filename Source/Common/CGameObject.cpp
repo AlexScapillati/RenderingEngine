@@ -40,6 +40,11 @@ std::string CGameObject::TextureFileName()
 	else return std::string();
 }
 
+bool CGameObject::IsPbr()
+{
+	return mTextureFiles.size() > 1;
+}
+
 std::vector<std::string>& CGameObject::GetMeshes() { return mMeshFiles; }
 
 // Control a given node in the model using keys provided. Amount of motion performed depends on frame time

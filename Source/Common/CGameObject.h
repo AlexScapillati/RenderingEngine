@@ -56,15 +56,15 @@ public:
 	CVector3                  Position(int node = 0); // Position is on bottom row of matrix
 	CVector3                  Rotation(int node = 0); // Getting angles from a matrix is complex - see .cpp file
 	CVector3                  Scale(int node = 0);    // Scale is length of rows 0-2 in matrix
-	CMatrix4x4& WorldMatrix(int node = 0);
+	CMatrix4x4&               WorldMatrix(int node = 0);
 	std::string               Name();
 	void                      SetName(std::string n);
-	float& ParallaxDepth();
+	float&                    ParallaxDepth();
 	void                      SetParallaxDepth(float p);
-	float* DirectPosition();
-	bool* Enabled();
-	float& Roughness();
-	float& Metalness();
+	float*                    DirectPosition();
+	bool*                     Enabled();
+	float&                    Roughness();
+	float&                    Metalness();
 	void                      SetRoughness(float r);
 	void                      SetPosition(CVector3 position, int node = 0);
 	virtual void              SetRotation(CVector3 rotation, int node = 0);
@@ -72,7 +72,8 @@ public:
 	void                      SetScale(float scale);
 	void                      SetWorldMatrix(CMatrix4x4 matrix, int node = 0);
 	void                      GetFilesInFolder(IEngine* engine, std::string& dirPath, std::vector<std::string>& fileNames) const;
-	std::string				  TextureFileName();
+	std::string               TextureFileName();
+	bool					  IsPbr();
 	std::vector<std::string>& GetMeshes();
 
 	//-------------------------------------
