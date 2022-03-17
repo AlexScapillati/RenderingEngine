@@ -127,27 +127,19 @@ void CLevelImporter::SaveObjects(tinyxml2::XMLElement* el,
 
 		auto childEl = obj->InsertNewChildElement("Geometry");
 
-		//if (dynamic_cast<DX11::CDX11GameObject*>(it)->Material()->HasNormals())
-		//{
-		//	std::string id = dynamic_cast<DX11::CDX11GameObject*>(it)->Mesh()->MeshFileName();
+		if (it->IsPbr())
+		{
+			std::string id = it->GetMeshes().front();
 
-		//	childEl->SetAttribute("ID", id.c_str());
-		//}
-		//else
-		//{
-		//	childEl->SetAttribute("Mesh", dynamic_cast<DX11::CDX11GameObject*>(it)->Mesh()->MeshFileName().c_str());
-		//	childEl->SetAttribute("Diffuse", dynamic_cast<DX11::CDX11GameObject*>(it)->TextureFileName().c_str());
-		//}
+			childEl->SetAttribute("ID", id.c_str());
+		}
+		else
+		{
+			childEl->SetAttribute("Mesh",	it->GetMeshes().front().c_str());
+			childEl->SetAttribute("Diffuse", it->TextureFileName().c_str());
+		}
 
 		SavePositionRotationScale(obj, it);
-
-		//// Ambient Map
-		//if (dynamic_cast<DX11::CDX11GameObject*>(it)->AmbientMapEnabled())
-		//{
-		//	childEl = obj->InsertNewChildElement("AmbientMap");
-		//	childEl->SetAttribute("Enabled", dynamic_cast<DX11::CDX11GameObject*>(it)->AmbientMapEnabled());
-		//	childEl->SetAttribute("Size", (int)dynamic_cast<DX11::CDX11GameObject*>(it)->AmbientMap()->Size());
-		//}
 	}
 
 	//----------------------------------------------------

@@ -160,11 +160,11 @@
     <ClCompile Include="Source\Common\CGui.cpp">
       <Filter>Engine\Common</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Common\CLight.cpp">
-      <Filter>Engine\Common</Filter>
-    </ClCompile>
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Source\DX12\Objects\DX12Light.cpp">
+      <Filter>Engine\DX12\Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\DX12\Objects\DX12SpotLight.cpp">
       <Filter>Engine\DX12\Objects</Filter>
     </ClCompile>
   </ItemGroup>
@@ -381,6 +381,9 @@
     </ClInclude>
     <ClInclude Include="Source\Common\CLight.h">
       <Filter>Engine\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\DX12\Objects\DX12SpotLight.h">
+      <Filter>Engine\DX12\Objects</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -54,7 +54,7 @@ namespace DX12
 
 			mSceneTexture = std::make_unique <CDX12RenderTarget>(mEngine, desc, mEngine->mSRVDescriptorHeap.get(), mEngine->mRTVDescriptorHeap.get());
 
-			NAME_D3D12_OBJECT(mSceneTexture->mResource);
+			mSceneTexture->mResource->SetName(L"SceneTex");
 		}
 
 		//Creating the depth texture
@@ -62,8 +62,8 @@ namespace DX12
 			const CD3DX12_RESOURCE_DESC depth_texture(
 				D3D12_RESOURCE_DIMENSION_TEXTURE2D,
 				0,
-				mWindow->GetWindowWidth(),
-				mWindow->GetWindowHeight(),
+				mViewportX,
+				mViewportY,
 				1,
 				1,
 				DXGI_FORMAT_D32_FLOAT,
@@ -163,20 +163,18 @@ namespace DX12
 
 		mEngine->CopyBuffers();
 
-
-		void* ptr = mShadowMaps.front();
-
 		mEngine->mPbrPso->Set(mEngine->mCommandList.Get());
 
 		mEngine->mSRVDescriptorHeap->Set();
 
-
-		if (ptr) 
+		if (!mShadowMaps.empty())
 		{
+			void* ptr = mShadowMaps.front();
 			// Convert back from void* to handle*
 			auto handle = *static_cast<CD3DX12_GPU_DESCRIPTOR_HANDLE*>(ptr);
 			//mEngine->mCommandList->SetGraphicsRootDescriptorTable(13, handle);
 		}
+
 
 		mEngine->GetObjManager()->RenderAllObjects();
 
@@ -190,34 +188,22 @@ namespace DX12
 
 	void CDX12Scene::Resize(UINT newX, UINT newY)
 	{
-		return;
-
-		mEngine->Flush();
-
-		ThrowIfFailed(mEngine->mCommandList->Close());
-
 		mCamera->SetAspectRatio(float(newX) / float(newY));
 
 		mViewportX = newX;
 		mViewportY = newY;
 
+		return;
 
 		for (int i = 0; i < CDX12Engine::mNumFrames; ++i)
 		{
-			mEngine->mDepthStencils[i] = nullptr;
+			mDepthStencils[i] = nullptr;
 		}
 
 		mSceneTexture = nullptr;
 		mDSVDescriptorHeap = nullptr;
 
 		InitFrameDependentStuff();
-
-		// Reset the current command allocator and the command list
-		mEngine->mCommandAllocators[mEngine->mCurrentBackBufferIndex]->Reset();
-
-		ThrowIfFailed(mEngine->mCommandList->Reset(mEngine->mCommandAllocators[mEngine->mCurrentBackBufferIndex].Get(), nullptr));
-
-		mEngine->mBackBuffers[mEngine->mCurrentBackBufferIndex]->mCurrentResourceState = D3D12_RESOURCE_STATE_COMMON;
 	}
 
 	CDX12Scene::~CDX12Scene()

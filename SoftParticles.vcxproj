@@ -114,7 +114,6 @@
     </FxCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Source\Common\CLight.cpp" />
     <ClCompile Include="Source\Common\CGameObject.cpp" />
     <ClCompile Include="Source\Common\CGameObjectManager.cpp" />
     <ClCompile Include="Source\Common\CGui.cpp" />
@@ -153,6 +152,7 @@
     <ClCompile Include="Source\DX12\DX12Engine.cpp" />
     <ClCompile Include="Source\DX12\DX12Gui.cpp" />
     <ClCompile Include="Source\DX12\Objects\DX12Light.cpp" />
+    <ClCompile Include="Source\DX12\Objects\DX12SpotLight.cpp" />
     <ClCompile Include="Source\External\imgui\backends\imgui_impl_dx11.cpp" />
     <ClCompile Include="Source\External\imgui\backends\imgui_impl_dx12.cpp" />
     <ClCompile Include="Source\External\imgui\backends\imgui_impl_win32.cpp" />
@@ -190,6 +190,7 @@
     <ClInclude Include="Source\DX12\DX12ConstantBuffer.h" />
     <ClInclude Include="Source\DX12\DX12Texture.h" />
     <ClInclude Include="Source\DX12\Objects\DX12Light.h" />
+    <ClInclude Include="Source\DX12\Objects\DX12SpotLight.h" />
     <ClInclude Include="Source\External\imgui\backends\imgui_impl_dx11.h" />
     <ClInclude Include="Source\External\imgui\backends\imgui_impl_dx12.h" />
     <ClInclude Include="Source\External\imgui\backends\imgui_impl_win32.h" />

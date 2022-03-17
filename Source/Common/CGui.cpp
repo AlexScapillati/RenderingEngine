@@ -770,8 +770,7 @@ void CGui::DisplayPropertiesWindow() const
 	ImGui::End();
 
 	const auto pos = mViewportWindowPos;
-
-
+	
 	ImGuizmo::Enable(true);
 	ImGuizmo::SetRect(pos.x, pos.y, mEngine->GetScene()->GetViewportSize().x, mEngine->GetScene()->GetViewportSize().y);
 	ImGuizmo::Manipulate(mEngine->GetScene()->GetCamera()->ViewMatrix().GetArray(), mEngine->GetScene()->GetCamera()->ProjectionMatrix().GetArray(),

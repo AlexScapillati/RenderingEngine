@@ -81,8 +81,8 @@ class CScene
 
 		// Lock FPS to monitor refresh rate, which will typically set it to 60fps. Press 'p' to toggle to full fps
 		bool         mLockFPS     = true;
-		UINT         mViewportX   = 1024;
-		UINT         mViewportY   = 720;
+		UINT         mViewportX   = 1920;
+		UINT         mViewportY   = 1080;
 		int          mPcfSamples  = 4;
 		CGameObject* mSelectedObj = nullptr;
 		CWindow*     mWindow      = nullptr;

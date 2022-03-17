@@ -44,6 +44,7 @@ namespace DX12
 
 	void CDX12Gui::End()
 	{
+		mEngine->mSRVDescriptorHeap->Set();
 		ImGui::Render();
 		ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), mEngine->mCommandList.Get());
 		ImGui::UpdatePlatformWindows();

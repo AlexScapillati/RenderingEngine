@@ -61,11 +61,11 @@ namespace DX12
 #if defined(_DEBUG)
 		// Enable better shader debugging with the graphics debugging tools.
 			UINT compileFlags = D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;
-			ID3D10Blob* errorBlob;
 #else
 		UINT compileFlags = 0;
 #endif
 
+			ID3D10Blob* errorBlob;
 		ThrowIfFailed(
 			D3DCompileFromFile(
 				std::wstring(absolutePath.begin(), absolutePath.end()).c_str(),
