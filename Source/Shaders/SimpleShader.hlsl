@@ -616,7 +616,6 @@ float4 PSMain(NormalMappingPixelShaderInput input) : SV_TARGET
             shadowMapUV.y = 1.0f - shadowMapUV.y; // Check if pixel is within light cone
             
         	resDiffuse += CalculateLight(gSpotLights[j].pos, gSpotLights[j].intensity, gSpotLights[j].colour, resDiffuse, resSpecular, textureNormal, cameraDirection, input.worldPosition, roughness, albedo);
-            
         }
     }
 

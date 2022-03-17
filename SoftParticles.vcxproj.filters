@@ -167,6 +167,12 @@
     <ClCompile Include="Source\DX12\Objects\DX12SpotLight.cpp">
       <Filter>Engine\DX12\Objects</Filter>
     </ClCompile>
+    <ClCompile Include="Source\DX12\Objects\DX12PointLight.cpp">
+      <Filter>Engine\DX12\Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\DX12\Objects\DX12DirectionalLight.cpp">
+      <Filter>Engine\DX12\Objects</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="External">
@@ -383,6 +389,12 @@
       <Filter>Engine\Common</Filter>
     </ClInclude>
     <ClInclude Include="Source\DX12\Objects\DX12SpotLight.h">
+      <Filter>Engine\DX12\Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\DX12\Objects\DX12PointLight.h">
+      <Filter>Engine\DX12\Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\DX12\Objects\DX12DirectionalLight.h">
       <Filter>Engine\DX12\Objects</Filter>
     </ClInclude>
   </ItemGroup>

@@ -84,4 +84,46 @@ namespace DX12
 		INT mDSVDescriptorIndex;
 
 	};
+
+
+	class CDX12TextureCube
+	{
+	public:
+
+		CDX12TextureCube() = delete;
+		CDX12TextureCube(const CDX12TextureCube&) = delete;
+		CDX12TextureCube(const CDX12TextureCube&&) = delete;
+		CDX12TextureCube& operator=(const CDX12TextureCube&) = delete;
+		CDX12TextureCube& operator=(const CDX12TextureCube&&) = delete;
+
+
+		CDX12Engine* mPtrEngine;
+		Resource  mResource;
+		SHandle   mHandle;
+		INT                   mDescriptorIndex;
+		D3D12_RESOURCE_STATES mCurrentResourceState;
+
+		// Leave the resource uninitialized (use carefully)
+		CDX12TextureCube(CDX12Engine* engine, CDX12DescriptorHeap* heap);
+
+		CDX12TextureCube(CDX12Engine* engine, Resource r);
+
+		CDX12TextureCube(CDX12Engine* engine, std::string& filename, CDX12DescriptorHeap* heap);
+
+		CDX12TextureCube(CDX12Engine* engine, D3D12_RESOURCE_DESC desc, CDX12DescriptorHeap* heap);
+
+		virtual ~CDX12TextureCube();
+
+		void Barrier(D3D12_RESOURCE_STATES after);
+
+		void Set(UINT rootParameterIndex);
+
+
+	protected:
+		void LoadTexture(std::string& filename);
+
+		void CreateTexture(D3D12_RESOURCE_DESC desc);
+		void CreateTexture(D3D12_RESOURCE_DESC desc,
+			D3D12_CLEAR_VALUE   clearValue);
+	};
 }

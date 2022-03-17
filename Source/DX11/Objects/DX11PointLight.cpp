@@ -6,38 +6,33 @@
 
 namespace DX11
 {
-	CDX11PointLight::CDX11PointLight(CDX11Engine* engine,
-		const std::string& mesh,
-		const std::string& name,
-		const std::string& diffuse,
-		const CVector3& colour,
-		const float& strength,
-		CVector3 position,
-		CVector3 rotation,
-		float scale) :
-		CDX11Light(engine,
-					mesh,
-					name,
-					diffuse,
-					colour,
-					strength,
-					position,
-					rotation,
-					scale), CPointLight({1,1,1},1000,2048)
+	CDX11PointLight::CDX11PointLight(CDX11Engine*       engine,
+									 const std::string& mesh,
+									 const std::string& name,
+									 const std::string& diffuse,
+									 const CVector3&    colour,
+									 const float&       strength,
+									 CVector3           position,
+									 CVector3           rotation,
+									 float              scale)
+		:
+		CDX11Light(engine, mesh, name, diffuse, colour, strength, position, rotation, scale),
+		CPointLight(colour,strength,2048)
 	{
 		InitTextures();
 	}
 	
-	CDX11PointLight::CDX11PointLight(CDX11PointLight& p) : CDX11Light(p), CPointLight({ 1,1,1 }, 1000, 2048)
-	{
-		InitTextures();
-	}
 
 	void CDX11PointLight::SetShadowMapSize(int size)
 	{
 		mShadowMapSize = size;
 
 		InitTextures();
+	}
+
+	void* CDX11PointLight::GetSRV()
+	{
+		return mShadowMapSRV;
 	}
 
 	void CDX11PointLight::Render(bool basicGeometry)

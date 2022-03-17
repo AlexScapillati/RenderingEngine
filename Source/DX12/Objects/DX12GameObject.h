@@ -18,6 +18,7 @@ enum KeyCode;
 
 namespace DX12
 {
+	
 class CDX12Engine;
 
 	class CDX12GameObject : virtual public CGameObject
@@ -86,7 +87,7 @@ class CDX12Engine;
 	class CDX12Plant : public CDX12GameObject, public CPlant
 	{
 		public:
-			explicit CDX12Plant(CDX12GameObject& cdx12GameObject)
+		    CDX12Plant(CDX12GameObject& cdx12GameObject)
 				: CDX12GameObject(cdx12GameObject)
 			{
 			}

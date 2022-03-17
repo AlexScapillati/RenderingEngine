@@ -44,9 +44,12 @@ CScene::CScene(IEngine* engine, std::string fileName)
 			cube->SetPosition({ 0.0f,10.0f,20.0f });
 			sky->SetScale(1000);
 
-			auto light = mEngine->CreateSpotLight("Light.x", "Light", "Flare.jpg", { 1,1,1 }, 1000);
+			auto light = mEngine->CreatePointLight("Light.x", "PointLight", "Flare.jpg", { 1,1,1 }, 1000);
 			light->SetPosition({ 10.f,20.f,30.f });
 			light->SetRotation({ 90.f,0.f,0.f });
+
+			auto l = mEngine->CreateLight("Light.x", "Light", "Flare.jpg", { 1,1,1 }, 1000);
+			l->SetPosition({ 10.f,20000.f,30.f });
 		}
 		else
 		{

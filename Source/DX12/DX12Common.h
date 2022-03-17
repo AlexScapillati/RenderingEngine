@@ -16,6 +16,7 @@
 #include <stdexcept>
 #include <string>
 #include <wrl/client.h>
+#include <deque>
 
 #include "..\Math/CVector2.h"
 #include "..\Math/CVector3.h"

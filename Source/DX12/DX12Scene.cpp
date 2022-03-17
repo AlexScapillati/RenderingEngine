@@ -188,12 +188,12 @@ namespace DX12
 
 	void CDX12Scene::Resize(UINT newX, UINT newY)
 	{
+		return;
 		mCamera->SetAspectRatio(float(newX) / float(newY));
 
 		mViewportX = newX;
 		mViewportY = newY;
 
-		return;
 
 		for (int i = 0; i < CDX12Engine::mNumFrames; ++i)
 		{

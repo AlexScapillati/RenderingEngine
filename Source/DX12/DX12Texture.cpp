@@ -2,6 +2,7 @@
 #include "DX12Texture.h"
 #include "DX12ConstantBuffer.h"
 #include "DX12DescriptorHeap.h"
+#include "DX12Engine.h"
 #include "ResourceUploadBatch.h"
 
 #include "../DirectXTK12/Inc/DDSTextureLoader.h"
@@ -153,7 +154,7 @@ namespace DX12
 
 		mCurrentResourceState = D3D12_RESOURCE_STATE_COMMON;
 
-		DirectX::CreateShaderResourceView(device, mResource.Get(), mHandle.mCpu);
+		DirectX::CreateShaderResourceView(device, mResource.Get(), mHandle.mCpu, desc.Dimension == D3D12_RESOURCE_DIMENSION_TEXTURE3D);
 
 		device->Release();
 	}
@@ -176,7 +177,7 @@ namespace DX12
 
 		mCurrentResourceState = D3D12_RESOURCE_STATE_COMMON;
 
-		DirectX::CreateShaderResourceView(device, mResource.Get(), mHandle.mCpu);
+		DirectX::CreateShaderResourceView(device, mResource.Get(), mHandle.mCpu, desc.Dimension == D3D12_RESOURCE_DIMENSION_TEXTURE3D);
 
 		device->Release();
 	}
@@ -236,4 +237,5 @@ namespace DX12
 
 		device->Release();
 	}
+
 }

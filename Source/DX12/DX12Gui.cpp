@@ -11,6 +11,8 @@
 #include "ImGuizmo.h"
 #include "../Common/CScene.h"
 
+#include "DX12Engine.h"
+
 namespace DX12
 {
 	CDX12Gui::CDX12Gui(CDX12Engine* engine): CGui(engine)

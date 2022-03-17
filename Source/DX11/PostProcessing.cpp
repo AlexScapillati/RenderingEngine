@@ -3,7 +3,6 @@
 // Complementary of the class CScene
 //--------------------------------------------------------------------------------------
 
-#pragma once
 #include <stdexcept>
 
 #include "DX11Common.h"

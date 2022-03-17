@@ -7,8 +7,9 @@
 #include <assimp/postprocess.h>
 #include <assimp/DefaultLogger.hpp>
 
-#include "DX12DescriptorHeap.h"
 #include "DX12ConstantBuffer.h"
+
+#include "DX12Engine.h"
 
 namespace DX12
 {

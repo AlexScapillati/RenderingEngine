@@ -14,25 +14,18 @@ namespace DX11
 								 const std::string& mesh,
 								 const std::string& name,
 								 const std::string& diffuse,
-		CVector3                                    colour,
-		float                                       strength,
-		CVector3                                    position,
-		CVector3                                    rotation,
-		float                                       scale)
-		: CDX11Light(engine, mesh, name, diffuse, colour, strength, position, rotation, scale), CDirectionalLight()
+								 CVector3           colour,
+								 float              strength,
+								 CVector3           position,
+								 CVector3           rotation,
+								 float              scale)
+		:
+		CDX11GameObject(engine, mesh, name, diffuse, position, rotation, scale),
+		CDirectionalLight(colour, strength)
 	{
 		mShadowMap             = nullptr;
 		mShadowMapDepthStencil = nullptr;
 		mShadowMapSRV          = nullptr;
-
-		InitTextures();
-	}
-
-	CDX11DirLight::CDX11DirLight(CDX11DirLight& l) : CDX11Light(l)
-	{
-		mShadowMap = nullptr;
-		mShadowMapDepthStencil = nullptr;
-		mShadowMapSRV = nullptr;
 
 		InitTextures();
 	}
@@ -156,6 +149,6 @@ namespace DX11
 		}
 	}
 
-	void CDX11DirLight::Render(bool basicGeometry) { CDX11Light::Render(basicGeometry); }
-	void CDX11DirLight::LoadNewMesh(std::string newMesh) { CDX11Light::LoadNewMesh(newMesh); }
+	void CDX11DirLight::Render(bool basicGeometry) { CDX11GameObject::Render(basicGeometry); }
+	void CDX11DirLight::LoadNewMesh(std::string newMesh) { CDX11GameObject::LoadNewMesh(newMesh); }
 }

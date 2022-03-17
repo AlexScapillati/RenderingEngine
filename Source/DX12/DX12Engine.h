@@ -4,6 +4,8 @@
 #include "imgui.h"
 #include "..\Engine.h"
 
+#include "DX12ConstantBuffer.h"
+
 // https://www.3dgep.com/learning-directx-12-1/#GPU_Synchronization
 
 

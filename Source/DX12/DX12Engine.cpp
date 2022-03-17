@@ -1,17 +1,17 @@
 #include "DX12Engine.h"
 
-#include "..\Window.h"
-
+#include "D3D12Helpers.h"
 #include "DX12ConstantBuffer.h"
 #include "DX12DescriptorHeap.h"
-
-#include "D3D12Helpers.h"
 #include "DX12Gui.h"
 #include "DX12Scene.h"
 #include "DX12Shader.h"
 #include "DX12Texture.h"
+#include "../Window.h"
 #include "Objects/CDX12Sky.h"
+#include "Objects/DX12DirectionalLight.h"
 #include "Objects/DX12Light.h"
+#include "Objects/DX12PointLight.h"
 #include "Objects/DX12SpotLight.h"
 
 namespace DX12
@@ -349,8 +349,7 @@ namespace DX12
 										   CVector3           rotation,
 										   float              scale)
 	{
-		
-		auto obj =  new CDX12GameObject(this, mesh, name, diffuseMap, position, rotation, scale);
+		auto obj = new CDX12GameObject(this, mesh, name, diffuseMap, position, rotation, scale);
 		mObjManager->AddObject(obj);
 		return obj;
 	}
@@ -398,15 +397,7 @@ namespace DX12
 									 CVector3           rotation,
 									 float              scale)
 	{
-		auto l = new CDX12Light(this,
-							  mesh,
-							  name,
-							  diffuseMap,
-							  colour,
-							  strength,
-							  position,
-							  rotation,
-							  scale);
+		auto l = new CDX12Light(this, mesh, name, diffuseMap, colour, strength, position, rotation, scale);
 		mObjManager->AddLight(l);
 		return l;
 	}
@@ -420,15 +411,7 @@ namespace DX12
 											 CVector3           rotation,
 											 float              scale)
 	{
-		auto s = new CDX12SpotLight(this,
-								  mesh,
-								  name,
-								  diffuseMap,
-								  colour,
-								  strength,
-								  position,
-								  rotation,
-								  scale);
+		auto s = new CDX12SpotLight(this, mesh, name, diffuseMap, colour, strength, position, rotation, scale);
 		mObjManager->AddSpotLight(s);
 		return s;
 	}
@@ -854,9 +837,7 @@ namespace DX12
 
 			// Disable the Alt+Enter fullscreen toggle feature. Switching to fullscreen
 			// will be handled manually.
-			if (FAILED(
-					dxgiFactory4->MakeWindowAssociation(mWindow->GetHandle(), DXGI_MWA_NO_ALT_ENTER
-					))) { throw std::runtime_error("Error"); }
+			if (FAILED(dxgiFactory4->MakeWindowAssociation(mWindow->GetHandle(), DXGI_MWA_NO_ALT_ENTER))) { throw std::runtime_error("Error"); }
 
 			if (FAILED(swapChain1.As(&mSwapChain)))
 			{

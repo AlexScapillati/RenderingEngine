@@ -47,6 +47,7 @@ namespace DX12
 		tDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL;
 
 		mShadowMap = std::make_unique<CDX12DepthStencil>(mEngine, tDesc, mEngine->mSRVDescriptorHeap.get(), mDSVDescHeap.get());
+		mShadowMap->mResource->SetName(L"ShadowMap");
 	}
 
 	void CDX12SpotLight::SetRotation(CVector3 rotation, int node) { CGameObject::SetRotation(rotation, node); }
@@ -65,7 +66,13 @@ namespace DX12
 
 		commandList->OMSetRenderTargets(0, nullptr, false,&mShadowMap->mDSVHandle.mCpu);
 		commandList->ClearDepthStencilView(mShadowMap->mDSVHandle.mCpu,D3D12_CLEAR_FLAG_DEPTH,1.f,0,0,nullptr);
-			 
+
+		mEngine->mPerFrameConstants.viewMatrix = InverseAffine(WorldMatrix());
+		mEngine->mPerFrameConstants.projectionMatrix = MakeProjectionMatrix(1.0f, ToRadians(mConeAngle));
+		mEngine->mPerFrameConstants.viewProjectionMatrix = mEngine->mPerFrameConstants.viewMatrix * mEngine->mPerFrameConstants.projectionMatrix;
+
+		mEngine->mPerFrameConstantBuffer->Copy(mEngine->mPerFrameConstants);
+
 		for(const auto& o : mEngine->GetObjManager()->mObjects)
 		{
 			if (o->IsPbr())

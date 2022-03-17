@@ -111,8 +111,8 @@ namespace DX12
 			
 			D3D12_STATIC_SAMPLER_DESC samplers[] =
 			{
-				DirectX::CommonStates::StaticPointWrap(0),
-				DirectX::CommonStates::StaticPointClamp(1),
+				DirectX::CommonStates::StaticLinearWrap(0),
+				DirectX::CommonStates::StaticAnisotropicClamp(1),
 			};
 
 			CD3DX12_VERSIONED_ROOT_SIGNATURE_DESC rootSignatureDescription;
@@ -179,7 +179,7 @@ namespace DX12
 				}
 			}
 
-			auto samplerDesc = DirectX::CommonStates::StaticAnisotropicWrap(0);
+			auto samplerDesc = DirectX::CommonStates::StaticAnisotropicBorder(0);
 
 			CD3DX12_VERSIONED_ROOT_SIGNATURE_DESC rootSignatureDescription;
 			rootSignatureDescription.Init_1_1(_countof(rootParameters), rootParameters, 1u, &samplerDesc, rootSignatureFlags);
@@ -244,7 +244,7 @@ namespace DX12
 				}
 			}
 
-			auto samplerDesc = DirectX::CommonStates::StaticAnisotropicWrap(0);
+			auto samplerDesc = DirectX::CommonStates::StaticPointClamp(0);
 
 			CD3DX12_VERSIONED_ROOT_SIGNATURE_DESC rootSignatureDescription;
 			rootSignatureDescription.Init_1_1(_countof(rootParameters), rootParameters, 1u, &samplerDesc, rootSignatureFlags);

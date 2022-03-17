@@ -29,7 +29,7 @@ public:
 	CCamera(CVector3 position = {0,0,0}, CVector3 rotation = {0,0,0}, 
            float fov = PI/3, float aspectRatio = 16.0f / 9.0f, float nearClip = 0.1f, float farClip = 10000.0f);
 
-	~CCamera(){};
+	~CCamera(){}
 
 
 	// Control the camera's position and rotation using keys provided

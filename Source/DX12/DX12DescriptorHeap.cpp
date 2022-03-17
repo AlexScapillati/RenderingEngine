@@ -1,5 +1,7 @@
 #include "DX12DescriptorHeap.h"
 
+#include "DX12Engine.h"
+
 namespace DX12
 {
 

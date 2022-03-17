@@ -7,18 +7,15 @@
 
 #pragma once
 
-#include <string>
-#include <vector>
+#include "DX12Common.h"
 
-#include "DX12Engine.h"
-
-#include "../Math/CMatrix4x4.h"
-
+#include "DX12ConstantBuffer.h"
 
 struct aiNode;
 
 namespace DX12
 {
+	class CDX12Engine;
 	class CDX12Material;
 	class CDX12PBRPSO;
 
@@ -27,7 +24,6 @@ namespace DX12
 		//--------------------------------------------------------------------------------------
 		// Private data structures
 		//--------------------------------------------------------------------------------------
-	private:
 
 		// A mesh is made of multiple sub-meshes. Each one uses a single material (texture).
 		// Each sub-mesh has a vertex / index buffer on the GPU. Could share buffers for performance but that would be complex.
@@ -38,9 +34,9 @@ namespace DX12
 			//// GPU-side vertex and index buffers
 			uint32_t       numVertices = 0;
 
-			uint32_t numIndices;
-			ComPtr<ID3D12Resource> IndexBuffer;
-			D3D12_INDEX_BUFFER_VIEW indexBufferView;
+			uint32_t                         numIndices;
+			ComPtr<ID3D12Resource>           IndexBuffer;
+			D3D12_INDEX_BUFFER_VIEW          indexBufferView;
 			std::unique_ptr<unsigned char[]> indices;
 
 			ComPtr<ID3D12Resource> mVertexBuffer;
@@ -71,7 +67,6 @@ namespace DX12
 		// Construction / Usage
 		//--------------------------------------------------------------------------------------
 	public:
-		virtual ~CDX12Mesh() = default;
 
 		CDX12Mesh() = delete;
 		CDX12Mesh(const CDX12Mesh&&) = delete;
@@ -95,7 +90,7 @@ namespace DX12
 		// Render the mesh with the given matrices
 		// Handles rigid body meshes (including single part meshes) as well as skinned meshes
 		// LIMITATION: The mesh must use a single texture throughout
-		virtual void Render(std::vector<CMatrix4x4>& modelMatrices);
+		void Render(std::vector<CMatrix4x4>& modelMatrices);
 
 		std::string MeshFileName() const { return mFileName; }
 

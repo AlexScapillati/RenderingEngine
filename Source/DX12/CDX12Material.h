@@ -3,6 +3,7 @@
 
 namespace DX12
 {
+	class CDX12DescriptorHeap;
 	class CDX12Texture;
 
 	class CDX12Material

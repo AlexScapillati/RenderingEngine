@@ -187,7 +187,7 @@ namespace DX12
 
 		// geometry loaded, set its position...
 		SetPosition(position);
-		SetRotation(rotation);
+		CGameObject::SetRotation(rotation);
 		SetScale(scale);
 	}
 
@@ -197,9 +197,14 @@ namespace DX12
 	{
 		try
 		{
+
+			mMesh = nullptr;
+
 			const auto prevPos = Position();
 			const auto prevScale = Scale();
 			const auto prevRotation = Rotation();
+
+			mMesh = std::make_unique<CDX12Mesh>(mEngine,newMesh,IsPbr());
 
 			// Recalculate matrix based on mesh
 			mWorldMatrices.resize(mMesh->NumberNodes());

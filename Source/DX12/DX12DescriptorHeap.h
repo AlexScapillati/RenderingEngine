@@ -1,10 +1,11 @@
 #pragma once
-#include <deque>
 
-#include "DX12Engine.h"
+#include "DX12Common.h"
 
 namespace DX12
 {
+	class CDX12Engine;
+
 	class CDX12DescriptorHeap
 	{
 
