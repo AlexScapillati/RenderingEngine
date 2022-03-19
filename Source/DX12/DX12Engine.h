@@ -40,10 +40,13 @@ namespace DX12
 		// Inherited via IEngine
 		bool UpdateImpl() ;
 <<<<<<< Updated upstream
+<<<<<<< HEAD
 
 		void ResizeImpl(UINT x, UINT y) ;
 
 		void FinalizeFrameImpl();
+=======
+>>>>>>> parent of 32b3477 (Merge pull request #4 from AlexScapillati/TryingPolymorphism)
 
 		void CreatePipelineStateObjects();
 
@@ -56,6 +59,18 @@ namespace DX12
 
 		void CreatePipelineStateObjects();
 
+<<<<<<< HEAD
+=======
+=======
+
+		// Inherited via IEngine
+		void ResizeImpl(UINT x, UINT y) ;
+
+		void FinalizeFrameImpl();
+
+		void CreatePipelineStateObjects();
+
+>>>>>>> parent of 32b3477 (Merge pull request #4 from AlexScapillati/TryingPolymorphism)
 
 >>>>>>> Stashed changes
 		void Present();

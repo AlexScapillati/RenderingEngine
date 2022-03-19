@@ -706,6 +706,11 @@ void CGui::DisplayPropertiesWindow() const
 					dirLight->SetWidth(width);
 				}
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> parent of 32b3477 (Merge pull request #4 from AlexScapillati/TryingPolymorphism)
 =======
 
 
@@ -720,6 +725,11 @@ void CGui::DisplayPropertiesWindow() const
 					point->SetShadowMapSize((int)pow<int, int>(2, size));
 				}
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> parent of 32b3477 (Merge pull request #4 from AlexScapillati/TryingPolymorphism)
 =======
 
 
