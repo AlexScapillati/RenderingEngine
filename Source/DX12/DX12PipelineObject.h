@@ -1,13 +1,9 @@
 #pragma once
 
-#include "DX12Common.h"
-
 #include "DX12RootSignature.h"
 
 namespace DX12
 {
-	class CDX12Engine;
-
 	class CDX12PBRPSO
 	{
 	public:
@@ -36,13 +32,12 @@ namespace DX12
 	{
 		public:
 
-		CDX12DepthOnlyPSO(CDX12Engine* engine, bool requireTangents);
+			CDX12DepthOnlyPSO(CDX12Engine* engine, bool requireTangents);
+			void Set(ID3D12GraphicsCommandList* commandList);
 
-		void Set(ID3D12GraphicsCommandList* commandList);
-
-		CDX12Engine* mEngine;
-		std::unique_ptr<CDX12DepthOnlyRootSignature> mRootSignature;
-		ComPtr<ID3D12PipelineState> mPipelineState;
+			CDX12Engine* mEngine;
+			std::unique_ptr<CDX12DepthOnlyRootSignature> mRootSignature;
+			ComPtr<ID3D12PipelineState> mPipelineState;
 	};
 
 }

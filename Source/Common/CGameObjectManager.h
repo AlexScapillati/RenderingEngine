@@ -43,10 +43,14 @@ class CGameObjectManager
 		std::deque<CPointLight*> mPointLights {};
 		std::deque<CSpotLight*> mSpotLights {};
 		std::deque<CDirectionalLight*> mDirLights {};
-		CSky*			 mSky = nullptr;
 
 	private:
+<<<<<<< HEAD
 
+=======
+		IEngine*		 mEngine;
+		CSky*			 mSky = nullptr;
+>>>>>>> parent of 5f2c2d1 (Working on IBL - DX12)
 		int              mMaxSize;
 		int              mMaxShadowMaps;
 	};

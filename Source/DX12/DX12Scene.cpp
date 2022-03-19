@@ -1,11 +1,15 @@
 #include "DX12Scene.h"
 
+<<<<<<< HEAD
 #include "DX12AmbientMap.h"
 #include "DX12Engine.h"
+=======
+>>>>>>> parent of 5f2c2d1 (Working on IBL - DX12)
 #include "DX12DescriptorHeap.h"
 #include "DX12Engine.h"
 #include "DX12Texture.h"
 #include "../Window.h"
+#include "../../Common/LevelImporter.h"
 #include "../../Common/Camera.h"
 #include "Objects/DX12Light.h"
 
@@ -18,9 +22,6 @@ namespace DX12
 		try
 		{
 			InitFrameDependentStuff();
-
-			mAmbientMap = std::make_unique<CDX12AmbientMap>(engine, 2048, mEngine->mRTVDescriptorHeap.get(), mEngine->mSRVDescriptorHeap.get(), mEngine->mDSVDescriptorHeap.get());
-
 		}
 		catch (const std::runtime_error& e) { throw std::runtime_error(e.what()); }
 	}
@@ -99,38 +100,14 @@ namespace DX12
 				mShadowMaps.push_back(l->RenderFromThis());
 			}
 
-			for (const auto& l : objm->mPointLights)
-			{
-				mShadowMaps.push_back(l->RenderFromThis());
-			}
-
-			for (const auto& l : objm->mDirLights)
-			{
-				mShadowMaps.push_back(l->RenderFromThis());
-			}
-
 			PIXEndEvent(mEngine->mCommandList.Get());
 		}
-
-		// Render the ambient map
-		{
-			CMatrix4x4 mat = MatrixIdentity();
-
-			auto ptr = mAmbientMap->RenderFromThis(&mat);
-			if(ptr)
-			{
-				mEngine->mSRVDescriptorHeap->Set();
-				auto handle = *static_cast<CD3DX12_GPU_DESCRIPTOR_HANDLE*>(ptr);
-				mEngine->mCommandList->SetGraphicsRootDescriptorTable(12, handle);
-			}
-		}
-
 
 		// Render scene to texture
 		{
 			const FLOAT clearColor[] = { 0.4f,0.6f,0.9f,1.0f };
 
-				mEngine->mSRVDescriptorHeap->Set();
+			mEngine->mSRVDescriptorHeap->Set();
 
 			const auto rtv = mSceneTexture->mRTVHandle.mCpu;
 
@@ -190,16 +167,16 @@ namespace DX12
 
 		mEngine->CopyBuffers();
 
+		mEngine->mPbrPso->Set(mEngine->mCommandList.Get());
+
 		mEngine->mSRVDescriptorHeap->Set();
 
 		if (!mShadowMaps.empty())
 		{
-			if (void* ptr = mShadowMaps.front())
-			{
-				// Convert back from void* to handle*
-				auto handle = *static_cast<CD3DX12_GPU_DESCRIPTOR_HANDLE*>(ptr);
-				//mEngine->mCommandList->SetGraphicsRootDescriptorTable(13, handle);
-			}
+			void* ptr = mShadowMaps.front();
+			// Convert back from void* to handle*
+			auto handle = *static_cast<CD3DX12_GPU_DESCRIPTOR_HANDLE*>(ptr);
+			//mEngine->mCommandList->SetGraphicsRootDescriptorTable(13, handle);
 		}
 
 

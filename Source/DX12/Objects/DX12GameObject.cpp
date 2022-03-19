@@ -1,8 +1,10 @@
 #include "DX12GameObject.h"
 
-#include "../../Utility/HelperFunctions.h"
+#include <filesystem>
+#include <memory>
+#include <utility>
 
-#include "../DX12Engine.h"
+#include "../../Utility/HelperFunctions.h"
 
 #include "../DX12PipelineObject.h"
 

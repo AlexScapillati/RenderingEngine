@@ -3,8 +3,8 @@
 //--------------------------------------------------------------------------------------
 // Code in .cpp file
 
-#pragma once
-
+#ifndef _CMATRIX4X4_H_DEFINED_
+#define _CMATRIX4X4_H_DEFINED_
 
 #include "CVector3.h"
 #include "CVector4.h"
@@ -174,3 +174,5 @@ CMatrix4x4 MakeProjectionMatrix(float aspectRatio = 4.0f / 3.0f, float FOVx = To
 	float nearClip = 0.1f, float farClip = 10000.0f);
 
 CMatrix4x4 MakeOrthogonalMatrix(float width, float height, float nearClip, float farClip);
+
+#endif // _CMATRIX4X4_H_DEFINED_

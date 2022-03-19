@@ -356,10 +356,16 @@ void CLevelImporter::LoadObject(tinyxml2::XMLElement* currEntity)
 	if (ID.empty())
 	{
 		obj = mEngine->CreateObject(mesh, name, diffuse, pos, rot, scale);
+
+		// Add it to the object manager
+		if (obj) mEngine->GetObjManager()->AddObject(obj);
 	}
 	else
 	{
 		obj = mEngine->CreateObject(ID, name, pos, rot, scale);
+
+		// Add it to the object manager
+		if (obj) mEngine->GetObjManager()->AddObject(obj);
 	}
 
 
@@ -425,6 +431,8 @@ void CLevelImporter::LoadPointLight(tinyxml2::XMLElement* currEntity)
 	}
 
 	auto obj = mEngine->CreatePointLight(mesh, name, diffuse, colour, strength, pos, rot, scale);
+
+	mEngine->GetObjManager()->AddPointLight(obj);
 }
 
 void CLevelImporter::LoadLight(tinyxml2::XMLElement* currEntity)
@@ -483,6 +491,8 @@ void CLevelImporter::LoadLight(tinyxml2::XMLElement* currEntity)
 	}
 
 	auto obj = mEngine->CreateLight(mesh, name, diffuse, colour, strength, pos, rot, scale);
+
+	mEngine->GetObjManager()->AddLight(obj);
 }
 
 
@@ -542,6 +552,8 @@ void CLevelImporter::LoadSpotLight(tinyxml2::XMLElement* currEntity)
 	}
 
 	auto obj = mEngine->CreateSpotLight(mesh, name, diffuse, colour, strength, pos, rot, scale);
+
+	mEngine->GetObjManager()->AddSpotLight(obj);
 }
 
 
@@ -601,6 +613,8 @@ void CLevelImporter::LoadDirLight(tinyxml2::XMLElement* currEntity)
 	}
 
 	auto obj = mEngine->CreateDirectionalLight(mesh, name, diffuse, colour, strength, pos, rot, scale);
+
+	mEngine->GetObjManager()->AddDirLight(obj);
 }
 
 
@@ -650,6 +664,8 @@ void CLevelImporter::LoadSky(tinyxml2::XMLElement* currEntity)
 	// No ambient map for the sky object
 
 	CSky* obj = mEngine->CreateSky(mesh, name, diffuse, pos, rot, scale);
+
+	mEngine->GetObjManager()->AddSky(obj);
 
 }
 

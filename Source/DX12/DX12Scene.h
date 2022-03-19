@@ -1,12 +1,18 @@
 #pragma once
 
+<<<<<<< HEAD
 <<<<<<< Updated upstream
 #include "DX12Engine.h"
 #include "../Common/CScene.h"
 #include "DX12PipelineObject.h"
 #include <vector>
 =======
+=======
+#include "DX12Engine.h"
+>>>>>>> parent of 5f2c2d1 (Working on IBL - DX12)
 #include "../Common/CScene.h"
+#include "DX12PipelineObject.h"
+
 
 #include <vector>
 
@@ -14,10 +20,6 @@
 
 namespace DX12
 {
-	class CDX12DescriptorHeap;
-	class CDX12RenderTarget;
-	class CDX12Engine;
-	class CDX12AmbientMap;
 	class CDX12DepthStencil;
 	class CDX12GameObject;
 
@@ -62,9 +64,16 @@ namespace DX12
 		ImTextureID GetTextureSRVImpl() ;
 
 		std::unique_ptr<CDX12RenderTarget> mSceneTexture;
+<<<<<<< HEAD
 		std::unique_ptr<CDX12DepthStencil> mDepthStencils[3];
 		std::unique_ptr<CDX12DescriptorHeap> mDSVDescriptorHeap;
 		std::unique_ptr<CDX12AmbientMap> mAmbientMap;
+=======
+		std::unique_ptr<CDX12DepthStencil> mDepthStencils[CDX12Engine::mNumFrames];
+		
+		std::unique_ptr<CDX12DescriptorHeap> mDSVDescriptorHeap;
+			
+>>>>>>> parent of 5f2c2d1 (Working on IBL - DX12)
 
 <<<<<<< Updated upstream
 

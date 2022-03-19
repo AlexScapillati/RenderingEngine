@@ -1,7 +1,5 @@
 #include "DX12PointLight.h"
 
-#include "../DX12Engine.h"
-
 #include "../DX12DescriptorHeap.h"
 #include "../DX12PipelineObject.h"
 #include "../DX12Texture.h"
@@ -87,7 +85,7 @@ namespace DX12
 
 			mShadowMaps[i]->Barrier(D3D12_RESOURCE_STATE_DEPTH_WRITE);
 
-			mEngine->mCommandList->RSSetViewports(1, &mVp);
+			mEngine->mCommandList->RSSetViewports(0, &mVp);
 			mEngine->mCommandList->RSSetScissorRects(1, &mScissorsRect);
 			mEngine->mCommandList->OMSetRenderTargets(0, nullptr, false, &mShadowMaps[i]->mDSVHandle.mCpu);
 			mEngine->mCommandList->ClearDepthStencilView(mShadowMaps[i]->mDSVHandle.mCpu, D3D12_CLEAR_FLAG_DEPTH, 1.f, 0, 0, nullptr);
@@ -98,6 +96,7 @@ namespace DX12
 
 			mEngine->mPerFrameConstantBuffer->Copy(mEngine->mPerFrameConstants);
 
+
 			for (const auto& o : mEngine->GetObjManager()->mObjects)
 			{
 				if (o->IsPbr())
@@ -105,6 +104,8 @@ namespace DX12
 				else
 					mEngine->mDepthOnlyPso->Set(mEngine->mCommandList.Get());
 				o->Render(true);
+
+				mEngine->mCommandList->DrawInstanced(3, 1, 0, 0);
 			}
 
 			mShadowMaps[i]->Barrier(D3D12_RESOURCE_STATE_GENERIC_READ);
@@ -115,7 +116,7 @@ namespace DX12
 		// unbind the shadow map form render target
 		mEngine->mCommandList->OMSetRenderTargets(0, nullptr, false, nullptr);
 
-		return &mShadowMaps[0]->mHandle.mGpu;
+		return nullptr;
 	}
 
 

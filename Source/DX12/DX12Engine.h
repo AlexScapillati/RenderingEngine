@@ -4,14 +4,15 @@
 #include "imgui.h"
 #include "..\Engine.h"
 
+#include "DX12ConstantBuffer.h"
 
 // https://www.3dgep.com/learning-directx-12-1/#GPU_Synchronization
 
 
 namespace DX12
 {
-	class CDX12SkyPSO;
 	class CDX12DepthOnlyPSO;
+	class CDX12SkyPSO;
 	class CDX12PBRPSO;
 	class CDX12RenderTarget;
 	class CDX12DescriptorHeap;

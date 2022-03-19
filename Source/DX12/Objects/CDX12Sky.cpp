@@ -1,7 +1,5 @@
 #include "CDX12Sky.h"
 
-#include "../DX12Engine.h"
-
 #include "../../Common/CScene.h"
 #include "../DX12PipelineObject.h"
 

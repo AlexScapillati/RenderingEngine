@@ -1,6 +1,7 @@
 #pragma once
 
 #include "DX11GameObject.h"
+#include "DX11Material.h"
 
 namespace DX11
 {
