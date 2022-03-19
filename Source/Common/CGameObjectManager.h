@@ -39,30 +39,10 @@ class CGameObjectManager
 		std::deque<CPointLight*> mPointLights {};
 		std::deque<CSpotLight*> mSpotLights {};
 		std::deque<CDirectionalLight*> mDirLights {};
+		CSky*			 mSky = nullptr;
 
 	private:
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-
-=======
 		IEngine*		 mEngine;
-		CSky*			 mSky = nullptr;
->>>>>>> parent of 5f2c2d1 (Working on IBL - DX12)
-=======
-		IEngine*		 mEngine;
->>>>>>> parent of 100d753 (Merge pull request #3 from AlexScapillati/TryingPolymorphism)
-=======
-		IEngine*		 mEngine;
-<<<<<<< HEAD
-<<<<<<< HEAD
->>>>>>> parent of b0bd427 (Up)
-=======
-		CSky*			 mSky;
->>>>>>> parent of 7bb1619 (Merge branch 'main' into TryingPolymorphism)
-=======
-		CSky*			 mSky = nullptr;
->>>>>>> parent of 5f2c2d1 (Working on IBL - DX12)
 		int              mMaxSize;
 		int              mMaxShadowMaps;
 	};

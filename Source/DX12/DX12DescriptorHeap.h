@@ -1,10 +1,11 @@
 #pragma once
-#include <deque>
 
-#include "DX12Engine.h"
+#include "DX12Common.h"
 
 namespace DX12
 {
+	class CDX12Engine;
+
 	class CDX12DescriptorHeap
 	{
 
@@ -18,7 +19,6 @@ namespace DX12
 		CDX12DescriptorHeap& operator=(const CDX12DescriptorHeap&) = delete;
 		CDX12DescriptorHeap& operator=(const CDX12DescriptorHeap&&) = delete;
 
-
 		ComPtr<ID3D12DescriptorHeap> mDescriptorHeap;
 
 		D3D12_DESCRIPTOR_HEAP_DESC GetDesc() const;
@@ -30,8 +30,6 @@ namespace DX12
 		void Set() const;
 
 		INT Top() const;
-
-		void Remove(UINT pos);
 
 	private:
 

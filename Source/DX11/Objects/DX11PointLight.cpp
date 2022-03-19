@@ -1,34 +1,27 @@
 #include "DX11PointLight.h"
+
+#include <stdexcept>
+
 #include "..\DX11Scene.h"
 
 namespace DX11
 {
-	CDX11PointLight::CDX11PointLight(CDX11Engine* engine,
-		const std::string& mesh,
-		const std::string& name,
-		const std::string& diffuse,
-		const CVector3& colour,
-		const float& strength,
-		CVector3 position,
-		CVector3 rotation,
-		float scale) :
-		CDX11Light(engine,
-					mesh,
-					name,
-					diffuse,
-					colour,
-					strength,
-					position,
-					rotation,
-					scale), CPointLight({1,1,1},1000,2048)
+	CDX11PointLight::CDX11PointLight(CDX11Engine*       engine,
+									 const std::string& mesh,
+									 const std::string& name,
+									 const std::string& diffuse,
+									 const CVector3&    colour,
+									 const float&       strength,
+									 CVector3           position,
+									 CVector3           rotation,
+									 float              scale)
+		:
+		CDX11Light(engine, mesh, name, diffuse, colour, strength, position, rotation, scale),
+		CPointLight(colour,strength,2048)
 	{
 		InitTextures();
 	}
 	
-	CDX11PointLight::CDX11PointLight(CDX11PointLight& p) : CDX11Light(p), CPointLight({ 1,1,1 }, 1000, 2048)
-	{
-		InitTextures();
-	}
 
 	void CDX11PointLight::SetShadowMapSize(int size)
 	{
@@ -37,12 +30,17 @@ namespace DX11
 		InitTextures();
 	}
 
+	void* CDX11PointLight::GetSRV()
+	{
+		return mShadowMapSRV;
+	}
+
 	void CDX11PointLight::Render(bool basicGeometry)
 	{
 		CDX11Light::Render(basicGeometry);
 	}
 
-	ID3D11ShaderResourceView** CDX11PointLight::RenderFromThis()
+	void* CDX11PointLight::RenderFromThis()
 	{
 		// Store original rotation
 		const auto originalOrientation = CDX11GameObject::Rotation();
@@ -83,11 +81,11 @@ namespace DX11
 			mEngine->UpdateFrameConstantBuffer(gPerFrameConstantBuffer.Get(), gPerFrameConstants);
 
 			// Set it to the GPU
-			mEngine->GetContext()->VSSetConstantBuffers(1, 1, &gPerFrameConstantBuffer);
-			mEngine->GetContext()->PSSetConstantBuffers(1, 1, &gPerFrameConstantBuffer);
+			mEngine->GetContext()->VSSetConstantBuffers(1, 1, gPerFrameConstantBuffer.GetAddressOf());
+			mEngine->GetContext()->PSSetConstantBuffers(1, 1, gPerFrameConstantBuffer.GetAddressOf());
 
 			//render just the objects that can cast shadows
-			for (const auto it : mEngine->GetScene()->GetObjectManager()->mObjects)
+			for (const auto it : mEngine->GetObjManager()->mObjects)
 			{
 				//basic geometry rendered, that means just render the model's geometry, leaving all the fancy shaders
 				it->Render(true);

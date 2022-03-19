@@ -1,15 +1,12 @@
-#include "DX11Gui.h"
-#include <sstream>
 
-#include "..\Common/Camera.h"
+
+#include "DX11Gui.h"
 
 #include <imgui.h>
 
+#include "DX11Engine.h"
 #include "ImGuizmo.h"
-#include "Objects/DX11GameObject.h"
-#include "..\Window.h"
-
-
+#include "../Window.h"
 #include "backends/imgui_impl_dx11.h"
 #include "backends/imgui_impl_win32.h"
 

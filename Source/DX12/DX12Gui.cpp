@@ -11,6 +11,8 @@
 #include "ImGuizmo.h"
 #include "../Common/CScene.h"
 
+#include "DX12Engine.h"
+
 namespace DX12
 {
 	CDX12Gui::CDX12Gui(CDX12Engine* engine): CGui(engine)
@@ -18,14 +20,13 @@ namespace DX12
 		mEngine = engine;
 	
 		// Calculate offset on the srvdescriptorheap to store imgui font texture
-
-		const auto handle = mEngine->mSRVDescriptorHeap->Add();
+		auto handle = mEngine->mSRVDescriptorHeap->Add();
 
 		// Setup Platform/Renderer bindings
 		if (!ImGui_ImplDX12_Init(engine->GetDevice(),
 								CDX12Engine::mNumFrames,
 								DXGI_FORMAT_R8G8B8A8_UNORM,
-								engine->mSRVDescriptorHeap->mDescriptorHeap.Get(),
+								mEngine->mSRVDescriptorHeap->mDescriptorHeap.Get(),
 								handle.mCpu,
 								handle.mGpu)
 			||
@@ -46,7 +47,6 @@ namespace DX12
 	void CDX12Gui::End()
 	{
 		mEngine->mSRVDescriptorHeap->Set();
-		
 		ImGui::Render();
 		ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), mEngine->mCommandList.Get());
 		ImGui::UpdatePlatformWindows();

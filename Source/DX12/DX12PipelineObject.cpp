@@ -1,9 +1,5 @@
 #include "DX12PipelineObject.h"
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> parent of 5f2c2d1 (Working on IBL - DX12)
-#include "DX12RootSignature.h"
+
 #include "DX12Shader.h"
 
 namespace DX12
@@ -166,5 +162,3 @@ namespace DX12
 		mEngine->mCommandList->SetPipelineState(mPipelineState.Get());
 	}
 }
-=======
->>>>>>> parent of 7bb1619 (Merge branch 'main' into TryingPolymorphism)

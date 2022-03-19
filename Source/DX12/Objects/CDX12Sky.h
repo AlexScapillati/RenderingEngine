@@ -6,7 +6,7 @@
 
 namespace DX12
 {
-	class CDX12Sky final : public CDX12GameObject, public CSky
+	class CDX12Sky final : virtual public CDX12GameObject, public CSky
 	{
 		public:
 			explicit CDX12Sky(CDX12GameObject& cdx12GameObject)

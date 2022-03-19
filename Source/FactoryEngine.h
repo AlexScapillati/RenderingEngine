@@ -14,13 +14,20 @@ enum EApiType
 
 inline std::unique_ptr<IEngine> NewEngine(EApiType type, HINSTANCE hInstance, int nCmdShow)
 {
-	switch (type)
+	try
 	{
-	case EDX11:
-		return std::make_unique<DX11::CDX11Engine>(hInstance, nCmdShow);
-	case EDX12:
-		return std::make_unique<DX12::CDX12Engine>(hInstance, nCmdShow);
-	default:
-		return nullptr;
+		switch (type)
+		{
+		case EDX11:
+			return std::make_unique<DX11::CDX11Engine>(hInstance, nCmdShow);
+		case EDX12:
+			return std::make_unique<DX12::CDX12Engine>(hInstance, nCmdShow);
+		default:
+			return nullptr;
+		}
+	}
+	catch (const std::exception& e)
+	{
+		throw std::runtime_error(e.what());
 	}
 }

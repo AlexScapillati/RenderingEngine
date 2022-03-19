@@ -1,73 +1,17 @@
 #pragma once
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< Updated upstream
-=======
->>>>>>> parent of 100d753 (Merge pull request #3 from AlexScapillati/TryingPolymorphism)
-=======
->>>>>>> parent of b0bd427 (Up)
-=======
-<<<<<<< Updated upstream
->>>>>>> parent of 7bb1619 (Merge branch 'main' into TryingPolymorphism)
-#include "DX12Engine.h"
-#include "../Common/CScene.h"
-#include "DX12PipelineObject.h"
-=======
-<<<<<<< HEAD
->>>>>>> parent of 78525fa (Merge pull request #2 from AlexScapillati/TryingPolymorphism)
 #include <vector>
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-=======
-=======
->>>>>>> parent of e03ed59 (Static Polymorphic attemp)
-#include "DX12Engine.h"
->>>>>>> parent of 5f2c2d1 (Working on IBL - DX12)
+
 #include "../Common/CScene.h"
-#include "DX12PipelineObject.h"
-<<<<<<< HEAD
-
-=======
-#include "../Common/CScene.h"
->>>>>>> parent of 7bb1619 (Merge branch 'main' into TryingPolymorphism)
-
-#include <vector>
->>>>>>> Stashed changes
-=======
->>>>>>> parent of e03ed59 (Static Polymorphic attemp)
-
-
->>>>>>> Stashed changes
-=======
->>>>>>> parent of 100d753 (Merge pull request #3 from AlexScapillati/TryingPolymorphism)
-=======
->>>>>>> parent of b0bd427 (Up)
-
-=======
-#include "DX12Engine.h"
->>>>>>> parent of 5f2c2d1 (Working on IBL - DX12)
-#include "../Common/CScene.h"
-#include "DX12PipelineObject.h"
-
 
 namespace DX12
 {
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> parent of 5f2c2d1 (Working on IBL - DX12)
+	class CDX12DescriptorHeap;
+	class CDX12RenderTarget;
+	class CDX12Engine;
+	class CDX12AmbientMap;
 	class CDX12DepthStencil;
 	class CDX12GameObject;
-=======
-class CDX12GameObject;
->>>>>>> parent of 7bb1619 (Merge branch 'main' into TryingPolymorphism)
 
 	class CDX12Scene : public CScene
 	{
@@ -91,8 +35,6 @@ class CDX12GameObject;
 		//--------------------------------------------------------------------------------------
 
 		void InitFrameDependentStuff();
-
-		void InitScene();
 
 		//--------------------------------------------------------------------------------------
 		// Scene Render and Update
@@ -120,70 +62,21 @@ class CDX12GameObject;
 		void DisplayPostProcessingEffects() override;
 
 		std::unique_ptr<CDX12RenderTarget> mSceneTexture;
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-<<<<<<< Updated upstream
-
-		std::unique_ptr<CDX12PBRPSO> mPso;
-=======
->>>>>>> parent of 7bb1619 (Merge branch 'main' into TryingPolymorphism)
 		std::unique_ptr<CDX12DepthStencil> mDepthStencils[3];
 		
 		std::unique_ptr<CDX12DescriptorHeap> mDSVDescriptorHeap;
-<<<<<<< HEAD
-		std::unique_ptr<CDX12AmbientMap> mAmbientMap;
-<<<<<<< HEAD
-=======
-		std::unique_ptr<CDX12DepthStencil> mDepthStencils[CDX12Engine::mNumFrames];
-		
-		std::unique_ptr<CDX12DescriptorHeap> mDSVDescriptorHeap;
-			
->>>>>>> parent of 5f2c2d1 (Working on IBL - DX12)
-=======
->>>>>>> parent of 78525fa (Merge pull request #2 from AlexScapillati/TryingPolymorphism)
 
-=======
->>>>>>> Stashed changes
->>>>>>> parent of 7bb1619 (Merge branch 'main' into TryingPolymorphism)
 
 		std::unique_ptr<CDX12AmbientMap> mAmbientMap;
-=======
-		std::unique_ptr<CDX12DepthStencil> mDepthStencils[CDX12Engine::mNumFrames];
-		
-		std::unique_ptr<CDX12DescriptorHeap> mDSVDescriptorHeap;
->>>>>>> parent of 5f2c2d1 (Working on IBL - DX12)
 			
-=======
-
-		std::unique_ptr<CDX12PBRPSO> mPso;
->>>>>>> parent of e03ed59 (Static Polymorphic attemp)
 
 	private:
 		//--------------------------------------------------------------------------------------
 		// Scene Data
 		//--------------------------------------------------------------------------------------
 		CDX12Engine* mEngine = nullptr;
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-<<<<<<< Updated upstream
-=======
-
-		std::vector<ImTextureID> mShadowMaps;
->>>>>>> parent of 7bb1619 (Merge branch 'main' into TryingPolymorphism)
 
 		std::vector<ImTextureID> mShadowMaps;
 
-<<<<<<< HEAD
-=======
-		void InitFrameDependentStuff();
-
->>>>>>> Stashed changes
->>>>>>> parent of 7bb1619 (Merge branch 'main' into TryingPolymorphism)
-=======
->>>>>>> parent of e03ed59 (Static Polymorphic attemp)
 	};
 }

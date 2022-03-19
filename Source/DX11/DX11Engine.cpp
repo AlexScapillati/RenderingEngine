@@ -147,6 +147,8 @@ namespace DX11
 			//load default shaders
 			LoadDefaultShaders();
 
+			mObjManager = std::make_unique<CGameObjectManager>(this);
+
 			mGui = std::make_unique<CDX11Gui>(this);
 		}
 		catch (const std::exception& e)
@@ -340,115 +342,60 @@ namespace DX11
 	}
 
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 	void CDX11Engine::CreateScene(std::string fileName)
-=======
-	void CDX11Engine::CreateSceneImpl(std::string fileName)
->>>>>>> parent of 7bb1619 (Merge branch 'main' into TryingPolymorphism)
-=======
-	void CDX11Engine::CreateScene(std::string fileName)
->>>>>>> parent of e03ed59 (Static Polymorphic attemp)
 	{
 		if (mScene) mScene = nullptr;
 		mScene = std::make_unique<CDX11Scene>(this,fileName);
 	}
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 	CGameObject* CDX11Engine::CreateObject(const std::string& mesh,
-=======
-<<<<<<< Updated upstream
-	CGameObject* CDX11Engine::CreateObject(const std::string& mesh, const std::string& name, const std::string& diffuseMap, CVector3 position, CVector3 rotation, float scale)
-=======
-	CGameObject* CDX11Engine::CreateObjectImpl(const std::string& mesh,
->>>>>>> parent of 7bb1619 (Merge branch 'main' into TryingPolymorphism)
 		const std::string& name,
 		const std::string& diffuseMap,
 		CVector3           position,
 		CVector3           rotation,
 		float              scale)
->>>>>>> Stashed changes
-=======
-	CGameObject* CDX11Engine::CreateObject(const std::string& mesh, const std::string& name, const std::string& diffuseMap, CVector3 position, CVector3 rotation, float scale)
->>>>>>> parent of e03ed59 (Static Polymorphic attemp)
 	{
-		return new CDX11GameObject(this, mesh, name, diffuseMap, position, rotation, scale);
+
+		auto obj = new CDX11GameObject(this, mesh, name, diffuseMap, position, rotation, scale);
+		mObjManager->AddObject(obj);
+		return obj;
 	}
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 	CSky* CDX11Engine::CreateSky(const std::string& mesh,
-=======
-<<<<<<< Updated upstream
-	CSky* CDX11Engine::CreateSky(const std::string& mesh, const std::string& name, const std::string& diffuseMap, CVector3 position, CVector3 rotation, float scale)
-=======
-	CSky* CDX11Engine::CreateSkyImpl(const std::string& mesh,
->>>>>>> parent of 7bb1619 (Merge branch 'main' into TryingPolymorphism)
 		const std::string& name,
 		const std::string& diffuseMap,
 		CVector3           position,
 		CVector3           rotation,
 		float              scale)
->>>>>>> Stashed changes
-=======
-	CSky* CDX11Engine::CreateSky(const std::string& mesh, const std::string& name, const std::string& diffuseMap, CVector3 position, CVector3 rotation, float scale)
->>>>>>> parent of e03ed59 (Static Polymorphic attemp)
 	{
-		return new CDX11Sky(this, mesh, name, diffuseMap, position, rotation, scale);
+		auto s = new CDX11Sky(this, mesh, name, diffuseMap, position, rotation, scale);
+		mObjManager->AddSky(s);
+		return s;
 	}
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 	CPlant* CDX11Engine::CreatePlant(const std::string& id,
-=======
-<<<<<<< Updated upstream
-	CPlant* CDX11Engine::CreatePlant(const std::string& mesh, const std::string& name, CVector3 position, CVector3 rotation, float scale)
-=======
-	CPlant* CDX11Engine::CreatePlantImpl(const std::string& id,
->>>>>>> parent of 7bb1619 (Merge branch 'main' into TryingPolymorphism)
 		const std::string& name,
 		CVector3           position,
 		CVector3           rotation,
 		float              scale)
->>>>>>> Stashed changes
-=======
-	CPlant* CDX11Engine::CreatePlant(const std::string& mesh, const std::string& name, CVector3 position, CVector3 rotation, float scale)
->>>>>>> parent of e03ed59 (Static Polymorphic attemp)
 	{
-		return new CDX11Plant(this, mesh, name, position, rotation, scale);
+		auto p = new CDX11Plant(this, id, name, position, rotation, scale);
+		mObjManager->AddPlant(p);
+		return p;
 	}
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 	CGameObject* CDX11Engine::CreateObject(const std::string& dirPath,
-=======
-<<<<<<< Updated upstream
-	CGameObject* CDX11Engine::CreateObject(const std::string& dirPath, const std::string& name, CVector3 position, CVector3 rotation, float scale)
-=======
-	CGameObject* CDX11Engine::CreateObjectImpl(const std::string& dirPath,
->>>>>>> parent of 7bb1619 (Merge branch 'main' into TryingPolymorphism)
 		const std::string& name,
 		CVector3           position,
 		CVector3           rotation,
 		float              scale)
->>>>>>> Stashed changes
-=======
-	CGameObject* CDX11Engine::CreateObject(const std::string& dirPath, const std::string& name, CVector3 position, CVector3 rotation, float scale)
->>>>>>> parent of e03ed59 (Static Polymorphic attemp)
 	{
-		return new CDX11GameObject(this, dirPath, name, position, rotation, scale);
+		auto o = new CDX11GameObject(this, dirPath, name, position, rotation, scale);
+		mObjManager->AddObject(o);
+		return o;
 	}
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 	CLight* CDX11Engine::CreateLight(const std::string& mesh,
-=======
-<<<<<<< Updated upstream
-	CLight* CDX11Engine::CreateLight(const std::string& mesh, const std::string& name, const std::string& diffuseMap, const CVector3& colour, const float& strength, CVector3 position, CVector3 rotation, float scale)
-=======
-	CLight* CDX11Engine::CreateLightImpl(const std::string& mesh,
->>>>>>> parent of 7bb1619 (Merge branch 'main' into TryingPolymorphism)
 		const std::string& name,
 		const std::string& diffuseMap,
 		const CVector3& colour,
@@ -456,23 +403,21 @@ namespace DX11
 		CVector3           position,
 		CVector3           rotation,
 		float              scale)
->>>>>>> Stashed changes
-=======
-	CLight* CDX11Engine::CreateLight(const std::string& mesh, const std::string& name, const std::string& diffuseMap, const CVector3& colour, const float& strength, CVector3 position, CVector3 rotation, float scale)
->>>>>>> parent of e03ed59 (Static Polymorphic attemp)
 	{
-		return new CDX11Light(this, mesh, name, diffuseMap, colour, strength, position, rotation, scale);
+		auto l = new CDX11Light(this,
+			mesh,
+			name,
+			diffuseMap,
+			colour,
+			strength,
+			position,
+			rotation,
+			scale);
+		mObjManager->AddLight(l);
+		return l;
 	}
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 	CSpotLight* CDX11Engine::CreateSpotLight(const std::string& mesh,
-=======
-<<<<<<< Updated upstream
-	CSpotLight* CDX11Engine::CreateSpotLight(const std::string& mesh, const std::string& name, const std::string& diffuseMap, const CVector3& colour, const float& strength, CVector3 position, CVector3 rotation, float scale)
-=======
-	CSpotLight* CDX11Engine::CreateSpotLightImpl(const std::string& mesh,
->>>>>>> parent of 7bb1619 (Merge branch 'main' into TryingPolymorphism)
 		const std::string& name,
 		const std::string& diffuseMap,
 		const CVector3& colour,
@@ -480,23 +425,21 @@ namespace DX11
 		CVector3           position,
 		CVector3           rotation,
 		float              scale)
->>>>>>> Stashed changes
-=======
-	CSpotLight* CDX11Engine::CreateSpotLight(const std::string& mesh, const std::string& name, const std::string& diffuseMap, const CVector3& colour, const float& strength, CVector3 position, CVector3 rotation, float scale)
->>>>>>> parent of e03ed59 (Static Polymorphic attemp)
 	{
-		return new CDX11SpotLight(this, mesh, name, diffuseMap, colour, strength, position, rotation, scale);
+		auto s = new CDX11SpotLight(this,
+			mesh,
+			name,
+			diffuseMap,
+			colour,
+			strength,
+			position,
+			rotation,
+			scale);
+		mObjManager->AddSpotLight(s);
+		return s;
 	}
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 	CDirectionalLight* CDX11Engine::CreateDirectionalLight(const std::string& mesh,
-=======
-<<<<<<< Updated upstream
-	CDirectionalLight* CDX11Engine::CreateDirectionalLight(const std::string& mesh, const std::string& name, const std::string& diffuseMap, const CVector3& colour, const float& strength, CVector3 position, CVector3 rotation, float scale)
-=======
-	CDirectionalLight* CDX11Engine::CreateDirectionalLightImpl(const std::string& mesh,
->>>>>>> parent of 7bb1619 (Merge branch 'main' into TryingPolymorphism)
 		const std::string& name,
 		const std::string& diffuseMap,
 		const CVector3& colour,
@@ -504,23 +447,13 @@ namespace DX11
 		CVector3           position,
 		CVector3           rotation,
 		float              scale)
->>>>>>> Stashed changes
-=======
-	CDirectionalLight* CDX11Engine::CreateDirectionalLight(const std::string& mesh, const std::string& name, const std::string& diffuseMap, const CVector3& colour, const float& strength, CVector3 position, CVector3 rotation, float scale)
->>>>>>> parent of e03ed59 (Static Polymorphic attemp)
 	{
-		return new CDX11DirLight(this, mesh, name, diffuseMap, colour, strength, position, rotation, scale);
+		auto d = new CDX11DirLight(this, mesh, name, diffuseMap, colour, strength, position, rotation, scale);
+		mObjManager->AddDirLight(d);
+		return d;
 	}
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 	CPointLight* CDX11Engine::CreatePointLight(const std::string& mesh,
-=======
-<<<<<<< Updated upstream
-	CPointLight* CDX11Engine::CreatePointLight(const std::string& mesh, const std::string& name, const std::string& diffuseMap, const CVector3& colour, const float& strength, CVector3 position, CVector3 rotation, float scale)
-=======
-	CPointLight* CDX11Engine::CreatePointLightImpl(const std::string& mesh,
->>>>>>> parent of 7bb1619 (Merge branch 'main' into TryingPolymorphism)
 		const std::string& name,
 		const std::string& diffuseMap,
 		const CVector3& colour,
@@ -528,11 +461,9 @@ namespace DX11
 		CVector3           position,
 		CVector3           rotation,
 		float              scale)
->>>>>>> Stashed changes
-=======
-	CPointLight* CDX11Engine::CreatePointLight(const std::string& mesh, const std::string& name, const std::string& diffuseMap, const CVector3& colour, const float& strength, CVector3 position, CVector3 rotation, float scale)
->>>>>>> parent of e03ed59 (Static Polymorphic attemp)
 	{
-		return new CDX11PointLight(this, mesh, name, diffuseMap, colour, strength, position, rotation, scale);
+		auto p = new CDX11PointLight(this, mesh, name, diffuseMap, colour, strength, position, rotation, scale);
+		mObjManager->AddPointLight(p);
+		return p;
 	}
 }

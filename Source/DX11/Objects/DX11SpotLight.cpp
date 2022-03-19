@@ -1,18 +1,21 @@
 #include "DX11SpotLight.h"
+
+#include <stdexcept>
+
 #include "../GraphicsHelpers.h"
 #include "../DX11Scene.h"
 
 namespace DX11
 {
-	CDX11SpotLight::CDX11SpotLight(CDX11Engine* engine,
-								   std::string  mesh,
-								   std::string  name,
-								   std::string diffuse,
-								   CVector3     colour,
-								   float        strength,
-								   CVector3     position,
-								   CVector3     rotation,
-								   float        scale)
+	CDX11SpotLight::CDX11SpotLight(CDX11Engine*       engine,
+								   const std::string& mesh,
+								   const std::string& name,
+								   const std::string& diffuse,
+								   CVector3           colour,
+								   float              strength,
+								   CVector3           position,
+								   CVector3           rotation,
+								   float              scale)
 		:
 		CDX11GameObject(engine, mesh, name, diffuse, position, rotation, scale)
 		{
@@ -39,7 +42,7 @@ namespace DX11
 
 	void CDX11SpotLight::Render(bool basicGeometry) { CDX11GameObject::Render(basicGeometry); }
 
-	ID3D11ShaderResourceView* CDX11SpotLight::RenderFromThis()
+	void* CDX11SpotLight::RenderFromThis()
 		{
 			// Store the prev rasterize state
 			ID3D11RasterizerState* prevRS = nullptr;
@@ -69,10 +72,10 @@ namespace DX11
 
 			mEngine->UpdateFrameConstantBuffer(gPerFrameConstantBuffer.Get(), gPerFrameConstants);
 
-			mEngine->GetContext()->VSSetConstantBuffers(1, 1, &gPerFrameConstantBuffer);
+			mEngine->GetContext()->VSSetConstantBuffers(1, 1, gPerFrameConstantBuffer.GetAddressOf());
 
 			//render just the objects that can cast shadows
-			for (CGameObject* it : mEngine->GetScene()->GetObjectManager()->mObjects)
+			for (CGameObject* it : mEngine->GetObjManager()->mObjects)
 			{
 				//basic geometry rendered, that means just render the model's geometry, leaving all the fancy shaders
 				it->Render(true);
@@ -104,6 +107,11 @@ namespace DX11
 			//TODO boundaries
 			mConeAngle = value;
 		}
+
+	void* CDX11SpotLight::GetSRV()
+	{
+		return mShadowMapSRV;
+	}
 
 	void CDX11SpotLight::InitTextures()
 		{

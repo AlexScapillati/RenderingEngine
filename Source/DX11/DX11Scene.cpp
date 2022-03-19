@@ -5,40 +5,16 @@
 
 #include "DX11Scene.h"
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 #include <stdexcept>
 
-=======
-<<<<<<< Updated upstream
->>>>>>> parent of 7bb1619 (Merge branch 'main' into TryingPolymorphism)
-=======
->>>>>>> parent of e03ed59 (Static Polymorphic attemp)
 #include "DX11Common.h"
-#include "Objects/DX11SpotLight.h"
-#include "Objects/DX11DirLight.h"
-#include "Objects/DX11PointLight.h"
-#include "Objects/DX11Plant.h"
-<<<<<<< HEAD
-#include "Objects/DX11PointLight.h"
-=======
-#include "..\Common/Camera.h"
-
-#include "../Common/LevelImporter.h"
 #include "..\Window.h"
-<<<<<<< HEAD
-=======
-#include <deque>
-#include <stdexcept>
-
-#include "DX11Common.h"
-#include "../Common/CGameObjectManager.h"
+#include "../Common/LevelImporter.h"
 #include "..\Common/Camera.h"
->>>>>>> parent of 7bb1619 (Merge branch 'main' into TryingPolymorphism)
+#include "Objects/DX11DirLight.h"
+#include "Objects/DX11Plant.h"
+#include "Objects/DX11PointLight.h"
 #include "Objects/DX11SpotLight.h"
->>>>>>> Stashed changes
-=======
->>>>>>> parent of e03ed59 (Static Polymorphic attemp)
 
 namespace DX11
 {
@@ -113,7 +89,9 @@ namespace DX11
 			gPerFramePointLightsConstBuffer.Attach(mEngine->CreateConstantBuffer(sizeof(gPerFramePointLightsConstants)));
 			gPostProcessingConstBuffer.Attach(mEngine->CreateConstantBuffer(sizeof(gPostProcessingConstants)));
 
-			if (!gPerFrameConstantBuffer || !gPerModelConstantBuffer || !gPerFrameDirLightsConstBuffer || !gPerFrameLightsConstBuffer || !gPerFrameSpotLightsConstBuffer || !gPerFramePointLightsConstBuffer || !gPostProcessingConstBuffer) { throw std::runtime_error("Error creating constant buffers"); }
+			if (!gPerFrameConstantBuffer || !gPerModelConstantBuffer || !gPerFrameDirLightsConstBuffer || !
+				gPerFrameLightsConstBuffer || !gPerFrameSpotLightsConstBuffer || !gPerFramePointLightsConstBuffer || !
+				gPostProcessingConstBuffer) { throw std::runtime_error("Error creating constant buffers"); }
 		}
 
 	
@@ -125,9 +103,9 @@ namespace DX11
 	void CDX11Scene::RenderSceneFromCamera(CCamera* camera)
 	{
 		// Set camera matrices in the constant buffer and send over to GPU
-		gPerFrameConstants.cameraMatrix = camera->WorldMatrix();
-		gPerFrameConstants.viewMatrix = camera->ViewMatrix();
-		gPerFrameConstants.projectionMatrix = camera->ProjectionMatrix();
+		gPerFrameConstants.cameraMatrix         = camera->WorldMatrix();
+		gPerFrameConstants.viewMatrix           = camera->ViewMatrix();
+		gPerFrameConstants.projectionMatrix     = camera->ProjectionMatrix();
 		gPerFrameConstants.viewProjectionMatrix = camera->ViewProjectionMatrix();
 
 		// Update the frame constant buffer
@@ -151,12 +129,13 @@ namespace DX11
 		mEngine->GetContext()->PSSetSamplers(0, 1, mEngine->mAnisotropic4XSampler.GetAddressOf());
 
 		//Render All Objects, if something went wrong throw an exception
-		mObjManager->RenderAllObjects();
+		mEngine->GetObjManager()->RenderAllObjects();
 
 		mShadowsMaps.clear();
 
 		// Unbind shadow maps from shaders - prevents warnings from DirectX when we try to render to the shadow maps again next frame
-		const auto nShadowMaps = mObjManager->mSpotLights.size() + mObjManager->mDirLights.size() + (mObjManager->mPointLights.size() * 6);
+		const auto nShadowMaps = mEngine->GetObjManager()->mSpotLights.size() + mEngine->GetObjManager()->mDirLights.size() + (
+			mEngine->GetObjManager()->mPointLights.size() * 6);
 
 		for (int i = 0; i < nShadowMaps; ++i)
 		{
@@ -177,7 +156,7 @@ namespace DX11
 		// Set up the light information in the constant buffer
 		// Don't send to the GPU yet, the function RenderSceneFromCamera will do that
 
-		UpdateAllBuffers(mObjManager.get());
+		UpdateAllBuffers(mEngine->GetObjManager());
 
 		gPerFrameConstants.ambientColour = gAmbientColour;
 		gPerFrameConstants.specularPower = gSpecularPower;
@@ -188,16 +167,16 @@ namespace DX11
 		// Update constant buffers
 		mEngine->UpdateLightConstantBuffer(gPerFrameLightsConstBuffer.Get(),
 			gPerFrameLightsConstants,
-			mObjManager->mLights.size());
+			static_cast<int>(mEngine->GetObjManager()->mLights.size()));
 		mEngine->UpdateDirLightsConstantBuffer(gPerFrameDirLightsConstBuffer.Get(),
 			gPerFrameDirLightsConstants,
-			mObjManager->mDirLights.size());
+			static_cast<int>(mEngine->GetObjManager()->mDirLights.size()));
 		mEngine->UpdateSpotLightsConstantBuffer(gPerFrameSpotLightsConstBuffer.Get(),
 			gPerFrameSpotLightsConstants,
-			mObjManager->mSpotLights.size());
+			static_cast<int>(mEngine->GetObjManager()->mSpotLights.size()));
 		mEngine->UpdatePointLightsConstantBuffer(gPerFramePointLightsConstBuffer.Get(),
 			gPerFramePointLightsConstants,
-			mObjManager->mPointLights.size());
+			static_cast<int>(mEngine->GetObjManager()->mPointLights.size()));
 
 		// Set them to the GPU
 		ID3D11Buffer* frameCBuffers[] =
@@ -220,34 +199,31 @@ namespace DX11
 
 		////----- Render form the lights point of view ----------////
 
-		for (const auto it : mObjManager->mSpotLights)
+		for (const auto it : mEngine->GetObjManager()->mSpotLights)
 		{
-			auto l = dynamic_cast<CDX11SpotLight*>(it);
 			if (*it->Enabled())
 			{
-				auto tmp = l->RenderFromThis();
+				auto tmp = static_cast<ID3D11ShaderResourceView*>(it->RenderFromThis());
 
 				mShadowsMaps.push_back(tmp);
 			}
 		}
 
-		for (const auto it : mObjManager->mDirLights)
+		for (const auto it : mEngine->GetObjManager()->mDirLights)
 		{
-			auto l = dynamic_cast<CDX11DirLight*>(it);
 			if (*it->Enabled())
 			{
-				auto tmp = l->RenderFromThis();
+				auto tmp = static_cast<ID3D11ShaderResourceView*>(it->RenderFromThis());
 
 				mShadowsMaps.push_back(tmp);
 			}
 		}
 
-		for (const auto it : mObjManager->mPointLights)
+		for (const auto it : mEngine->GetObjManager()->mPointLights)
 		{
-			auto l = dynamic_cast<CDX11PointLight*>(it);
 			if (*it->Enabled())
 			{
-				auto tmp = l->RenderFromThis();
+				auto tmp = static_cast<ID3D11ShaderResourceView**>(it->RenderFromThis());
 
 				for (int i = 0; i < 6; ++i)
 				{
@@ -260,12 +236,12 @@ namespace DX11
 		if (!mShadowsMaps.empty())
 		{
 			//send the shadow maps to the shaders (slot 7)
-			mEngine->GetContext()->PSSetShaderResources(7, mShadowsMaps.size(), &mShadowsMaps[0]);
+			mEngine->GetContext()->PSSetShaderResources(7, static_cast<unsigned>(mShadowsMaps.size()), &mShadowsMaps[0]);
 		}
 
 		////--------------- Render Ambient Maps  ---------------////
 
-		for (auto & o : mObjManager->mObjects)
+		for (auto & o : mEngine->GetObjManager()->mObjects)
 		{
 			if(o->Enabled())
 			{
@@ -574,11 +550,11 @@ namespace DX11
 				FLB->spotLights[i].enabled = 1;
 				FLB->spotLights[i].colour = l->GetColour();
 				FLB->spotLights[i].pos = ob->Position();
+				FLB->spotLights[i].intensity = l->GetStrength();
 				FLB->spotLights[i].facing = Normalise(ob->WorldMatrix().GetRow(2));
 				FLB->spotLights[i].cosHalfAngle = cos(ToRadians(l->GetConeAngle() / 2));
 				FLB->spotLights[i].viewMatrix = InverseAffine(ob->WorldMatrix());
 				FLB->spotLights[i].projMatrix = MakeProjectionMatrix(1.0f, ToRadians(l->GetConeAngle()));
-				FLB->spotLights[i].intensity = l->GetStrength();
 			}
 			else { FLB->spotLights[i].enabled = 0; }
 		}

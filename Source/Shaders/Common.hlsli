@@ -3,7 +3,6 @@
 //--------------------------------------------------------------------------------------
 // Using include files to define the type of data passed between the shaders
 
-
 //--------------------------------------------------------------------------------------
 // Shader input / output
 //--------------------------------------------------------------------------------------
@@ -131,7 +130,6 @@ struct sPointLight
 
 static const int MAX_LIGHTS = 64;
 
-static const int MAX_BONES = 64;
 // These structures are "constant buffers" - a way of passing variables over from C++ to the GPU
 // They are called constants but that only means they are constant for the duration of a single GPU draw call.
 // These "constants" correspond to variables in C++ that we will change per-model, or per-frame etc.
@@ -145,19 +143,19 @@ static const int MAX_BONES = 64;
 // These variables must match exactly the gPerModelConstants structure in Scene.cpp
 cbuffer PerModelConstants : register(b0) // The b1 gives this constant buffer the number 1 - used in the C++ code
 {
-    float4x4    gWorldMatrix;
+    float4x4 gWorldMatrix;
+             
+    float3   gObjectColour;  // Used for tinting light models
+	float    gParallaxDepth; // Used in the pixel shader to control how much the polygons are bumpy
+    float    gHasOpacityMap;
+    float    gHasAoMap;
+    float    gHasRoughnessMap;
+    float    gHasAmbientMap;
+    float    gHasMetallnessMap;
+    float    gRoughness;
+    float    gMetalness;
 
-    float3      gObjectColour;  // Used for tinting light models
-	float       gParallaxDepth; // Used in the pixel shader to control how much the polygons are bumpy
-    
-    float       gHasOpacityMap;
-    float       gHasAoMap;
-    float       gHasRoughnessMap;
-    float       gHasAmbientMap;
-    float       gHasMetallnessMap;
-    
-    float       gRoughness;
-    float       gMetalness;
+    float padding[37];
 }
 
 
@@ -188,7 +186,7 @@ cbuffer PerFrameConstants : register(b1) // The b0 gives this constant buffer th
     float3      gCameraPosition;
 	float      gFrameTime;      // This app does updates on the GPU so we pass over the frame update time
 
-    float padding[44];
+    float padding3[44];
 }
 // Note constant buffers are not structs: we don't use the name of the constant buffer, these are really just a collection of global variables (hence the 'g')
 

@@ -3,22 +3,13 @@
 // Complementary of the class CScene
 //--------------------------------------------------------------------------------------
 
-<<<<<<< HEAD
 #include <stdexcept>
 
 #include "DX11Common.h"
 #include "DX11Scene.h"
-=======
-#pragma once
-#include "DX11Scene.h"
-#include "DX11Common.h"
-#include "Objects\DX11GameObject.h"
-#include "Objects\DX11DirLight.h"
-#include "Objects\DX11PointLight.h"
-#include "Objects\DX11SpotLight.h"
-#include "..\External\imgui\imgui.h"
->>>>>>> parent of 7bb1619 (Merge branch 'main' into TryingPolymorphism)
 #include "..\Common/Camera.h"
+#include "..\External\imgui\imgui.h"
+#include "Objects\DX11PointLight.h"
 
 //*******************************
 //**** Post-processing shader DirectX objects
@@ -261,7 +252,7 @@ namespace DX11
 			CVector3 lightPos;
 			CVector3 lightScreenPos;
 
-			const auto GOM = mEngine->GetScene()->GetObjectManager();
+			const auto GOM = mEngine->GetObjManager();
 
 			// TODO REMOVE
 			// TODO IMPLEMENT SUPPORT FOR MULTIPLE LIGHTS
@@ -544,7 +535,7 @@ namespace DX11
 					{
 						if (ImGui::Begin("Select Object"))
 						{
-							for (const auto obj : mEngine->GetScene()->GetObjectManager()->mObjects)
+							for (const auto obj : mEngine->GetObjManager()->mObjects)
 							{
 								if (ImGui::Button(obj->Name().c_str()))
 								{
@@ -584,7 +575,7 @@ namespace DX11
 					{
 						if (ImGui::Begin("Select Object"))
 						{
-							for (const auto obj : mEngine->GetScene()->GetObjectManager()->mObjects)
+							for (const auto obj : mEngine->GetObjManager()->mObjects)
 							{
 								if (ImGui::Button(obj->Name().c_str()))
 								{
@@ -658,7 +649,7 @@ namespace DX11
 		mEngine->GetContext()->RSSetState(mEngine->mCullNoneState.Get());
 
 		//render just the objects that can cast shadows
-		for (const auto it : mEngine->GetScene()->GetObjectManager()->mObjects)
+		for (const auto it : mEngine->GetObjManager()->mObjects)
 		{
 			//basic geometry rendered, that means just render the model's geometry, leaving all the fancy shaders
 			it->Render(true);

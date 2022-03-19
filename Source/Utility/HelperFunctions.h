@@ -3,7 +3,7 @@
 #include <stdexcept>
 #include <system_error>
 
-inline void GetFilesWithID(std::string& dirPath, std::vector<std::string>& fileNames, std::string& id)
+inline void GetFilesWithID(const std::string& dirPath, std::vector<std::string>& fileNames,const std::string& id)
 {
 	//iterate through the directory
 	std::filesystem::recursive_directory_iterator iter(dirPath);

@@ -1,0 +1,48 @@
+<Scene>
+    <Default>
+        <Shaders/>
+    </Default>
+    <Entities>
+        <Entity Type="GameObject" Name="Ground">
+            <Geometry/>
+            <Position X="0" Y="0" Z="0"/>
+            <Rotation X="-0" Y="0" Z="0"/>
+            <Scale X="1" Y="1" Z="1"/>
+        </Entity>
+        <Entity Type="GameObject" Name="Cube">
+            <Geometry/>
+            <Position X="0" Y="10" Z="20"/>
+            <Rotation X="-0" Y="0" Z="0"/>
+            <Scale X="1" Y="1" Z="1"/>
+        </Entity>
+        <Entity Type="GameObject" Name="Roman Statue_tfprbilda_3D Asset">
+            <Geometry/>
+            <Position X="0" Y="2.2029595" Z="-8.208931"/>
+            <Rotation X="-0" Y="-179.5327" Z="0"/>
+            <Scale X="0.49999982" Y="0.5" Z="0.49999982"/>
+        </Entity>
+        <Entity Type="SpotLight" Name="Light">
+            <Geometry Mesh="Light.x" Diffuse=""/>
+            <Position X="10" Y="46.58963" Z="32.704338"/>
+            <Rotation X="63.379845" Y="180" Z="180"/>
+            <Scale X="1" Y="1" Z="1"/>
+            <Colour X="1" Y="1" Z="1"/>
+            <Strength S="1000"/>
+        </Entity>
+        <Entity Type="SpotLight" Name="Light">
+            <Geometry Mesh="Light.x" Diffuse=""/>
+            <Position X="5.5086222" Y="78.383926" Z="50.311771"/>
+            <Rotation X="-0" Y="-171.32977" Z="0"/>
+            <Scale X="10" Y="10" Z="10"/>
+            <Colour X="1" Y="1" Z="1"/>
+            <Strength S="10000"/>
+        </Entity>
+        <Entity Type="Camera">
+            <Position X="-152.31174" Y="115.55148" Z="107.1991"/>
+            <Rotation X="17.746349" Y="-237.04741" Z="0"/>
+        </Entity>
+    </Entities>
+    <PostProcessingEffects>
+        <Settings setting0="0" setting1="0" setting2="0" setting3="0" setting4="0" setting5="0" setting6="0" setting7="0" setting8="0" setting9="0" setting10="0" setting11="0" setting12="0" setting13="0" setting14="0" setting15="0" setting16="0" setting17="0" setting18="0" setting19="0" setting20="0" setting21="0" setting22="0" setting23="0" setting24="1" setting25="1" setting26="1" setting27="0.5" setting28="0" setting29="0" setting30="0" setting31="0" setting32="0" setting33="0" setting34="0" setting35="0" setting36="0.27841616" setting37="0" setting38="0" setting39="0" setting40="0.029999999" setting41="0" setting42="0" setting43="0" setting44="0.073282003" setting45="0" setting46="0" setting47="0" setting48="226.39275" setting49="0.0049999999" setting50="0.125" setting51="0" setting52="0.0099999998" setting53="0.5" setting54="0.0099999998" setting55="0" setting56="16" setting57="3" setting58="8" setting59="0" setting60="0.5" setting61="0" setting62="0" setting63="0" setting64="1" setting65="0.2" setting66="1e-06" setting67="0.1" setting68="0" setting69="0" setting70="0.58767003" setting71="0.97815001" setting72="0.2" setting73="0.926" setting74="5.6051939e-45" setting75="0"/>
+    </PostProcessingEffects>
+</Scene>

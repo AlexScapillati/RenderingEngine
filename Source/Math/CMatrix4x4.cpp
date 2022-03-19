@@ -324,9 +324,6 @@ void CMatrix4x4::Transpose()
 	std::swap(e13, e31);
 	std::swap(e23, e32);
 }
-<<<<<<< HEAD
-
-
 
 
 //--------------------------------------------------------------------------------------
@@ -366,5 +363,3 @@ CMatrix4x4 MakeOrthogonalMatrix(float width, float height, float nearClip, float
 		0.0f,    0.0f,		 scaleZb,   1.0f };
 }
 
-=======
->>>>>>> parent of 7bb1619 (Merge branch 'main' into TryingPolymorphism)

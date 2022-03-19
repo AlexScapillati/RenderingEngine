@@ -6,35 +6,24 @@
 
 #pragma once
 
-#include <memory>
+#include "../DX12Common.h"
 
 #include "../../Common/CGameObject.h"
-#include "../../Math/CVector3.h"
 
-#include "../DX12Mesh.h"
 #include "../CDX12Material.h"
+#include "../DX12Mesh.h"
 
 enum KeyCode;
 
 namespace DX12
 {
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> parent of 5f2c2d1 (Working on IBL - DX12)
-	
-class CDX12Engine;
+	class CDX12AmbientMap;
+
+	class CDX12Engine;
 
 	class CDX12GameObject : virtual public CGameObject
-=======
-class CDX12Material;
-class CDX12Engine;
-
-	class CDX12GameObject : public CGameObject
->>>>>>> parent of 7bb1619 (Merge branch 'main' into TryingPolymorphism)
 	{
 	public:
-		~CDX12GameObject() override = default;
 
 		//-------------------------------------
 		// Construction / Usage
@@ -86,25 +75,18 @@ class CDX12Engine;
 
 		CDX12Engine* mEngine;
 
-		// The acutual mesh class
+		// The actual mesh class
 		std::unique_ptr<CDX12Mesh> mMesh;
-<<<<<<< HEAD
 
 		// The material
 		// It will hold all the textures and send them to the shader with RenderMaterial()
 		std::unique_ptr<CDX12Material> mMaterial;
-
-<<<<<<< HEAD
-=======
->>>>>>> parent of 7bb1619 (Merge branch 'main' into TryingPolymorphism)
-=======
->>>>>>> parent of 5f2c2d1 (Working on IBL - DX12)
 	};
 
 	class CDX12Plant : public CDX12GameObject, public CPlant
 	{
 		public:
-			explicit CDX12Plant(CDX12GameObject& cdx12GameObject)
+		    CDX12Plant(CDX12GameObject& cdx12GameObject)
 				: CDX12GameObject(cdx12GameObject)
 			{
 			}
