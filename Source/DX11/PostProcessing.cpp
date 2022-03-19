@@ -17,6 +17,7 @@
 
 #include "DX11Common.h"
 #include "DX11Scene.h"
+#include "../Common/CGameObjectManager.h"
 #include "..\Common/Camera.h"
 #include "..\External\imgui\imgui.h"
 #include "Objects\DX11PointLight.h"

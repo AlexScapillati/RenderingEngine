@@ -1,9 +1,16 @@
 #pragma once
 
+<<<<<<< Updated upstream
 #include "DX12Engine.h"
 #include "../Common/CScene.h"
 #include "DX12PipelineObject.h"
 #include <vector>
+=======
+#include "../Common/CScene.h"
+
+#include <vector>
+
+>>>>>>> Stashed changes
 
 namespace DX12
 {
@@ -59,10 +66,20 @@ namespace DX12
 		std::unique_ptr<CDX12DescriptorHeap> mDSVDescriptorHeap;
 		std::unique_ptr<CDX12AmbientMap> mAmbientMap;
 
+<<<<<<< Updated upstream
 
 		//--------------------------------------------------------------------------------------
 		// Scene Data
 		//--------------------------------------------------------------------------------------
+=======
+		//--------------------------------------------------------------------------------------
+		// Scene Data
+		//--------------------------------------------------------------------------------------
+
+	private:
+
+		CDX12Engine* mEngine = nullptr;
+>>>>>>> Stashed changes
 
 	private:
 
@@ -74,5 +91,9 @@ namespace DX12
 		//--------------------------------------------------------------------------------------
 
 		void InitFrameDependentStuff();
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
 	};
 }

@@ -24,6 +24,8 @@ namespace DX12
 	{
 	public:
 
+		friend class IEngine<CDX12Engine>;
+
 		CDX12Engine()                               = delete;
 		CDX12Engine(const CDX12Engine&)             = delete;
 		CDX12Engine(const CDX12Engine&&)            = delete;
@@ -36,6 +38,7 @@ namespace DX12
 
 		// Inherited via IEngine
 		bool UpdateImpl() ;
+<<<<<<< Updated upstream
 
 		void ResizeImpl(UINT x, UINT y) ;
 
@@ -43,6 +46,17 @@ namespace DX12
 
 		void CreatePipelineStateObjects();
 
+=======
+
+		// Inherited via IEngine
+		void ResizeImpl(UINT x, UINT y) ;
+
+		void FinalizeFrameImpl();
+
+		void CreatePipelineStateObjects();
+
+
+>>>>>>> Stashed changes
 		void Present();
 
 

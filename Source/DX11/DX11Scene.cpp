@@ -5,11 +5,12 @@
 
 #include "DX11Scene.h"
 
+#include <deque>
 #include <stdexcept>
 #include "DX11Common.h"
-#include "..\Window.h"
-#include "../Common/LevelImporter.h"
+#include "../Common/CGameObjectManager.h"
 #include "..\Common/Camera.h"
+<<<<<<< Updated upstream
 #include "Objects/DX11DirLight.h"
 #include "Objects/DX11Plant.h"
 
@@ -19,6 +20,8 @@
 #include "DX11Common.h"
 #include "../Common/CGameObjectManager.h"
 #include "..\Common/Camera.h"
+=======
+>>>>>>> Stashed changes
 #include "Objects/DX11SpotLight.h"
 
 namespace DX11

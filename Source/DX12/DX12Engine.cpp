@@ -1,9 +1,12 @@
 #include "DX12Engine.h"
 
 #include "../Common/CGameObjectManager.h"
+<<<<<<< Updated upstream
 #include "D3D12Helpers.h"
 #include "DX12ConstantBuffer.h"
 #include "DX12DescriptorHeap.h"
+=======
+>>>>>>> Stashed changes
 #include "D3D12Helpers.h"
 #include "DX12ConstantBuffer.h"
 #include "DX12DescriptorHeap.h"
@@ -58,7 +61,7 @@ namespace DX12
 
 			InitFrameDependentResources();
 
-			mObjManager = std::make_unique<CGameObjectManager>(this);
+			mObjManager = std::make_unique<CGameObjectManager>();
 
 			// Create Gui
 			mGui = std::make_unique<CDX12Gui>(this);
@@ -345,6 +348,11 @@ namespace DX12
 	{
 		mScene = std::make_unique<CDX12Scene>(this, fileName);
 	}
+<<<<<<< Updated upstream
+=======
+
+
+>>>>>>> Stashed changes
 	CGameObject* CDX12Engine::CreateObjectImpl(const std::string& mesh,
 										   const std::string& name,
 										   const std::string& diffuseMap,
