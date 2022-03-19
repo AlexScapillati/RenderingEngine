@@ -21,38 +21,37 @@ class CCamera;
 namespace DX11
 {
 
-	class CDX11Scene : public CScene
+	class CDX11Scene : public CScene<CDX11Scene>
 	{
 	public:
 
+		friend class CScene<CDX11Scene>;
 
 		void InitTextures();
 
 		CDX11Scene(CDX11Engine* engine, std::string fileName);
 
-		void RenderSceneFromCamera(CCamera* camera) override;
+		void RenderSceneFromCameraImpl(CCamera* camera);
 
 		//--------------------------------------------------------------------------------------
 		// Scene Render and Update
 		//--------------------------------------------------------------------------------------
 
 		// Returns the generated scene texture
-		void RenderScene(float& frameTime) override;
+		void RenderSceneImpl(float& frameTime);
 
-		void UpdateScene(float& frameTime) override;
+		void UpdateSceneImpl(float& frameTime);
 
 		//--------------------------------------------------------------------------------------
 		// Public Functions
 		//--------------------------------------------------------------------------------------
+		
+		void ResizeImpl(UINT newX, UINT newY) ;
+		void PostProcessingPassImpl() ;
+		void RenderToDepthMapImpl() ;
+		void DisplayPostProcessingEffectsImpl() ; // TODO: Remove
 
-		void Save(std::string fileName = "") override;
-		void Resize(UINT newX, UINT newY) override;
-		void PostProcessingPass() override;
-		void RenderToDepthMap() override;
-		void DisplayPostProcessingEffects() override; // TODO: Remove
-
-
-		ImTextureID GetTextureSRV() override
+		ImTextureID GetTextureSRVImpl()
 		{
 			return mSceneSRV.Get();
 		}

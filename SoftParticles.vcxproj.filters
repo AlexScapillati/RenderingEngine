@@ -127,9 +127,6 @@
     <ClCompile Include="Source\Common\CGameObjectManager.cpp">
       <Filter>Engine\Common</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Common\CScene.cpp">
-      <Filter>Engine\Common</Filter>
-    </ClCompile>
     <ClCompile Include="Source\External\imgui\imgui.cpp">
       <Filter>External\Imgui</Filter>
     </ClCompile>

@@ -162,7 +162,7 @@ namespace DX11
 	}
 
 
-	bool CDX11Engine::Update()
+	bool CDX11Engine::UpdateImpl()
 	{
 		// Main message loop - this is a Windows equivalent of the loop in a TL-Engine application
 		MSG msg = {};
@@ -219,7 +219,7 @@ namespace DX11
 		return (int)msg.wParam;
 	}
 
-	void CDX11Engine::FinalizeFrame()
+	void CDX11Engine::FinalizeFrameImpl()
 	{
 		// Set the back buffer as the target for rendering and select the main depth buffer.
 		// When finished the back buffer is sent to the "front buffer" - which is the monitor.
@@ -230,7 +230,7 @@ namespace DX11
 		mD3DContext->ClearDepthStencilView(mDepthStencil.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
 	}
 
-	void CDX11Engine::Resize(UINT x, UINT y)
+	void CDX11Engine::ResizeImpl(UINT x, UINT y)
 	{
 		if (mSwapChain)
 		{
@@ -341,14 +341,13 @@ namespace DX11
 		}
 	}
 
-
-	void CDX11Engine::CreateScene(std::string fileName)
+	void CDX11Engine::CreateSceneImpl(std::string fileName)
 	{
 		if (mScene) mScene = nullptr;
 		mScene = std::make_unique<CDX11Scene>(this,fileName);
 	}
-
-	CGameObject* CDX11Engine::CreateObject(const std::string& mesh,
+  
+	CGameObject* CDX11Engine::CreateObjectImpl(const std::string& mesh,
 		const std::string& name,
 		const std::string& diffuseMap,
 		CVector3           position,
@@ -361,7 +360,7 @@ namespace DX11
 		return obj;
 	}
 
-	CSky* CDX11Engine::CreateSky(const std::string& mesh,
+	CSky* CDX11Engine::CreateSkyImpl(const std::string& mesh,
 		const std::string& name,
 		const std::string& diffuseMap,
 		CVector3           position,
@@ -372,8 +371,8 @@ namespace DX11
 		mObjManager->AddSky(s);
 		return s;
 	}
-
-	CPlant* CDX11Engine::CreatePlant(const std::string& id,
+  
+	CPlant* CDX11Engine::CreatePlantImpl(const std::string& id,
 		const std::string& name,
 		CVector3           position,
 		CVector3           rotation,
@@ -384,7 +383,8 @@ namespace DX11
 		return p;
 	}
 
-	CGameObject* CDX11Engine::CreateObject(const std::string& dirPath,
+	CGameObject* CDX11Engine::CreateObjectImpl(const std::string& dirPath,
+
 		const std::string& name,
 		CVector3           position,
 		CVector3           rotation,
@@ -395,7 +395,7 @@ namespace DX11
 		return o;
 	}
 
-	CLight* CDX11Engine::CreateLight(const std::string& mesh,
+	CLight* CDX11Engine::CreateLightImpl(const std::string& mesh,
 		const std::string& name,
 		const std::string& diffuseMap,
 		const CVector3& colour,
@@ -417,7 +417,7 @@ namespace DX11
 		return l;
 	}
 
-	CSpotLight* CDX11Engine::CreateSpotLight(const std::string& mesh,
+	CSpotLight* CDX11Engine::CreateSpotLightImpl(const std::string& mesh,
 		const std::string& name,
 		const std::string& diffuseMap,
 		const CVector3& colour,
@@ -439,7 +439,7 @@ namespace DX11
 		return s;
 	}
 
-	CDirectionalLight* CDX11Engine::CreateDirectionalLight(const std::string& mesh,
+	CDirectionalLight* CDX11Engine::CreateDirectionalLightImpl(const std::string& mesh,
 		const std::string& name,
 		const std::string& diffuseMap,
 		const CVector3& colour,
@@ -453,7 +453,7 @@ namespace DX11
 		return d;
 	}
 
-	CPointLight* CDX11Engine::CreatePointLight(const std::string& mesh,
+	CPointLight* CDX11Engine::CreatePointLightImpl(const std::string& mesh,
 		const std::string& name,
 		const std::string& diffuseMap,
 		const CVector3& colour,

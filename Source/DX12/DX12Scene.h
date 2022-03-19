@@ -1,8 +1,9 @@
 #pragma once
 
-#include <vector>
-
+#include "DX12Engine.h"
 #include "../Common/CScene.h"
+#include "DX12PipelineObject.h"
+#include <vector>
 
 namespace DX12
 {
@@ -13,9 +14,16 @@ namespace DX12
 	class CDX12DepthStencil;
 	class CDX12GameObject;
 
-	class CDX12Scene : public CScene
+	class CDX12Scene : public CScene<CDX12Scene>
 	{
+
 	public:
+
+		friend class CScene<CDX12Scene>;
+
+		//--------------------------------------------------------------------------------------
+		// Constructors
+		//--------------------------------------------------------------------------------------
 
 		CDX12Scene() = delete;
 		CDX12Scene(const CDX12Scene&) = delete;
@@ -23,60 +31,48 @@ namespace DX12
 		CDX12Scene& operator=(const CDX12Scene&) = delete;
 		CDX12Scene& operator=(const CDX12Scene&&) = delete;
 
-		//--------------------------------------------------------------------------------------
-		// Constructors
-		//--------------------------------------------------------------------------------------
-
-		CDX12Scene(CDX12Engine* engine,
-			std::string  fileName);
-
-		//--------------------------------------------------------------------------------------
-		// Initialization
-		//--------------------------------------------------------------------------------------
-
-		void InitFrameDependentStuff();
+		CDX12Scene(CDX12Engine* engine, std::string  fileName);
 
 		//--------------------------------------------------------------------------------------
 		// Scene Render and Update
 		//--------------------------------------------------------------------------------------
 
 		// Returns the generated scene texture
-		void RenderScene(float& frameTime) override;
+		void RenderSceneImpl(float& frameTime) ;
 
-		ImTextureID GetTextureSRV() override;
 
-		void RenderSceneFromCamera(CCamera* camera) override;
+		void RenderSceneFromCameraImpl(CCamera* camera) ;
 		
 
 		//--------------------------------------------------------------------------------------
 		// DirectX12
 		//--------------------------------------------------------------------------------------
 
-		void Resize(UINT newX, UINT newY) override;
-
-		~CDX12Scene() override;
-		void UpdateScene(float& frameTime) override;
-		void Save(std::string fileName) override;
-		void PostProcessingPass() override;
-		void RenderToDepthMap() override;
-		void DisplayPostProcessingEffects() override;
+		void ResizeImpl(UINT newX, UINT newY);
+		void PostProcessingPassImpl();
+		void RenderToDepthMapImpl();
+		void DisplayPostProcessingEffectsImpl();
+		ImTextureID GetTextureSRVImpl() ;
 
 		std::unique_ptr<CDX12RenderTarget> mSceneTexture;
 		std::unique_ptr<CDX12DepthStencil> mDepthStencils[3];
-		
 		std::unique_ptr<CDX12DescriptorHeap> mDSVDescriptorHeap;
-
-
 		std::unique_ptr<CDX12AmbientMap> mAmbientMap;
-			
 
-	private:
+
 		//--------------------------------------------------------------------------------------
 		// Scene Data
 		//--------------------------------------------------------------------------------------
-		CDX12Engine* mEngine = nullptr;
 
+	private:
+
+		CDX12Engine* mEngine = nullptr;
 		std::vector<ImTextureID> mShadowMaps;
 
+		//--------------------------------------------------------------------------------------
+		// Initialization
+		//--------------------------------------------------------------------------------------
+
+		void InitFrameDependentStuff();
 	};
 }
