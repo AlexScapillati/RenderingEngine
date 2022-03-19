@@ -2,13 +2,17 @@
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 <<<<<<< Updated upstream
 =======
 >>>>>>> parent of 100d753 (Merge pull request #3 from AlexScapillati/TryingPolymorphism)
+=======
+>>>>>>> parent of b0bd427 (Up)
 #include "DX12Engine.h"
 #include "../Common/CScene.h"
 #include "DX12PipelineObject.h"
 #include <vector>
+<<<<<<< HEAD
 <<<<<<< HEAD
 =======
 =======
@@ -23,6 +27,8 @@
 >>>>>>> Stashed changes
 =======
 >>>>>>> parent of 100d753 (Merge pull request #3 from AlexScapillati/TryingPolymorphism)
+=======
+>>>>>>> parent of b0bd427 (Up)
 
 namespace DX12
 {

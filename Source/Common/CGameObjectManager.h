@@ -45,6 +45,7 @@ class CGameObjectManager
 	private:
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 =======
 		IEngine*		 mEngine;
@@ -53,6 +54,9 @@ class CGameObjectManager
 =======
 		IEngine*		 mEngine;
 >>>>>>> parent of 100d753 (Merge pull request #3 from AlexScapillati/TryingPolymorphism)
+=======
+		IEngine*		 mEngine;
+>>>>>>> parent of b0bd427 (Up)
 		int              mMaxSize;
 		int              mMaxShadowMaps;
 	};
