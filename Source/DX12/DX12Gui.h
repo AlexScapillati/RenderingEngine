@@ -1,6 +1,5 @@
 #pragma once
 
-#include "DX12DescriptorHeap.h"
 #include "../Common/CGui.h"
 
 namespace DX12
@@ -29,8 +28,5 @@ namespace DX12
 
 	private:
 		CDX12Engine* mEngine = nullptr;
-
-		std::unique_ptr<CDX12DescriptorHeap> mDescHeap;
-
 	};
 }

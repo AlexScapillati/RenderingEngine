@@ -2,7 +2,7 @@
 #pragma once
 #define STB_IMAGE_IMPLEMENTATION
 
-#include <string>
+#include "DX12Engine.h"
 
 inline std::string ReplaceAll(std::string str, const std::string& from, const std::string& to) {
 	size_t start_pos = 0;

@@ -54,7 +54,11 @@ class CGameObjectManager
 >>>>>>> parent of 100d753 (Merge pull request #3 from AlexScapillati/TryingPolymorphism)
 =======
 		IEngine*		 mEngine;
+<<<<<<< HEAD
 >>>>>>> parent of b0bd427 (Up)
+=======
+		CSky*			 mSky;
+>>>>>>> parent of 7bb1619 (Merge branch 'main' into TryingPolymorphism)
 		int              mMaxSize;
 		int              mMaxShadowMaps;
 	};

@@ -1,7 +1,5 @@
 #include "DX12DescriptorHeap.h"
 
-#include "DX12Engine.h"
-
 namespace DX12
 {
 
@@ -25,12 +23,13 @@ namespace DX12
 
 	SHandle CDX12DescriptorHeap::Add()
 	{
-		SHandle newHandle;
-
-		newHandle.mCpu = CD3DX12_CPU_DESCRIPTOR_HANDLE(mDescriptorHeap->GetCPUDescriptorHandleForHeapStart(), mTop, mSize);
-		newHandle.mGpu = mDesc.Flags == D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE ?
-			CD3DX12_GPU_DESCRIPTOR_HANDLE(mDescriptorHeap->GetGPUDescriptorHandleForHeapStart(), mTop, mSize) :
-			CD3DX12_GPU_DESCRIPTOR_HANDLE();
+		const SHandle newHandle
+		{
+			CD3DX12_CPU_DESCRIPTOR_HANDLE(mDescriptorHeap->GetCPUDescriptorHandleForHeapStart(),mTop,mSize),
+			mDesc.Flags == D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE ?
+				CD3DX12_GPU_DESCRIPTOR_HANDLE(mDescriptorHeap->GetGPUDescriptorHandleForHeapStart(),mTop,mSize) :
+				CD3DX12_GPU_DESCRIPTOR_HANDLE()
+		};
 
 		mTop++;
 
@@ -52,5 +51,10 @@ namespace DX12
 	INT CDX12DescriptorHeap::Top() const
 	{
 		return mTop;
+	}
+
+	void CDX12DescriptorHeap::Remove(UINT pos)
+	{
+
 	}
 }

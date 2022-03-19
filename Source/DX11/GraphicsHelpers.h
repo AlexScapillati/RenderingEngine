@@ -5,8 +5,9 @@
 
 #pragma once
 
-#include <atlbase.h> // C-string to unicode conversion function CA2CT
 #include <d3d11.h>
+#include <atlbase.h> // C-string to unicode conversion function CA2CT
+
 #include "DX11Engine.h"
 
 namespace DX11
@@ -121,5 +122,18 @@ namespace DX11
 		memcpy(cb.pData, &bufferData, size);
 		mD3DContext->Unmap(buffer, 0);
 	}
+
+	//--------------------------------------------------------------------------------------
+	// Camera helpers
+	//--------------------------------------------------------------------------------------
+
+	// A "projection matrix" contains properties of a camera. Covered mid-module - the maths is an optional topic (not examinable).
+	// - Aspect ratio is screen width / height (like 4:3, 16:9)
+	// - FOVx is the viewing angle from left->right (high values give a fish-eye look),
+	// - near and far clip are the range of z distances that can be rendered
+	CMatrix4x4 MakeProjectionMatrix(float aspectRatio = 4.0f / 3.0f, float FOVx = ToRadians(60),
+		float nearClip = 0.1f, float farClip = 10000.0f);
+
+	CMatrix4x4 MakeOrthogonalMatrix(float width, float height, float nearClip, float farClip);
 
 }

@@ -1,27 +1,22 @@
 #include "DX11DirLight.h"
 
-#include <stdexcept>
-
-#include "../DX11Engine.h"
-#include "../DX11Scene.h"
-#include "../GraphicsHelpers.h"
 #include "../../Math/CVector3.h"
+#include "../DX11Scene.h"
+#include "../DX11Engine.h"
+#include "../GraphicsHelpers.h"
 
 
 namespace DX11
 {
-	CDX11DirLight::CDX11DirLight(CDX11Engine*       engine,
-								 const std::string& mesh,
-								 const std::string& name,
-								 const std::string& diffuse,
-								 CVector3           colour,
-								 float              strength,
-								 CVector3           position,
-								 CVector3           rotation,
-								 float              scale)
-		:
-		CDX11GameObject(engine, mesh, name, diffuse, position, rotation, scale),
-		CDirectionalLight(colour, strength)
+	CDX11DirLight::CDX11DirLight(CDX11Engine* engine, std::string mesh,
+		std::string name,
+		std::string diffuse,
+		CVector3 colour,
+		float strength,
+		CVector3 position,
+		CVector3 rotation,
+		float scale)
+		: CDX11Light(engine, mesh, name, diffuse, colour, strength, position, rotation, scale), CDirectionalLight()
 	{
 		mShadowMap             = nullptr;
 		mShadowMapDepthStencil = nullptr;
@@ -30,7 +25,16 @@ namespace DX11
 		InitTextures();
 	}
 
-	void* CDX11DirLight::RenderFromThis()
+	CDX11DirLight::CDX11DirLight(CDX11DirLight& l) : CDX11Light(l)
+	{
+		mShadowMap = nullptr;
+		mShadowMapDepthStencil = nullptr;
+		mShadowMapSRV = nullptr;
+
+		InitTextures();
+	}
+
+	ID3D11ShaderResourceView* CDX11DirLight::RenderFromThis()
 	{
 		// Get Previous RSState 
 		ID3D11RasterizerState* prevRS = nullptr;
@@ -60,10 +64,10 @@ namespace DX11
 
 		mEngine->UpdateFrameConstantBuffer(gPerFrameConstantBuffer.Get(), gPerFrameConstants);
 
-		mEngine->GetContext()->VSSetConstantBuffers(1, 1, gPerFrameConstantBuffer.GetAddressOf());
+		mEngine->GetContext()->VSSetConstantBuffers(1, 1, &gPerFrameConstantBuffer);
 
 		//render just the objects that can cast shadows
-		for (auto it : mEngine->GetObjManager()->mObjects)
+		for (auto it : mEngine->GetScene()->GetObjectManager()->mObjects)
 		{
 			//basic geometry rendered, that means just render the model's geometry, leaving all the fancy shaders
 			it->Render(true);
@@ -149,6 +153,6 @@ namespace DX11
 		}
 	}
 
-	void CDX11DirLight::Render(bool basicGeometry) { CDX11GameObject::Render(basicGeometry); }
-	void CDX11DirLight::LoadNewMesh(std::string newMesh) { CDX11GameObject::LoadNewMesh(newMesh); }
+	void CDX11DirLight::Render(bool basicGeometry) { CDX11Light::Render(basicGeometry); }
+	void CDX11DirLight::LoadNewMesh(std::string newMesh) { CDX11Light::LoadNewMesh(newMesh); }
 }

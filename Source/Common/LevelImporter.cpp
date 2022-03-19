@@ -106,7 +106,7 @@ void CLevelImporter::SaveObjects(tinyxml2::XMLElement* el,
 	//	Game Objects
 	//----------------------------------------------------
 
-	for (const auto it : mEngine->GetObjManager()->mObjects)
+	for (const auto it : ptrScene->GetObjectManager()->mObjects)
 	{
 		const auto obj = el->InsertNewChildElement("Entity");
 
@@ -127,38 +127,46 @@ void CLevelImporter::SaveObjects(tinyxml2::XMLElement* el,
 
 		auto childEl = obj->InsertNewChildElement("Geometry");
 
-		if (it->IsPbr())
-		{
-			std::string id = it->GetMeshes().front();
+		//if (dynamic_cast<DX11::CDX11GameObject*>(it)->Material()->HasNormals())
+		//{
+		//	std::string id = dynamic_cast<DX11::CDX11GameObject*>(it)->Mesh()->MeshFileName();
 
-			childEl->SetAttribute("ID", id.c_str());
-		}
-		else
-		{
-			childEl->SetAttribute("Mesh",	it->GetMeshes().front().c_str());
-			childEl->SetAttribute("Diffuse", it->TextureFileName().c_str());
-		}
+		//	childEl->SetAttribute("ID", id.c_str());
+		//}
+		//else
+		//{
+		//	childEl->SetAttribute("Mesh", dynamic_cast<DX11::CDX11GameObject*>(it)->Mesh()->MeshFileName().c_str());
+		//	childEl->SetAttribute("Diffuse", dynamic_cast<DX11::CDX11GameObject*>(it)->TextureFileName().c_str());
+		//}
 
 		SavePositionRotationScale(obj, it);
+
+		//// Ambient Map
+		//if (dynamic_cast<DX11::CDX11GameObject*>(it)->AmbientMapEnabled())
+		//{
+		//	childEl = obj->InsertNewChildElement("AmbientMap");
+		//	childEl->SetAttribute("Enabled", dynamic_cast<DX11::CDX11GameObject*>(it)->AmbientMapEnabled());
+		//	childEl->SetAttribute("Size", (int)dynamic_cast<DX11::CDX11GameObject*>(it)->AmbientMap()->Size());
+		//}
 	}
 
 	//----------------------------------------------------
 	//	Simple Lights
 	//----------------------------------------------------
 
-	for (const auto it : mEngine->GetObjManager()->mLights)
+	for (const auto it : ptrScene->GetObjectManager()->mLights)
 	{
 		const auto obj = el->InsertNewChildElement("Entity");
 		obj->SetAttribute("Type", "Light");
-		obj->SetAttribute("Name", it->Name().c_str());
+		obj->SetAttribute("Name", dynamic_cast<CGameObject*>(it)->Name().c_str());
 
 		auto childEl = obj->InsertNewChildElement("Geometry");
 
-		childEl->SetAttribute("Mesh", it->MeshFileNames().c_str());
-		childEl->SetAttribute("Diffuse", it->TextureFileName().c_str());
+		childEl->SetAttribute("Mesh", dynamic_cast<CGameObject*>(it)->MeshFileNames().c_str());
+		childEl->SetAttribute("Diffuse", dynamic_cast<CGameObject*>(it)->TextureFileName().c_str());
 
 		//save position, position and scale
-		SavePositionRotationScale(obj, it);
+		SavePositionRotationScale(obj, dynamic_cast<CGameObject*>(it));
 
 		//save colour and strength
 		childEl = obj->InsertNewChildElement("Colour");
@@ -171,19 +179,19 @@ void CLevelImporter::SaveObjects(tinyxml2::XMLElement* el,
 	//	Spot Lights
 	//----------------------------------------------------
 
-	for (const auto it : mEngine->GetObjManager()->mSpotLights)
+	for (const auto it : ptrScene->GetObjectManager()->mSpotLights)
 	{
 		const auto obj = el->InsertNewChildElement("Entity");
 		obj->SetAttribute("Type", "SpotLight");
-		obj->SetAttribute("Name", it->Name().c_str());
+		obj->SetAttribute("Name", dynamic_cast<CGameObject*>(it)->Name().c_str());
 
 		auto childEl = obj->InsertNewChildElement("Geometry");
 
-		childEl->SetAttribute("Mesh", it->MeshFileNames().c_str());
-		childEl->SetAttribute("Diffuse", it->TextureFileName().c_str());
+		childEl->SetAttribute("Mesh", dynamic_cast<CGameObject*>(it)->MeshFileNames().c_str());
+		childEl->SetAttribute("Diffuse", dynamic_cast<CGameObject*>(it)->TextureFileName().c_str());
 
 		//save position, position and scale
-		SavePositionRotationScale(obj, it);
+		SavePositionRotationScale(obj, dynamic_cast<CGameObject*>(it));
 
 		//save colour and strength
 		childEl = obj->InsertNewChildElement("Colour");
@@ -196,19 +204,19 @@ void CLevelImporter::SaveObjects(tinyxml2::XMLElement* el,
 	//	Directional Lights
 	//----------------------------------------------------
 
-	for (const auto it : mEngine->GetObjManager()->mDirLights)
+	for (const auto it : ptrScene->GetObjectManager()->mDirLights)
 	{
 		const auto obj = el->InsertNewChildElement("Entity");
 		obj->SetAttribute("Type", "DirectionalLight");
-		obj->SetAttribute("Name", it->Name().c_str());
+		obj->SetAttribute("Name", dynamic_cast<CGameObject*>(it)->Name().c_str());
 
 		auto childEl = obj->InsertNewChildElement("Geometry");
 
-		childEl->SetAttribute("Mesh", it->MeshFileNames().c_str());
-		childEl->SetAttribute("Diffuse", it->TextureFileName().c_str());
+		childEl->SetAttribute("Mesh", dynamic_cast<CGameObject*>(it)->MeshFileNames().c_str());
+		childEl->SetAttribute("Diffuse", dynamic_cast<CGameObject*>(it)->TextureFileName().c_str());
 
 		//save rotation and scale
-		SavePositionRotationScale(obj, it);
+		SavePositionRotationScale(obj, dynamic_cast<CGameObject*>(it));
 
 		//save colour and strength
 		childEl = obj->InsertNewChildElement("Colour");
@@ -221,19 +229,19 @@ void CLevelImporter::SaveObjects(tinyxml2::XMLElement* el,
 	//	Point Lights
 	//----------------------------------------------------
 
-	for (const auto it : mEngine->GetObjManager()->mPointLights)
+	for (const auto it : ptrScene->GetObjectManager()->mPointLights)
 	{
 		const auto obj = el->InsertNewChildElement("Entity");
 		obj->SetAttribute("Type", "PointLight");
-		obj->SetAttribute("Name", it->Name().c_str());
+		obj->SetAttribute("Name", dynamic_cast<CGameObject*>(it)->Name().c_str());
 
 		auto childEl = obj->InsertNewChildElement("Geometry");
 
-		childEl->SetAttribute("Mesh", it->MeshFileNames().c_str());
-		childEl->SetAttribute("Diffuse", it->TextureFileName().c_str());
+		childEl->SetAttribute("Mesh", dynamic_cast<CGameObject*>(it)->MeshFileNames().c_str());
+		childEl->SetAttribute("Diffuse", dynamic_cast<CGameObject*>(it)->TextureFileName().c_str());
 
 		//save position, position and scale
-		SavePositionRotationScale(obj, it);
+		SavePositionRotationScale(obj, dynamic_cast<CGameObject*>(it));
 
 		//save colour and strength
 		childEl = obj->InsertNewChildElement("Colour");
@@ -335,17 +343,20 @@ void CLevelImporter::LoadObject(tinyxml2::XMLElement* currEntity,
 		if (diffuseAttr) diffuse = diffuseAttr->Value();
 	}
 
-	if (const auto positionEl = currEntity->FirstChildElement("Position"))
+	const auto positionEl = currEntity->FirstChildElement("Position");
+	if (positionEl)
 	{
 		pos = LoadVector3(positionEl);
 	}
 
-	if (const auto rotationEl = currEntity->FirstChildElement("Rotation"))
+	const auto rotationEl = currEntity->FirstChildElement("Rotation");
+	if (rotationEl)
 	{
 		rot = ToRadians(LoadVector3(rotationEl));
 	}
 
-	if (const auto scaleEl = currEntity->FirstChildElement("Scale"))
+	const auto scaleEl = currEntity->FirstChildElement("Scale");
+	if (scaleEl)
 	{
 		scale = scaleEl->FindAttribute("X")->FloatValue();
 	}
@@ -369,14 +380,22 @@ void CLevelImporter::LoadObject(tinyxml2::XMLElement* currEntity,
 		obj = mEngine->CreateObject(mesh, name, diffuse, pos, rot, scale);
 
 		// Add it to the object manager
+<<<<<<< HEAD
 		if (obj) mEngine->GetObjManager()->AddObject(obj);
+=======
+		if (obj) scene->GetObjectManager()->AddObject(obj);
+>>>>>>> parent of 7bb1619 (Merge branch 'main' into TryingPolymorphism)
 	}
 	else
 	{
 		obj = mEngine->CreateObject(ID, name, pos, rot, scale);
 
 		// Add it to the object manager
+<<<<<<< HEAD
 		if (obj) mEngine->GetObjManager()->AddObject(obj);
+=======
+		if (obj) scene->GetObjectManager()->AddObject(obj);
+>>>>>>> parent of 7bb1619 (Merge branch 'main' into TryingPolymorphism)
 	}
 
 
@@ -444,7 +463,11 @@ void CLevelImporter::LoadPointLight(tinyxml2::XMLElement* currEntity,
 
 	auto obj = mEngine->CreatePointLight(mesh, name, diffuse, colour, strength, pos, rot, scale);
 
+<<<<<<< HEAD
 	mEngine->GetObjManager()->AddPointLight(obj);
+=======
+	scene->GetObjectManager()->AddPointLight(obj);
+>>>>>>> parent of 7bb1619 (Merge branch 'main' into TryingPolymorphism)
 }
 
 void CLevelImporter::LoadLight(tinyxml2::XMLElement* currEntity,
@@ -505,7 +528,11 @@ void CLevelImporter::LoadLight(tinyxml2::XMLElement* currEntity,
 
 	auto obj = mEngine->CreateLight(mesh, name, diffuse, colour, strength, pos, rot, scale);
 
+<<<<<<< HEAD
 	mEngine->GetObjManager()->AddLight(obj);
+=======
+	scene->GetObjectManager()->AddLight(obj);
+>>>>>>> parent of 7bb1619 (Merge branch 'main' into TryingPolymorphism)
 }
 
 
@@ -567,7 +594,11 @@ void CLevelImporter::LoadSpotLight(tinyxml2::XMLElement* currEntity,
 
 	auto obj = mEngine->CreateSpotLight(mesh, name, diffuse, colour, strength, pos, rot, scale);
 
+<<<<<<< HEAD
 	mEngine->GetObjManager()->AddSpotLight(obj);
+=======
+	scene->GetObjectManager()->AddSpotLight(obj);
+>>>>>>> parent of 7bb1619 (Merge branch 'main' into TryingPolymorphism)
 }
 
 
@@ -629,7 +660,11 @@ void CLevelImporter::LoadDirLight(tinyxml2::XMLElement* currEntity,
 
 	auto obj = mEngine->CreateDirectionalLight(mesh, name, diffuse, colour, strength, pos, rot, scale);
 
+<<<<<<< HEAD
 	mEngine->GetObjManager()->AddDirLight(obj);
+=======
+	scene->GetObjectManager()->AddDirLight(obj);
+>>>>>>> parent of 7bb1619 (Merge branch 'main' into TryingPolymorphism)
 }
 
 
@@ -681,7 +716,11 @@ void CLevelImporter::LoadSky(tinyxml2::XMLElement* currEntity,
 
 	CSky* obj = mEngine->CreateSky(mesh, name, diffuse, pos, rot, scale);
 
+<<<<<<< HEAD
 	mEngine->GetObjManager()->AddSky(obj);
+=======
+	scene->GetObjectManager()->AddSky(obj);
+>>>>>>> parent of 7bb1619 (Merge branch 'main' into TryingPolymorphism)
 
 }
 
@@ -756,7 +795,7 @@ void CLevelImporter::LoadPlant(tinyxml2::XMLElement* currEntity,
 	try
 	{
 		const auto obj = mEngine->CreatePlant(ID, name, pos, rot, scale);
-		mEngine->GetObjManager()->AddPlant(obj);
+		scene->GetObjectManager()->AddPlant(obj);
 	}
 	catch (const std::exception& e)
 	{

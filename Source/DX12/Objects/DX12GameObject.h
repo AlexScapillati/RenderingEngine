@@ -18,12 +18,20 @@ enum KeyCode;
 
 namespace DX12
 {
+<<<<<<< HEAD
 	
 class CDX12Engine;
 
 	class CDX12GameObject : virtual public CGameObject
+=======
+class CDX12Material;
+class CDX12Engine;
+
+	class CDX12GameObject : public CGameObject
+>>>>>>> parent of 7bb1619 (Merge branch 'main' into TryingPolymorphism)
 	{
 	public:
+		~CDX12GameObject() override = default;
 
 		//-------------------------------------
 		// Construction / Usage
@@ -75,19 +83,22 @@ class CDX12Engine;
 
 		CDX12Engine* mEngine;
 
-		// The actual mesh class
+		// The acutual mesh class
 		std::unique_ptr<CDX12Mesh> mMesh;
+<<<<<<< HEAD
 
 		// The material
 		// It will hold all the textures and send them to the shader with RenderMaterial()
 		std::unique_ptr<CDX12Material> mMaterial;
 
+=======
+>>>>>>> parent of 7bb1619 (Merge branch 'main' into TryingPolymorphism)
 	};
 
 	class CDX12Plant : public CDX12GameObject, public CPlant
 	{
 		public:
-		    CDX12Plant(CDX12GameObject& cdx12GameObject)
+			explicit CDX12Plant(CDX12GameObject& cdx12GameObject)
 				: CDX12GameObject(cdx12GameObject)
 			{
 			}

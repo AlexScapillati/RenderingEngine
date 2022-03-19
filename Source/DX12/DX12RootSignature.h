@@ -9,7 +9,15 @@ namespace DX12
 
 	public:
 
+<<<<<<< HEAD
 		CDX12RootSignature(CDX12Engine* engine, CD3DX12_VERSIONED_ROOT_SIGNATURE_DESC rootSignatureDesc)
+=======
+		CDX12RootSignature(CDX12Engine* engine,
+			D3D12_ROOT_SIGNATURE_FLAGS flags,
+			UINT countOfRootParameters,
+			CD3DX12_ROOT_PARAMETER1* rootParameters,
+			D3D12_STATIC_SAMPLER_DESC samplerDesc)
+>>>>>>> parent of 7bb1619 (Merge branch 'main' into TryingPolymorphism)
 			:
 			mEngine(engine)
 		{
@@ -22,10 +30,20 @@ namespace DX12
 				featureData.HighestVersion = D3D_ROOT_SIGNATURE_VERSION_1_0;
 			}
 
+<<<<<<< HEAD
 			// Serialize the root signature.
 			ComPtr<ID3DBlob> rootSignatureBlob;
 			ComPtr<ID3DBlob> errorBlob;
 			D3DX12SerializeVersionedRootSignature(&rootSignatureDesc, featureData.HighestVersion, &rootSignatureBlob, &errorBlob);
+=======
+			CD3DX12_VERSIONED_ROOT_SIGNATURE_DESC rootSignatureDescription;
+			rootSignatureDescription.Init_1_1(countOfRootParameters, rootParameters, 1u, &samplerDesc, flags);
+
+			// Serialize the root signature.
+			ComPtr<ID3DBlob> rootSignatureBlob;
+			ComPtr<ID3DBlob> errorBlob;
+			D3DX12SerializeVersionedRootSignature(&rootSignatureDescription, featureData.HighestVersion, &rootSignatureBlob, &errorBlob);
+>>>>>>> parent of 7bb1619 (Merge branch 'main' into TryingPolymorphism)
 
 			if (errorBlob)
 			{
@@ -58,6 +76,7 @@ namespace DX12
 			: mEngine(engine)
 		{
 
+<<<<<<< HEAD
 			// Allow input layout and deny unnecessary access to certain pipeline stages.
 			D3D12_ROOT_SIGNATURE_FLAGS rootSignatureFlags =
 				D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT |
@@ -135,6 +154,21 @@ namespace DX12
 		CDX12SkyRootSignature(CDX12Engine* engine)
 			: mEngine(engine)
 		{
+=======
+			enum
+			{
+				ModelCB,
+				FrameCB,
+				LightsCB,
+				Albedo,
+				Roughness,
+				AO,
+				Displacement,
+				Normal,
+				Metalness
+			};
+
+>>>>>>> parent of 7bb1619 (Merge branch 'main' into TryingPolymorphism)
 			// Allow input layout and deny unnecessary access to certain pipeline stages.
 			D3D12_ROOT_SIGNATURE_FLAGS rootSignatureFlags =
 				D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT |
@@ -142,6 +176,7 @@ namespace DX12
 				D3D12_ROOT_SIGNATURE_FLAG_DENY_DOMAIN_SHADER_ROOT_ACCESS |
 				D3D12_ROOT_SIGNATURE_FLAG_DENY_GEOMETRY_SHADER_ROOT_ACCESS;
 
+<<<<<<< HEAD
 
 			constexpr auto numTextures = 1;
 			constexpr auto numConstantBuffers = 6;
@@ -250,6 +285,39 @@ namespace DX12
 			rootSignatureDescription.Init_1_1(_countof(rootParameters), rootParameters, 1u, &samplerDesc, rootSignatureFlags);
 
 			mRootSignature = std::make_unique<CDX12RootSignature>(engine, rootSignatureDescription);
+=======
+			// constant root parameters that are used by the vertex shader.
+			CD3DX12_DESCRIPTOR_RANGE1 ranges[9] = {};
+			CD3DX12_ROOT_PARAMETER1 rootParameters[9] = {};
+
+			ranges[ModelCB].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 0); // per model constant buffer
+			ranges[FrameCB].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 1); // per frame constant buffer
+			ranges[LightsCB].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 2); // per lights constant buffer
+
+			ranges[Albedo].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0); // texture
+			ranges[Roughness].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 1); // texture
+			ranges[AO].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 2); // texture
+			ranges[Displacement].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 3); // texture
+			ranges[Normal].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 4); // texture
+			ranges[Metalness].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 5); // texture
+
+
+			rootParameters[ModelCB].InitAsDescriptorTable(1, &ranges[0], D3D12_SHADER_VISIBILITY_ALL);
+			rootParameters[FrameCB].InitAsDescriptorTable(1, &ranges[1], D3D12_SHADER_VISIBILITY_ALL);
+			rootParameters[LightsCB].InitAsDescriptorTable(1, &ranges[2], D3D12_SHADER_VISIBILITY_ALL);
+
+
+			rootParameters[Albedo].InitAsDescriptorTable(1, &ranges[3], D3D12_SHADER_VISIBILITY_PIXEL);
+			rootParameters[Roughness].InitAsDescriptorTable(1, &ranges[4], D3D12_SHADER_VISIBILITY_PIXEL);
+			rootParameters[AO].InitAsDescriptorTable(1, &ranges[5], D3D12_SHADER_VISIBILITY_PIXEL);
+			rootParameters[Displacement].InitAsDescriptorTable(1, &ranges[6], D3D12_SHADER_VISIBILITY_PIXEL);
+			rootParameters[Normal].InitAsDescriptorTable(1, &ranges[7], D3D12_SHADER_VISIBILITY_PIXEL);
+			rootParameters[Metalness].InitAsDescriptorTable(1, &ranges[8], D3D12_SHADER_VISIBILITY_PIXEL);
+
+			auto samplerDesc = DirectX::CommonStates::StaticAnisotropicWrap(0);
+
+			mRootSignature = std::make_unique<CDX12RootSignature>(engine, rootSignatureFlags, 9, rootParameters, samplerDesc);
+>>>>>>> parent of 7bb1619 (Merge branch 'main' into TryingPolymorphism)
 		}
 
 		CDX12Engine* mEngine;

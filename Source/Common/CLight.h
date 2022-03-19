@@ -8,7 +8,8 @@ class CLight : virtual public CGameObject
 	public:
 		~CLight() override = default;
 
-		CLight(const CVector3& col = { 1,1,1 }, const float& s = 1000) : mColour(col),mStrength(s){}
+
+		CLight(const CVector3& col = {1,1,1}, const float& s = 1000) : mColour(col), mStrength(s) {}
 
 		void      SetColour(CVector3 colour) { mColour = colour; }
 		void      SetStrength(float strength) { mStrength = strength; }
@@ -22,18 +23,16 @@ class CLight : virtual public CGameObject
 		float    mStrength  =1;
 };
 
-class CSpotLight : virtual public CLight
+class CSpotLight : public CLight
 {
 	public:
 
-		CSpotLight(const CVector3& col = { 1,1,1 }, const float& s = 1000.f, const int& shadowMapSize = 2048, const float& coneAngle = 90.f)
-	:CLight(col, s), mShadowMapSize(shadowMapSize), mConeAngle(coneAngle){}
+		CSpotLight(const CVector3& col = {1,1,1}, const float& s = 1000.f, const int& shadowMapSize = 2048, const float& coneAngle = 90.f)
+			: CLight(col, s), mShadowMapSize(shadowMapSize), mConeAngle(coneAngle) {}
 
 
 		virtual void SetConeAngle(float value) = 0;
 		virtual void SetShadowMapsSize(int value) = 0;
-		virtual void* RenderFromThis() = 0;
-		virtual void* GetSRV() = 0;
 
 		int&   GetShadowMapSize() { return mShadowMapSize; }
 		float& GetConeAngle() { return mConeAngle; }
@@ -47,22 +46,27 @@ class CSpotLight : virtual public CLight
 };
 
 
-class CDirectionalLight : virtual public CLight
+class CDirectionalLight : public CLight
 {
 	public:
-		CDirectionalLight(const CVector3& col = { 1,1,1 },
+
+		CDirectionalLight(const CVector3& col = {1,1,1},
 			const float& s = 100.f,
-			const int& shadowMapSize = 2048,
+			const int& shadowMapSize = 2048, 
 			const float& width = 1000.f,
 			const float& height = 1000.f,
-			const float& nearClip = 0.0001f,
-			const float& farClip = 1000.f) :
-			CLight(col, s), mShadowMapSize(shadowMapSize), mWidth(width), mHeight(height), mNearClip(nearClip), mFarClip(farClip){}
- 
+			const float& nearClip =0.0001f,
+			const float& farClip = 1000.f)
+			: CLight(col, s),
+	mShadowMapSize(shadowMapSize),
+	mWidth(width),
+	mHeight(height),
+	mNearClip(nearClip),
+	mFarClip(farClip){}
+
 		virtual void SetShadowMapSize(int s) = 0;
 		virtual void   Render(bool basicGeometry = false) override = 0;
 		virtual void   LoadNewMesh(std::string newMesh) override = 0;
-		virtual void* RenderFromThis() = 0;
 
 		auto GetNearClip() const { return mNearClip; }
 		auto GetFarClip() const { return mFarClip; }
@@ -74,6 +78,7 @@ class CDirectionalLight : virtual public CLight
 		auto SetHeight(float n) { mHeight = n; }
 		auto GetShadowMapSize() const { return mShadowMapSize; }
 
+
 	protected:
 		int   mShadowMapSize;
 		float mWidth        ;
@@ -83,18 +88,17 @@ class CDirectionalLight : virtual public CLight
 };
 
 
-class CPointLight : virtual public CLight
+class CPointLight : public CLight
 {
 	public:
 
 
-		CPointLight(const CVector3& col, const float& s, const int& shadowMapSize) : CLight(col,s), mShadowMapSize(shadowMapSize){}
+		CPointLight(const CVector3& col, const float& s, const int& shadowMapSize)
+			: CLight(col, s), mShadowMapSize(shadowMapSize) {}
 
 		virtual void SetShadowMapSize(int size) = 0;
-		virtual void Render(bool basicGeometry = false) override = 0;
-		virtual void LoadNewMesh(std::string newMesh) override = 0;
-		virtual void* GetSRV() = 0;
-		virtual void* RenderFromThis() = 0;
+		virtual void   Render(bool basicGeometry = false) override = 0;
+		virtual void   LoadNewMesh(std::string newMesh) override = 0;
 
 		int GetShadowMapSize() const { return mShadowMapSize; }
 
@@ -109,6 +113,6 @@ class CPointLight : virtual public CLight
 
 	protected:
 
-		int mShadowMapSize;
+		int mShadowMapSize = 0;
 
 };

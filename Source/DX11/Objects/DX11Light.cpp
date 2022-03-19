@@ -1,9 +1,11 @@
 #include "DX11Light.h"
 
-#include "../DX11Material.h"
-
 namespace DX11
 {
+
+	CDX11Light::CDX11Light(CDX11Light& l) : CLight(l.GetColour(), l.GetStrength()), CDX11GameObject(l) {}
+
+
 	CDX11Light::CDX11Light(CDX11Engine* engine,
 							const std::string& mesh,
 							const std::string& name,

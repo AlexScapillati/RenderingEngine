@@ -6,7 +6,7 @@
 
 #include "../../Utility/HelperFunctions.h"
 
-#include "../DX12PipelineObject.h"
+#include "../DX12Mesh.h"
 
 namespace DX12
 {
@@ -36,17 +36,14 @@ namespace DX12
 		mName = name;
 
 		// Import material
-		mTextureFiles = { diffuseMap };
+		std::vector maps = { diffuseMap };
 
 		//default model
 		//not PBR
 		//that could be light models or cube maps
 		try
 		{
-
-			mMaterial = std::make_unique<CDX12Material>(mTextureFiles, mEngine);
-
-			mMesh = std::make_unique<CDX12Mesh>(mEngine, mesh);
+			mMesh = std::make_unique<CDX12Mesh>(mEngine, mesh, maps);
 			mMeshFiles.push_back(mesh);
 
 			// Set default matrices from mesh
@@ -175,9 +172,7 @@ namespace DX12
 
 		try
 		{
-			mMesh = std::make_unique<CDX12Mesh>(mEngine, mMeshFiles.front(), true);
-
-			mMaterial = std::make_unique<CDX12Material>(mTextureFiles, mEngine);
+			mMesh = std::make_unique<CDX12Mesh>(mEngine, mMeshFiles.front(), mTextureFiles);
 
 			// Set default matrices from mesh
 			mWorldMatrices.resize(mMesh->NumberNodes());
@@ -187,24 +182,19 @@ namespace DX12
 
 		// geometry loaded, set its position...
 		SetPosition(position);
-		CGameObject::SetRotation(rotation);
+		SetRotation(rotation);
 		SetScale(scale);
 	}
 
-	CDX12Material* CDX12GameObject::Material() const { return mMaterial.get(); }
+	CDX12Material* CDX12GameObject::Material() const { return mMesh->Material(); }
 
 	void CDX12GameObject::LoadNewMesh(std::string newMesh)
 	{
 		try
 		{
-
-			mMesh = nullptr;
-
 			const auto prevPos = Position();
 			const auto prevScale = Scale();
 			const auto prevRotation = Rotation();
-
-			mMesh = std::make_unique<CDX12Mesh>(mEngine,newMesh,IsPbr());
 
 			// Recalculate matrix based on mesh
 			mWorldMatrices.resize(mMesh->NumberNodes());
@@ -221,14 +211,6 @@ namespace DX12
 	{
 		//if the model is not enable do not render it
 		if (!mEnabled) return;
-
-			// Set the pipeline state object
-		if(!basicGeometry) mEngine->mPbrPso->Set(mEngine->mCommandList.Get());
-
-		// Render the material
-		mMaterial->RenderMaterial();
-
-		mEngine->SetConstantBuffers();
 
 		// Render the mesh
 		mMesh->Render(mWorldMatrices);

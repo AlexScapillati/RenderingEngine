@@ -7,17 +7,19 @@
 #include <assimp/postprocess.h>
 #include <assimp/DefaultLogger.hpp>
 
+#include "DX12DescriptorHeap.h"
 #include "DX12ConstantBuffer.h"
 
-#include "DX12Engine.h"
+#include "CDX12Material.h"
+#include "DX12PipelineObject.h"
 
 namespace DX12
 {
-	CDX12Mesh::CDX12Mesh(const CDX12Mesh& other) : CDX12Mesh(other.mEngine, other.mFileName, other.hasTangents) {}
 
-	CDX12Mesh::CDX12Mesh(CDX12Engine* engine,
-		std::string fileName,
-		bool requireTangents)
+	CDX12Mesh::CDX12Mesh(const CDX12Mesh& other) : CDX12Mesh(other.mEngine, other.mFileName, other.Material()->TextureFileNames()) {}
+
+
+	CDX12Mesh::CDX12Mesh(CDX12Engine* engine, std::string fileName, std::vector<std::string>& tex)
 	{
 		mEngine = engine;
 
@@ -25,7 +27,7 @@ namespace DX12
 
 		mFileName = fileName;
 
-		hasTangents = requireTangents;
+		hasTangents = true;
 
 		Assimp::Importer importer;
 
@@ -115,22 +117,26 @@ namespace DX12
 			//-----------------------------------
 
 			// Check for presence of position and normal data. Tangents and UVs are optional.
+			std::vector<D3D12_INPUT_ELEMENT_DESC> vertexElements;
 			unsigned int offset = 0;
 
 			if (!assimpMesh->HasPositions())
 				throw std::runtime_error("No position data for sub-mesh " + subMeshName + " in " + fileName);
 			auto positionOffset = offset;
+			vertexElements.push_back({ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, positionOffset, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 });
 			offset += 12;
 
 			if (!assimpMesh->HasNormals())
 				throw std::runtime_error("No normal data for sub-mesh " + subMeshName + " in " + fileName);
 			auto normalOffset = offset;
+			vertexElements.push_back({ "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, normalOffset, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 });
 			offset += 12;
 
 			auto tangentOffset = offset;
 			if (hasTangents)
 			{
 				if (!assimpMesh->HasTangentsAndBitangents())  throw std::runtime_error("No tangent data for sub-mesh " + subMeshName + " in " + fileName);
+				vertexElements.push_back({ "tangent", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, tangentOffset, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 });
 				offset += 12;
 			}
 
@@ -138,6 +144,7 @@ namespace DX12
 			if (assimpMesh->GetNumUVChannels() > 0 && assimpMesh->HasTextureCoords(0))
 			{
 				if (assimpMesh->mNumUVComponents[0] != 2)  throw std::runtime_error("Unsupported texture coordinates in " + subMeshName + " in " + fileName);
+				vertexElements.push_back({ "UV", 0, DXGI_FORMAT_R32G32_FLOAT, 0, uvOffset, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 });
 				offset += 8;
 			}
 
@@ -223,6 +230,9 @@ namespace DX12
 			//
 			//-----------------------------------
 
+			// Create pipeline state object
+			mPbrPipelineStateObject = std::make_unique<CDX12PBRPSO>(mEngine, vertexElements, mEngine->vs.get(), mEngine->ps.get());
+
 			auto hProp = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
 			auto buffer = CD3DX12_RESOURCE_DESC::Buffer(subMesh.vertexSize * subMesh.numVertices);
 
@@ -280,6 +290,22 @@ namespace DX12
 
 			mModelConstantBuffer->Copy(mModelConstants);
 		}
+
+		if (scene->HasTextures())
+		{
+			std::vector<std::string> textures(scene->mNumTextures);
+
+			for (auto i = 0u; i < scene->mNumTextures; ++i)
+			{
+				textures.push_back(scene->mTextures[i]->mFilename.C_Str());
+			}
+
+			mMaterial = std::make_unique<CDX12Material>(textures, mEngine);
+		}
+		else
+		{
+			mMaterial = std::make_unique<CDX12Material>(tex, mEngine);
+		}
 	}
 
 	void CDX12Mesh::Render(std::vector<CMatrix4x4>& modelMatrices)
@@ -295,21 +321,34 @@ namespace DX12
 			absoluteMatrices[nodeIndex] = modelMatrices[nodeIndex] * absoluteMatrices[mNodes[nodeIndex].parentIndex];
 		}
 
+		const auto commandList = mEngine->mCommandList.Get();
+
+		mPbrPipelineStateObject->Set(commandList);
+
+
+		// Render the material
+		mMaterial->RenderMaterial();
+
 		// Render a mesh without skinning. Although slightly reorganised to use the matrices calculated
 		// above, this is basically the same code as the rigid body animation lab
 		// Iterate through each node
 		for (unsigned int nodeIndex = 0; nodeIndex < mNodes.size(); ++nodeIndex)
 		{
 			// Send this node's matrix to the GPU via a constant buffer
-			mModelConstants.worldMatrix = absoluteMatrices[nodeIndex];
+			mModelConstants.modelMatrix = absoluteMatrices[nodeIndex];
 
-			mModelConstantBuffer->Copy(mModelConstants);
+			// Set the frame constant buffer heap and set the correct root parameter to pass to the vertex shader
+			{
+				mEngine->mCBVDescriptorHeap->Set();
+				mEngine->mPerFrameConstantBuffer->Set(1);
+				mEngine->mPerFrameLightsConstantBuffer->Set(2);
+			}
 
 			// Set the model constant buffer heap and set the correct root parameter to pass to the vertex shader
 			{
 				mModelConstantBuffer->Set(0);
+				mModelConstantBuffer->Copy(mModelConstants);
 			}
-
 			// Render the sub-meshes attached to this node (no bones - rigid movement)
 			for (const auto& subMeshIndex : mNodes[nodeIndex].subMeshes)
 			{

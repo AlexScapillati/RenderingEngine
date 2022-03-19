@@ -14,7 +14,7 @@
 
 using namespace DirectX;
 
-//----------------
+// --------------------------------------------------------------------------
 // Blend States
 // --------------------------------------------------------------------------
 
@@ -270,6 +270,7 @@ const D3D12_RASTERIZER_DESC CommonStates::Wireframe =
     D3D12_CONSERVATIVE_RASTERIZATION_MODE_OFF
 };
 
+
 // --------------------------------------------------------------------------
 // Static sampler States
 // --------------------------------------------------------------------------
@@ -424,35 +425,6 @@ const D3D12_STATIC_SAMPLER_DESC CommonStates::StaticAnisotropicClamp(
         D3D12_TEXTURE_ADDRESS_MODE_CLAMP, // AddressU
         D3D12_TEXTURE_ADDRESS_MODE_CLAMP, // AddressV
         D3D12_TEXTURE_ADDRESS_MODE_CLAMP, // AddressW
-        0, // MipLODBias
-        D3D12_MAX_MAXANISOTROPY,
-        D3D12_COMPARISON_FUNC_NEVER,
-        D3D12_STATIC_BORDER_COLOR_OPAQUE_BLACK,
-        0, // MinLOD
-        FLT_MAX, // MaxLOD
-        0, // ShaderRegister
-        0, // RegisterSpace
-        D3D12_SHADER_VISIBILITY_ALL,
-    };
-
-    D3D12_STATIC_SAMPLER_DESC desc = s_desc;
-    desc.ShaderRegister = shaderRegister;
-    desc.ShaderVisibility = shaderVisibility;
-    desc.RegisterSpace = registerSpace;
-    return desc;
-};
-
-
-const D3D12_STATIC_SAMPLER_DESC CommonStates::StaticAnisotropicBorder(
-    unsigned int shaderRegister,
-    D3D12_SHADER_VISIBILITY shaderVisibility,
-    unsigned int registerSpace) noexcept
-{
-    static const D3D12_STATIC_SAMPLER_DESC s_desc = {
-        D3D12_FILTER_COMPARISON_MIN_MAG_MIP_POINT,
-        D3D12_TEXTURE_ADDRESS_MODE_BORDER, // AddressU
-        D3D12_TEXTURE_ADDRESS_MODE_BORDER, // AddressV
-        D3D12_TEXTURE_ADDRESS_MODE_BORDER, // AddressW
         0, // MipLODBias
         D3D12_MAX_MAXANISOTROPY,
         D3D12_COMPARISON_FUNC_NEVER,

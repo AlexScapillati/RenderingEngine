@@ -5,14 +5,18 @@
 
 #pragma once
 
+#include "../Common/CScene.h"
+
+#include "..\Math/CVector3.h"
+#include "GraphicsHelpers.h" // Helper functions to unclutter the code here
+
 #include <array>
+#include <list>
+#include <stdexcept>
 #include <utility>
 #include <vector>
 #include <wrl.h>
-#include "GraphicsHelpers.h" // Helper functions to unclutter the code here
-#include "../Common/CScene.h"
 #include "../Math/CVector2.h"
-#include "..\Math/CVector3.h"
 
 class CMatrix4x4;
 class CWindow;

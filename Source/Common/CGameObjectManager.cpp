@@ -36,7 +36,7 @@ void CGameObjectManager::AddDirLight(CDirectionalLight* obj)
 
 void CGameObjectManager::AddSky(CSky* obj)
 {
-	//delete mSky;
+	if (mSky) delete obj;
 	mSky = obj;
 }
 
@@ -67,22 +67,22 @@ void CGameObjectManager::RenderAllObjects() const
 	}
 
 	// Render the lights 
-	for (const auto& it : mLights)
+	for (const auto it : mLights)
 	{
 		it->Render();
 	}
 
-	for (const auto& it : mSpotLights)
+	for (const auto it : mSpotLights)
 	{
 		it->Render();
 	}
 
-	for (const auto& it : mDirLights)
+	for (const auto it : mDirLights)
 	{
 		it->Render();
 	}
 
-	for (const auto& it : mPointLights)
+	for (const auto it : mPointLights)
 	{
 		it->Render();
 	}

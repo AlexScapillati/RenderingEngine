@@ -2,6 +2,7 @@
 // Timer class - works like a stopwatch
 //--------------------------------------------------------------------------------------
 
+#pragma once
 
 #include "Timer.h"
 #include <Windows.h>

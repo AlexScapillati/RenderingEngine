@@ -1,7 +1,5 @@
 #include "DX11Plant.h"
 
-#include "../DX11Engine.h"
-
 namespace DX11
 {
 	CDX11Plant::CDX11Plant(CDX11Plant& p)

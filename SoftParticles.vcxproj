@@ -49,13 +49,13 @@
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)\</OutDir>
     <IncludePath>$(IncludePath)</IncludePath>
-    <LibraryPath>$(ProjectDir)Source\External\DirectXTK12\Bin\Desktop_2019\$(Platform)\$(Configuration);$(ProjectDir);$(ProjectDir)Source\External\DirectXTex\Bin\Desktop_2019\$(Platform)\$(Configuration)\;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(ProjectDir)Source\External\DirectXTK12\Bin\Desktop_2019\$(Platform)\$(Configuration);$(ProjectDir);$(ProjectDir)Source\External\DirectXTex\DirectXTex\Bin\Desktop_2019\$(Platform)\$(Configuration)\;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)\</OutDir>
     <IncludePath>$(IncludePath)</IncludePath>
-    <LibraryPath>$ProjectDir)Source\External\assimp\lib\;$(ProjectDir)Source\External\DirectXTK12\Bin\Desktop_2019\$(Platform)\$(Configuration)\;$(ProjectDir)\;$(ProjectDir)Source\External\DirectXTex\Bin\Desktop_2019\$(Platform)\$(Configuration)\;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$ProjectDir)Source\External\assimp\lib\;$(ProjectDir)Source\External\DirectXTK12\Bin\Desktop_2019\$(Platform)\$(Configuration)\;$(ProjectDir)\;$(ProjectDir)Source\External\DirectXTex\DirectXTex\Bin\Desktop_2019\$(Platform)\$(Configuration)\;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <VcpkgUseStatic>true</VcpkgUseStatic>
@@ -114,8 +114,12 @@
     </FxCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+<<<<<<< HEAD
     <ClCompile Include="Source\DX12\Objects\DX12DirectionalLight.cpp" />
     <ClCompile Include="Source\DX12\Objects\DX12PointLight.cpp" />
+=======
+    <ClCompile Include="Source\Common\CLight.cpp" />
+>>>>>>> parent of 7bb1619 (Merge branch 'main' into TryingPolymorphism)
     <ClCompile Include="Source\Common\CGameObject.cpp" />
     <ClCompile Include="Source\Common\CGameObjectManager.cpp" />
     <ClCompile Include="Source\Common\CGui.cpp" />
@@ -153,8 +157,6 @@
     <ClCompile Include="Source\DX11\State.cpp" />
     <ClCompile Include="Source\DX12\DX12Engine.cpp" />
     <ClCompile Include="Source\DX12\DX12Gui.cpp" />
-    <ClCompile Include="Source\DX12\Objects\DX12Light.cpp" />
-    <ClCompile Include="Source\DX12\Objects\DX12SpotLight.cpp" />
     <ClCompile Include="Source\External\imgui\backends\imgui_impl_dx11.cpp" />
     <ClCompile Include="Source\External\imgui\backends\imgui_impl_dx12.cpp" />
     <ClCompile Include="Source\External\imgui\backends\imgui_impl_win32.cpp" />
@@ -178,8 +180,11 @@
     <Xml Include="Scene2.xml" />
   </ItemGroup>
   <ItemGroup>
+<<<<<<< HEAD
     <ClInclude Include="Source\DX12\Objects\DX12DirectionalLight.h" />
     <ClInclude Include="Source\DX12\Objects\DX12PointLight.h" />
+=======
+>>>>>>> parent of 7bb1619 (Merge branch 'main' into TryingPolymorphism)
     <ClInclude Include="Source\Common\CLight.h" />
     <ClInclude Include="Source\Common.h" />
     <ClInclude Include="Source\Common\CGui.h" />
@@ -194,7 +199,6 @@
     <ClInclude Include="Source\DX12\DX12ConstantBuffer.h" />
     <ClInclude Include="Source\DX12\DX12Texture.h" />
     <ClInclude Include="Source\DX12\Objects\DX12Light.h" />
-    <ClInclude Include="Source\DX12\Objects\DX12SpotLight.h" />
     <ClInclude Include="Source\External\imgui\backends\imgui_impl_dx11.h" />
     <ClInclude Include="Source\External\imgui\backends\imgui_impl_dx12.h" />
     <ClInclude Include="Source\External\imgui\backends\imgui_impl_win32.h" />

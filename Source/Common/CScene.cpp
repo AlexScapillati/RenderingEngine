@@ -26,6 +26,7 @@ CScene::CScene(IEngine* engine, std::string fileName)
 
 	try
 	{
+		mObjManager = std::make_unique<CGameObjectManager>(engine);
 
 		if (fileName.empty())
 		{
@@ -33,7 +34,7 @@ CScene::CScene(IEngine* engine, std::string fileName)
 			// Scene Geometry and Layout
 			//--------------------------------------------------------------------------------------
 
-			mBackgroundColor = { 0.1f,0.1f,0.1f,1.0f };
+			mObjManager = std::make_unique<CGameObjectManager>(engine);
 
 			mCamera = std::make_unique<CCamera>();
 			mCamera->SetPosition({ 0, 10.0f, -4.0f });
@@ -42,14 +43,15 @@ CScene::CScene(IEngine* engine, std::string fileName)
 			auto cube = mEngine->CreateObject("Cube.x", "Cube", "Mossy.png");
 			auto sky = mEngine->CreateSky("Stars.x", "sky", "Stars.jpg");
 			cube->SetPosition({ 0.0f,10.0f,20.0f });
-			sky->SetScale(1000);
 
-			auto light = mEngine->CreatePointLight("Light.x", "PointLight", "Flare.jpg", { 1,1,1 }, 1000);
+			auto light = mEngine->CreateLight("Light.x", "Light", "Flare.jpg", { 1,1,1 }, 1000);
 			light->SetPosition({ 10.f,20.f,30.f });
-			light->SetRotation({ 90.f,0.f,0.f });
 
-			auto l = mEngine->CreateLight("Light.x", "Light", "Flare.jpg", { 1,1,1 }, 1000);
-			l->SetPosition({ 10.f,20000.f,30.f });
+			mObjManager->AddObject(ground);
+			mObjManager->AddObject(cube);
+			mObjManager->AddLight(light);
+			mObjManager->AddSky(sky);
+
 		}
 		else
 		{
@@ -74,12 +76,15 @@ void CScene::UpdateScene(float& frameTime)
 	}
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 	
 >>>>>>> parent of 100d753 (Merge pull request #3 from AlexScapillati/TryingPolymorphism)
 =======
 	
 >>>>>>> parent of b0bd427 (Up)
+=======
+>>>>>>> parent of 7bb1619 (Merge branch 'main' into TryingPolymorphism)
 
 	// Show frame time / FPS in the window title //
 	const auto   fpsUpdateTime = 0.5f; // How long between updates (in seconds)

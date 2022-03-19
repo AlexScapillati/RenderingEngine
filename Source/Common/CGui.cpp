@@ -32,7 +32,7 @@ std::string ChooseTexture(bool& selected, imgui_addons::ImGuiFileBrowser fileDia
 
 
 CGui::CGui(IEngine* engine)
-{
+	{
 	mEngine = engine;
 
 	//initialize ImGui
@@ -53,7 +53,7 @@ CGui::CGui(IEngine* engine)
 	// Setup Dear ImGui style
 	ImGui::StyleColorsDark();
 
-}
+	}
 
 void CGui::Show(float& frameTime)
 {
@@ -132,8 +132,6 @@ void CGui::Show(float& frameTime)
 			ImGuiWindowFlags_NoCollapse |
 			ImGuiWindowFlags_MenuBar))
 		{
-
-			ImGuizmo::SetDrawlist();
 
 			// Camera control 
 			if (ImGui::IsWindowFocused())
@@ -370,7 +368,7 @@ void CGui::AddObjectsMenu() const
 					if (!mesh.empty() && !tex.empty())
 					{
 						const auto newObj = mEngine->CreateObject(mesh, name, tex);
-						mEngine->GetObjManager()->AddObject(newObj);
+						mEngine->GetScene()->GetObjectManager()->AddObject(newObj);
 
 						addObj = false;
 					}
@@ -382,7 +380,7 @@ void CGui::AddObjectsMenu() const
 					if (!mesh.empty())
 					{
 						const auto newObj = mEngine->CreateObject(mesh, name);
-						mEngine->GetObjManager()->AddObject(newObj);
+						mEngine->GetScene()->GetObjectManager()->AddObject(newObj);
 
 						addObj = false;
 					}
@@ -393,7 +391,7 @@ void CGui::AddObjectsMenu() const
 					if (!mesh.empty() && !tex.empty())
 					{
 						const auto newObj = mEngine->CreateSky(mesh, name, tex);
-						mEngine->GetObjManager()->AddSky(newObj);
+						mEngine->GetScene()->GetObjectManager()->AddSky(newObj);
 
 						addObj = false;
 					}
@@ -404,7 +402,7 @@ void CGui::AddObjectsMenu() const
 					{
 						const auto newObj = mEngine->CreatePlant(mesh, name);
 
-						mEngine->GetObjManager()->AddPlant(newObj);
+						mEngine->GetScene()->GetObjectManager()->AddPlant(newObj);
 
 						addObj = false;
 					}
@@ -416,6 +414,7 @@ void CGui::AddObjectsMenu() const
 					if (!mesh.empty() & !tex.empty())
 					{
 						const auto newObj = mEngine->CreateLight(mesh, name, tex, col, strenght);
+						mEngine->GetScene()->GetObjectManager()->AddLight(newObj);
 
 						addObj = false;
 					}
@@ -427,6 +426,7 @@ void CGui::AddObjectsMenu() const
 					if (!mesh.empty() & !tex.empty())
 					{
 						const auto newObj = mEngine->CreateSpotLight(mesh, name, tex, col, strenght);
+						mEngine->GetScene()->GetObjectManager()->AddSpotLight(newObj);
 
 						addObj = false;
 					}
@@ -438,6 +438,7 @@ void CGui::AddObjectsMenu() const
 					if (!mesh.empty() & !tex.empty())
 					{
 						const auto newObj = mEngine->CreateDirectionalLight(mesh, name, tex, col, strenght);
+						mEngine->GetScene()->GetObjectManager()->AddDirLight(newObj);
 
 						addObj = false;
 					}
@@ -449,6 +450,8 @@ void CGui::AddObjectsMenu() const
 					if (!mesh.empty() & !tex.empty())
 					{
 						const auto newObj = mEngine->CreatePointLight(mesh, name, tex, col, strenght);
+						mEngine->GetScene()->GetObjectManager()->AddPointLight(newObj);
+
 						addObj = false;
 					}
 
@@ -539,18 +542,22 @@ void CGui::DisplayPropertiesWindow() const
 					{
 						//TODO
 						auto o = mEngine->CreateSpotLight(mSelectedObj->MeshFileNames(), mSelectedObj->Name(), "", light->GetColour(), light->GetStrength());
+						mEngine->GetScene()->GetObjectManager()->AddSpotLight(o);
 					}
 					else if (dynamic_cast<CDirectionalLight*>(mSelectedObj))
 					{
 						auto obj = mEngine->CreateDirectionalLight(mSelectedObj->MeshFileNames(), mSelectedObj->Name(), "", light->GetColour(), light->GetStrength());
+						mEngine->GetScene()->GetObjectManager()->AddDirLight(obj);
 					}
 					else if (dynamic_cast<CPointLight*>(mSelectedObj))
 					{
 						auto obj = mEngine->CreatePointLight(mSelectedObj->MeshFileNames(), mSelectedObj->Name(), "", light->GetColour(), light->GetStrength());
+						mEngine->GetScene()->GetObjectManager()->AddPointLight(obj);
 					}
 					else
 					{
 						auto obj = mEngine->CreateLight(mSelectedObj->MeshFileNames(), mSelectedObj->Name(), "", light->GetColour(), light->GetStrength());
+						mEngine->GetScene()->GetObjectManager()->AddLight(obj);
 					}
 				}
 				else
@@ -558,14 +565,17 @@ void CGui::DisplayPropertiesWindow() const
 					if (auto plant = dynamic_cast<CPlant*>(mSelectedObj))
 					{
 						auto obj = mEngine->CreatePlant(mSelectedObj->MeshFileNames(), mSelectedObj->Name());
+						mEngine->GetScene()->GetObjectManager()->AddPlant(obj);
 					}
 					else if (auto sky = dynamic_cast<CSky*>(mSelectedObj))
 					{
 						auto obj = mEngine->CreateSky(mSelectedObj->MeshFileNames(), mSelectedObj->Name(), "");
+						mEngine->GetScene()->GetObjectManager()->AddSky(obj);
 					}
 					else
 					{
 						auto obj = mEngine->CreateObject(mSelectedObj->MeshFileNames(), mSelectedObj->Name(), "");
+						mEngine->GetScene()->GetObjectManager()->AddObject(obj);
 					}
 				}
 			}
@@ -663,10 +673,6 @@ void CGui::DisplayPropertiesWindow() const
 				{
 					spotLight->SetShadowMapsSize((int)pow<int, int>(2, size));
 				}
-
-				ImGui::Text("ShadowMap:");
-				ImGui::Image(spotLight->GetSRV(), { 128,128 });
-
 			}
 			else if (const auto dirLight = dynamic_cast<CDirectionalLight*>(mSelectedObj))
 			{
@@ -708,6 +714,7 @@ void CGui::DisplayPropertiesWindow() const
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 
 
@@ -720,6 +727,8 @@ void CGui::DisplayPropertiesWindow() const
 
 
 >>>>>>> parent of cbe79af (IDK)
+=======
+>>>>>>> parent of 7bb1619 (Merge branch 'main' into TryingPolymorphism)
 			}
 			else if (const auto point = dynamic_cast<CPointLight*>(mSelectedObj))
 			{
@@ -732,6 +741,7 @@ void CGui::DisplayPropertiesWindow() const
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 
 
@@ -744,6 +754,8 @@ void CGui::DisplayPropertiesWindow() const
 
 
 >>>>>>> parent of cbe79af (IDK)
+=======
+>>>>>>> parent of 7bb1619 (Merge branch 'main' into TryingPolymorphism)
 			}
 		}
 
@@ -774,35 +786,31 @@ void CGui::DisplayPropertiesWindow() const
 		ImGui::Text("Ambient Map");
 		ImGui::Separator();
 
+		ImGui::Checkbox("Toggle ambient Map", &dynamic_cast<DX11::CDX11GameObject*>(mSelectedObj)->AmbientMapEnabled());
 
 		//display the ambient map (if any)
-		auto obj = dynamic_cast<DX11::CDX11GameObject*>(mSelectedObj);
-		if (obj)
+		if (dynamic_cast<DX11::CDX11GameObject*>(mSelectedObj)->AmbientMapEnabled())
 		{
-			ImGui::Checkbox("Toggle ambient Map", &dynamic_cast<DX11::CDX11GameObject*>(mSelectedObj)->AmbientMapEnabled());
-			if (obj->AmbientMapEnabled())
-			{
-				ImGui::NewLine();
-				ImGui::Text("AmbientMap");
+			ImGui::NewLine();
+			ImGui::Text("AmbientMap");
 
-				static int size = (int)std::log2(dynamic_cast<DX11::CDX11GameObject*>(mSelectedObj)->AmbientMap()->Size());
-				if (ImGui::DragInt("Size (base 2)", &size, 1, 1, 12))
-				{
-					dynamic_cast<DX11::CDX11GameObject*>(mSelectedObj)->AmbientMap()->SetSize((UINT)pow(2, size));
-				}
+			static int size = (int)std::log2(dynamic_cast<DX11::CDX11GameObject*>(mSelectedObj)->AmbientMap()->Size());
+			if (ImGui::DragInt("Size (base 2)", &size, 1, 1, 12))
+			{
+				dynamic_cast<DX11::CDX11GameObject*>(mSelectedObj)->AmbientMap()->SetSize((UINT)pow(2, size));
 			}
-		}
-		else
-		{
-			ImGui::Text("Not supported in DX12");
 		}
 	}
 	ImGui::End();
 
 	const auto pos = mViewportWindowPos;
 	
+
 	ImGuizmo::Enable(true);
+	ImGuizmo::SetImGuiContext(ImGui::GetCurrentContext());
+	ImGuizmo::SetDrawlist(ImGui::GetForegroundDrawList());
 	ImGuizmo::SetRect(pos.x, pos.y, mEngine->GetScene()->GetViewportSize().x, mEngine->GetScene()->GetViewportSize().y);
+
 	ImGuizmo::Manipulate(mEngine->GetScene()->GetCamera()->ViewMatrix().GetArray(), mEngine->GetScene()->GetCamera()->ProjectionMatrix().GetArray(),
 		mCurrentGizmoOperation, ImGuizmo::WORLD, mSelectedObj->WorldMatrix().GetArray());
 
@@ -815,12 +823,9 @@ void CGui::DisplayObjects()
 		AddObjectsMenu();
 		ImGui::Separator();
 		//display for each model a button
-		const auto objManager = mEngine->GetObjManager();
+		const auto objManager = mEngine->GetScene()->GetObjectManager();
 		DisplayDeque(objManager->mObjects);
 		DisplayDeque(objManager->mLights);
-		DisplayDeque(objManager->mSpotLights);
-		DisplayDeque(objManager->mDirLights);
-		DisplayDeque(objManager->mPointLights);
 	}
 	ImGui::End();
 	if (mSelectedObj != nullptr)
@@ -854,5 +859,5 @@ void CGui::DisplayShadowMaps() const
 		}*/
 	}
 	ImGui::End();
-
+		
 }
