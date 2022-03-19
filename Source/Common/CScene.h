@@ -22,26 +22,91 @@
 class CWindow;
 class CCamera;
 
-template <typename Impl, typename EngineImpl>
+template <typename Impl>
 class CScene
 {
+<<<<<<< Updated upstream
 
 public:
 
 	~CScene() = default;
-	
 
 	//--------------------------------------------------------------------------------------
 	// Scene Implementation Independent Stuff
 	//--------------------------------------------------------------------------------------
 
-	CScene(IEngine<EngineImpl>* engine, std::string fileName)
+	CScene(IEngine<Impl>* engine, std::string fileName)
 	{
-		
+
+=======
+
+public:
+
+	~CScene() = default;
+
+	//--------------------------------------------------------------------------------------
+	// Scene Implementation Independent Stuff
+	//--------------------------------------------------------------------------------------
+
+	CScene(IEngine<Impl>* engine, std::string fileName)
+	{
+
+>>>>>>> Stashed changes
 		mEngine = engine;
 		mWindow = mEngine->GetWindow();
 		mFileName = fileName;
 
+		//--------------------------------------------------------------------------------------
+		// Scene Geometry and Layout
+		//--------------------------------------------------------------------------------------
+
+<<<<<<< Updated upstream
+<<<<<<< Updated upstream
+		virtual void Save(std::string fileName = "");
+		virtual void Resize(UINT newX, UINT newY) = 0;
+		virtual void PostProcessingPass() = 0;
+		virtual void RenderToDepthMap() = 0;
+		virtual void DisplayPostProcessingEffects() = 0; // TODO: Remove
+		
+
+		//--------------------------------------------------------------------------------------
+		// Getters 
+		//--------------------------------------------------------------------------------------
+		
+		auto  GetViewportSize() const { return CVector2((float)mViewportX, (float)mViewportY); }
+		auto  GetViewportX() const { return mViewportX; }
+		auto  GetViewportY() const { return mViewportY; }
+		CCamera*  GetCamera() const { return mCamera.get(); }
+		void SetCamera(CCamera* c) { mCamera.reset(c); }
+		auto& GetLockFps() { return mLockFPS; }
+		auto& GetBackgroundCol() { return mBackgroundColor; }
+
+	private:
+		IEngine* mEngine;
+
+	protected:
+		//--------------------------------------------------------------------------------------
+		// Private Variables
+		//--------------------------------------------------------------------------------------
+		
+		std::unique_ptr<CCamera>            mCamera;
+
+		// Lock FPS to monitor refresh rate, which will typically set it to 60fps. Press 'p' to toggle to full fps
+		bool         mLockFPS     = true;
+		UINT         mViewportX   = 1920;
+		UINT         mViewportY   = 1080;
+		int          mPcfSamples  = 4;
+		CGameObject* mSelectedObj = nullptr;
+		CWindow*     mWindow      = nullptr;
+		std::string  mFileName;
+
+		// Additional light information
+		CVector3 gAmbientColour   = { 0.03f,0.03f,0.04f }; // Background level of light (slightly bluish to match the far background, which is dark blue)
+		ColourRGBA mBackgroundColor = { 0.3f,0.3f,0.4f,1.0f };
+		float    gSpecularPower   = 256; // Specular power //will be removed since it will be dependent on the material
+=======
+=======
+>>>>>>> Stashed changes
 		try
 		{
 
@@ -110,8 +175,6 @@ public:
 			totalFrameTime = 0;
 			frameCount = 0;
 		}
-
-		impl()->UpdateSceneImp();
 	}
 
 	void Save(std::string fileName = "")
@@ -159,7 +222,7 @@ public:
 
 private:
 
-	IEngine<EngineImpl>* mEngine;
+	IEngine<Impl>* mEngine;
 
 	Impl* impl() { return static_cast<Impl*>(this); }
 
@@ -183,4 +246,8 @@ protected:
 	CVector3 gAmbientColour = { 0.03f,0.03f,0.04f }; // Background level of light (slightly bluish to match the far background, which is dark blue)
 	ColourRGBA mBackgroundColor = { 0.3f,0.3f,0.4f,1.0f };
 	float    gSpecularPower = 256; // Specular power //will be removed since it will be dependent on the material
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
+>>>>>>> Stashed changes
 };

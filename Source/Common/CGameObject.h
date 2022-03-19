@@ -73,7 +73,10 @@ public:
 	void                      GetFilesInFolder(std::string& mediaFolder, std::string& dirPath, std::vector<std::string>& fileNames) const;
 	std::string               TextureFileName();
 	bool                      IsPbr();
-
+<<<<<<< Updated upstream
+  
+=======
+>>>>>>> Stashed changes
 	std::vector<std::string>& GetMeshes();
 
 	//-------------------------------------

@@ -34,7 +34,7 @@ namespace DX12
 		
 	}
 
-	void CDX12Gui::BeginImpl()
+	void CDX12Gui::Begin()
 	{
 		// Start the Dear ImGui frame
 		ImGui_ImplDX12_NewFrame();
@@ -44,7 +44,7 @@ namespace DX12
 	}
 	
 
-	void CDX12Gui::EndImpl()
+	void CDX12Gui::End()
 	{
 		mEngine->mSRVDescriptorHeap->Set();
 		ImGui::Render();

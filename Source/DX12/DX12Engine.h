@@ -21,7 +21,7 @@ namespace DX12
 	class CDX12Gui;
 	class CDX12Shader;
 
-	class CDX12Engine final : public IEngine<CDX12Engine,CDX12Scene,CDX12Gui>
+	class CDX12Engine final : public IEngine<CDX12Engine>
 	{
 	public:
 
@@ -39,13 +39,25 @@ namespace DX12
 
 		// Inherited via IEngine
 		bool UpdateImpl() ;
+<<<<<<< Updated upstream
 
 		void ResizeImpl(UINT x, UINT y) ;
 
 		void FinalizeFrameImpl();
 
 		void CreatePipelineStateObjects();
-		
+
+=======
+
+		// Inherited via IEngine
+		void ResizeImpl(UINT x, UINT y) ;
+
+		void FinalizeFrameImpl();
+
+		void CreatePipelineStateObjects();
+
+
+>>>>>>> Stashed changes
 		void Present();
 
 

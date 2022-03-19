@@ -31,7 +31,7 @@ class CDX11Gui;
 			ID3D11Device*        GetDevice() const;
 			ID3D11DeviceContext* GetContext() const;
 
-			~CDX11Engine() override;
+			~CDX11Engine() ;
 
 			//------------------------------------------------
 			// Data
@@ -118,7 +118,6 @@ class CDX11Gui;
 			void InitDirect3D();
 
 		public:
-
 			//--------------------------------------------------------------------------------------
 			// Constant buffers
 			//--------------------------------------------------------------------------------------
@@ -127,19 +126,19 @@ class CDX11Gui;
 			// you want to update it with. The structure will be copied in full over to the GPU constant buffer, where it will
 			// be available to shaders. This is used to update model and camera positions, lighting data etc.
 
-			void UpdateModelConstantBuffer(ID3D11Buffer* buffer, PerModelConstants& bufferData) const;
+			void UpdateModelConstantBuffer(ID3D11Buffer* buffer, DX11::PerModelConstants& bufferData) const;
 
-			void UpdatePostProcessingConstBuffer(ID3D11Buffer* buffer, PostProcessingConstants& bufferData) const;
+			void UpdatePostProcessingConstBuffer(ID3D11Buffer* buffer, DX11::PostProcessingConstants& bufferData) const;
 
-			void UpdateFrameConstantBuffer(ID3D11Buffer* buffer, PerFrameConstants& bufferData) const;
+			void UpdateFrameConstantBuffer(ID3D11Buffer* buffer, DX11::PerFrameConstants& bufferData) const;
 
-			void UpdateLightConstantBuffer(ID3D11Buffer* buffer, PerFrameLights& bufferData, int numLights) const;
+			void UpdateLightConstantBuffer(ID3D11Buffer* buffer, DX11::PerFrameLights& bufferData, int numLights) const;
 
-			void UpdateSpotLightsConstantBuffer(ID3D11Buffer* buffer, PerFrameSpotLights& bufferData, int numLights) const;
+			void UpdateSpotLightsConstantBuffer(ID3D11Buffer* buffer, DX11::PerFrameSpotLights& bufferData, int numLights) const;
 
-			void UpdateDirLightsConstantBuffer(ID3D11Buffer* buffer, PerFrameDirLights& bufferData, int numLights) const;
+			void UpdateDirLightsConstantBuffer(ID3D11Buffer* buffer, DX11::PerFrameDirLights& bufferData, int numLights) const;
 
-			void UpdatePointLightsConstantBuffer(ID3D11Buffer* buffer, PerFramePointLights& bufferData, int numLights) const;
+			void UpdatePointLightsConstantBuffer(ID3D11Buffer* buffer, DX11::PerFramePointLights& bufferData, int numLights) const;
 
 			ID3DBlob* CreateSignatureForVertexLayout(const D3D11_INPUT_ELEMENT_DESC vertexLayout[], int numElements);
 
@@ -181,7 +180,7 @@ class CDX11Gui;
 
 			bool    CreateStates();
 
-			void     CreateSceneImpl(std::string fileName) ;
+			void     CreateScene(std::string fileName) ;
 
 			CGameObject* CreateObjectImpl(const std::string& mesh,
 					const std::string& name,

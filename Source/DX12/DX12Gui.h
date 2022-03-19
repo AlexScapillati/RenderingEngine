@@ -7,11 +7,9 @@ namespace DX12
 {
 	class CDX12Engine;
 
-	class CDX12Gui final : public CGui<CDX12Gui,CDX12Engine>
+	class CDX12Gui final : public CGui
 	{
 	public:
-
-		friend class CGui<CDX12Gui, CDX12Engine>;
 
 		CDX12Gui(CDX12Engine* engine);
 
@@ -23,11 +21,11 @@ namespace DX12
 		CDX12Gui& operator=(const CDX12Gui&) = delete;
 		CDX12Gui& operator=(const CDX12Gui&&) = delete;
 
-		void BeginImpl() ;
+		void Begin() override;
 
-		void EndImpl() ;
+		void End() override;
 
-		~CDX12Gui() ;
+		~CDX12Gui() override;
 
 	private:
 		CDX12Engine* mEngine = nullptr;
