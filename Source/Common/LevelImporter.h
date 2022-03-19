@@ -3,7 +3,7 @@
 #include "..\External/tinyxml2/tinyxml2.h"
 #include <string>
 
-template<typename Impl>
+template<typename Impl, typename SceneImpl, typename GuiImpl>
 class IEngine;
 
 class CGameObject;
@@ -21,13 +21,13 @@ public:
 
 	void SaveScene(std::string& fileName);
 
-	template <typename Impl>
-	CLevelImporter(IEngine<Impl>* engine) : mEngine(engine) {}
+	template<typename Impl, typename SceneImpl, typename GuiImpl>
+	CLevelImporter(IEngine<Impl,SceneImpl,GuiImpl>* engine) : mEngine(engine) {}
 
 private:
 
-	template <typename Impl>
-	IEngine<Impl>* mEngine;
+	template<typename Impl, typename SceneImpl, typename GuiImpl>
+	IEngine<Impl, SceneImpl, GuiImpl>* mEngine;
 
 	void ParsePostProcessingEffects(tinyxml2::XMLElement* curr);
 	

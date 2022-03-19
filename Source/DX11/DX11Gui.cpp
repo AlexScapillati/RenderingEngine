@@ -13,7 +13,7 @@
 namespace DX11
 {
 
-	CDX11Gui::CDX11Gui(CDX11Engine* engine) :CGui(engine)
+	CDX11Gui::CDX11Gui(CDX11Engine* engine) : CGui(engine)
 	{
 		mEngine = engine;
 
@@ -21,7 +21,7 @@ namespace DX11
 		ImGui_ImplDX11_Init(engine->GetDevice(), engine->GetContext());
 	}
 
-	void CDX11Gui::Begin()
+	void CDX11Gui::BeginImpl()
 	{
 		ImGui_ImplDX11_NewFrame();
 		ImGui_ImplWin32_NewFrame();
@@ -36,7 +36,7 @@ namespace DX11
 		ImGui::DestroyContext();
 	}
 
-	void CDX11Gui::End() {
+	void CDX11Gui::EndImpl() {
 		
 		ImGui::Render();
 		ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
