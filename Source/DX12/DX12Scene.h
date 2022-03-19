@@ -3,6 +3,7 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 <<<<<<< Updated upstream
 =======
 >>>>>>> parent of 100d753 (Merge pull request #3 from AlexScapillati/TryingPolymorphism)
@@ -11,6 +12,8 @@
 #include "DX12Engine.h"
 #include "../Common/CScene.h"
 #include "DX12PipelineObject.h"
+=======
+>>>>>>> parent of 78525fa (Merge pull request #2 from AlexScapillati/TryingPolymorphism)
 #include <vector>
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -30,21 +33,16 @@
 =======
 >>>>>>> parent of b0bd427 (Up)
 
+#include "../Common/CScene.h"
+
 namespace DX12
 {
 	class CDX12DepthStencil;
 	class CDX12GameObject;
 
-	class CDX12Scene : public CScene<CDX12Scene>
+	class CDX12Scene : public CScene
 	{
-
 	public:
-
-		friend class CScene<CDX12Scene>;
-
-		//--------------------------------------------------------------------------------------
-		// Constructors
-		//--------------------------------------------------------------------------------------
 
 		CDX12Scene() = delete;
 		CDX12Scene(const CDX12Scene&) = delete;
@@ -52,33 +50,50 @@ namespace DX12
 		CDX12Scene& operator=(const CDX12Scene&) = delete;
 		CDX12Scene& operator=(const CDX12Scene&&) = delete;
 
-		CDX12Scene(CDX12Engine* engine, std::string  fileName);
+		//--------------------------------------------------------------------------------------
+		// Constructors
+		//--------------------------------------------------------------------------------------
+
+		CDX12Scene(CDX12Engine* engine,
+			std::string  fileName);
+
+		//--------------------------------------------------------------------------------------
+		// Initialization
+		//--------------------------------------------------------------------------------------
+
+		void InitFrameDependentStuff();
 
 		//--------------------------------------------------------------------------------------
 		// Scene Render and Update
 		//--------------------------------------------------------------------------------------
 
 		// Returns the generated scene texture
-		void RenderSceneImpl(float& frameTime) ;
+		void RenderScene(float& frameTime) override;
 
+		ImTextureID GetTextureSRV() override;
 
-		void RenderSceneFromCameraImpl(CCamera* camera) ;
+		void RenderSceneFromCamera(CCamera* camera) override;
 		
 
 		//--------------------------------------------------------------------------------------
 		// DirectX12
 		//--------------------------------------------------------------------------------------
 
-		void ResizeImpl(UINT newX, UINT newY);
-		void PostProcessingPassImpl();
-		void RenderToDepthMapImpl();
-		void DisplayPostProcessingEffectsImpl();
-		ImTextureID GetTextureSRVImpl() ;
+		void Resize(UINT newX, UINT newY) override;
+
+		~CDX12Scene() override;
+		void UpdateScene(float& frameTime) override;
+		void Save(std::string fileName) override;
+		void PostProcessingPass() override;
+		void RenderToDepthMap() override;
+		void DisplayPostProcessingEffects() override;
 
 		std::unique_ptr<CDX12RenderTarget> mSceneTexture;
 <<<<<<< HEAD
 		std::unique_ptr<CDX12DepthStencil> mDepthStencils[3];
+		
 		std::unique_ptr<CDX12DescriptorHeap> mDSVDescriptorHeap;
+<<<<<<< HEAD
 		std::unique_ptr<CDX12AmbientMap> mAmbientMap;
 =======
 		std::unique_ptr<CDX12DepthStencil> mDepthStencils[CDX12Engine::mNumFrames];
@@ -86,21 +101,20 @@ namespace DX12
 		std::unique_ptr<CDX12DescriptorHeap> mDSVDescriptorHeap;
 			
 >>>>>>> parent of 5f2c2d1 (Working on IBL - DX12)
+=======
+>>>>>>> parent of 78525fa (Merge pull request #2 from AlexScapillati/TryingPolymorphism)
 
 
+		std::unique_ptr<CDX12AmbientMap> mAmbientMap;
+			
+
+	private:
 		//--------------------------------------------------------------------------------------
 		// Scene Data
 		//--------------------------------------------------------------------------------------
-
-	private:
-
 		CDX12Engine* mEngine = nullptr;
+
 		std::vector<ImTextureID> mShadowMaps;
 
-		//--------------------------------------------------------------------------------------
-		// Initialization
-		//--------------------------------------------------------------------------------------
-
-		void InitFrameDependentStuff();
 	};
 }

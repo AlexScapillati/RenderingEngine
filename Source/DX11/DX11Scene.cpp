@@ -6,19 +6,14 @@
 #include "DX11Scene.h"
 
 #include <stdexcept>
+
 #include "DX11Common.h"
 #include "..\Window.h"
 #include "../Common/LevelImporter.h"
 #include "..\Common/Camera.h"
 #include "Objects/DX11DirLight.h"
 #include "Objects/DX11Plant.h"
-
-#include <deque>
-#include <stdexcept>
-
-#include "DX11Common.h"
-#include "../Common/CGameObjectManager.h"
-#include "..\Common/Camera.h"
+#include "Objects/DX11PointLight.h"
 #include "Objects/DX11SpotLight.h"
 
 namespace DX11
@@ -53,7 +48,9 @@ namespace DX11
 	PostProcessingConstants gPostProcessingConstants;
 	ComPtr<ID3D11Buffer>    gPostProcessingConstBuffer;
 
-	CDX11Scene::CDX11Scene(CDX11Engine* engine, std::string fileName) : CScene<CDX11Scene>(engine,fileName)
+	CDX11Scene::CDX11Scene(CDX11Engine* engine, std::string fileName)
+		:
+		CScene(engine,fileName)
 		{
 			mEngine = engine;
 
@@ -103,7 +100,7 @@ namespace DX11
 	//--------------------------------------------------------------------------------------
 
 	// Render everything in the scene from the given camera
-	void CDX11Scene::RenderSceneFromCameraImpl(CCamera* camera)
+	void CDX11Scene::RenderSceneFromCamera(CCamera* camera)
 	{
 		// Set camera matrices in the constant buffer and send over to GPU
 		gPerFrameConstants.cameraMatrix         = camera->WorldMatrix();
@@ -152,7 +149,7 @@ namespace DX11
 
 
 	// Rendering the scene
-	void CDX11Scene::RenderSceneImpl(float& frameTime)
+	void CDX11Scene::RenderScene(float& frameTime)
 	{
 		//// Common settings ////
 
@@ -286,7 +283,7 @@ namespace DX11
 		// PostProcessing pass
 		PostProcessingPass();
 
-		mEngine->FinalizeFrameImpl();
+		mEngine->FinalizeFrame();
 	}
 
 	//--------------------------------------------------------------------------------------
@@ -294,7 +291,7 @@ namespace DX11
 	//--------------------------------------------------------------------------------------
 
 	// Update models and camera. frameTime is the time passed since the last frame
-	void CDX11Scene::UpdateSceneImpl(float& frameTime)
+	void CDX11Scene::UpdateScene(float& frameTime)
 	{
 
 		CScene::UpdateScene(frameTime);
@@ -316,7 +313,15 @@ namespace DX11
 
 	}
 
-	void CDX11Scene::ResizeImpl(UINT newX, UINT newY)
+	void CDX11Scene::Save(std::string fileName)
+	{
+		if (fileName.empty()) fileName = mFileName;
+
+		CLevelImporter importer(mEngine);
+		importer.SaveScene(fileName, this);
+	}
+
+	void CDX11Scene::Resize(UINT newX, UINT newY)
 	{
 		//set aspect ratio with the new window size
 		//broken

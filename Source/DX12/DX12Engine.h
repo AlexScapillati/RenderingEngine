@@ -21,7 +21,7 @@ namespace DX12
 	class CDX12Gui;
 	class CDX12Shader;
 
-	class CDX12Engine final : public IEngine<CDX12Engine>
+	class CDX12Engine final : public IEngine
 	{
 	public:
 
@@ -33,9 +33,10 @@ namespace DX12
 
 		CDX12Engine(HINSTANCE hInstance, int nCmdShow);
 
-		~CDX12Engine() ;
+		~CDX12Engine() override;
 
 		// Inherited via IEngine
+<<<<<<< HEAD
 		bool UpdateImpl() ;
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -48,9 +49,15 @@ namespace DX12
 		void FinalizeFrameImpl();
 =======
 >>>>>>> parent of 32b3477 (Merge pull request #4 from AlexScapillati/TryingPolymorphism)
+=======
+		bool Update() override;
+>>>>>>> parent of 78525fa (Merge pull request #2 from AlexScapillati/TryingPolymorphism)
 
+		// Inherited via IEngine
+		void Resize(UINT x, UINT y) override;
 		void CreatePipelineStateObjects();
 
+<<<<<<< HEAD
 =======
 
 		// Inherited via IEngine
@@ -100,6 +107,9 @@ namespace DX12
 >>>>>>> parent of 100d753 (Merge pull request #3 from AlexScapillati/TryingPolymorphism)
 =======
 >>>>>>> parent of b0bd427 (Up)
+=======
+		void FinalizeFrame() override;
+>>>>>>> parent of 78525fa (Merge pull request #2 from AlexScapillati/TryingPolymorphism)
 		void Present();
 
 
@@ -145,7 +155,7 @@ namespace DX12
 		 * Attempting to reset a command allocator before the command queue has finished executing
 		 * those commands will result in a COMMAND_ALLOCATOR_SYNC error by the debug layer.
 		 * The mCommandAllocators array variable is used to store the reference to the command allocators.
-		 * There must be at least one command allocator per render frame that is ‚Äúin-flight‚Äù
+		 * There must be at least one command allocator per render frame that is ìin-flightî
 		 * (at least one per back buffer of the swap chain).
 		 */
 		ComPtr<ID3D12CommandAllocator> mCommandAllocators[mNumFrames];
@@ -201,7 +211,7 @@ namespace DX12
 		uint64_t mFenceValue = 0;
 
 		/*
-		 * For each rendered frame that could be ‚Äúin-flight‚Äù on the command queue,
+		 * For each rendered frame that could be ìin-flightî on the command queue,
 		 * the fence value that was used to signal the command queue needs to be tracked to guarantee
 		 * that any resources that are still being referenced by the command queue are not overwritten.
 		 * The g_FrameFenceValues array variable is used to keep track of the fence values
@@ -294,14 +304,14 @@ namespace DX12
 			HANDLE                    fenceEvent,
 			std::chrono::milliseconds duration = std::chrono::milliseconds::max());
 
-		void			   CreateSceneImpl(std::string fileName) ;
-		CGameObject*       CreateObjectImpl(const std::string& mesh, const std::string& name, const std::string& diffuseMap, CVector3 position, CVector3 rotation, float scale) ;
-		CSky*              CreateSkyImpl(const std::string& mesh, const std::string& name, const std::string& diffuseMap, CVector3 position, CVector3 rotation, float scale) ;
-		CPlant*            CreatePlantImpl(const std::string& id, const std::string& name, CVector3 position, CVector3 rotation, float scale) ;
-		CGameObject*       CreateObjectImpl(const std::string& dirPath, const std::string& name, CVector3 position, CVector3 rotation, float scale) ;
-		CLight*            CreateLightImpl(const std::string& mesh, const std::string& name, const std::string& diffuseMap, const CVector3& colour, const float& strength, CVector3 position, CVector3 rotation, float scale) ;
-		CSpotLight*        CreateSpotLightImpl(const std::string& mesh, const std::string& name, const std::string& diffuseMap, const CVector3& colour, const float& strength, CVector3 position, CVector3 rotation, float scale) ;
-		CDirectionalLight* CreateDirectionalLightImpl(const std::string& mesh, const std::string& name, const std::string& diffuseMap, const CVector3& colour, const float& strength, CVector3 position, CVector3 rotation, float scale) ;
-		CPointLight*       CreatePointLightImpl(const std::string& mesh, const std::string& name, const std::string& diffuseMap, const CVector3& colour, const float& strength, CVector3 position, CVector3 rotation, float scale) ;
+		void			   CreateScene(std::string fileName) override;
+		CGameObject*       CreateObject(const std::string& mesh, const std::string& name, const std::string& diffuseMap, CVector3 position, CVector3 rotation, float scale) override;
+		CSky*              CreateSky(const std::string& mesh, const std::string& name, const std::string& diffuseMap, CVector3 position, CVector3 rotation, float scale) override;
+		CPlant*            CreatePlant(const std::string& id, const std::string& name, CVector3 position, CVector3 rotation, float scale) override;
+		CGameObject*       CreateObject(const std::string& dirPath, const std::string& name, CVector3 position, CVector3 rotation, float scale) override;
+		CLight*            CreateLight(const std::string& mesh, const std::string& name, const std::string& diffuseMap, const CVector3& colour, const float& strength, CVector3 position, CVector3 rotation, float scale) override;
+		CSpotLight*        CreateSpotLight(const std::string& mesh, const std::string& name, const std::string& diffuseMap, const CVector3& colour, const float& strength, CVector3 position, CVector3 rotation, float scale) override;
+		CDirectionalLight* CreateDirectionalLight(const std::string& mesh, const std::string& name, const std::string& diffuseMap, const CVector3& colour, const float& strength, CVector3 position, CVector3 rotation, float scale) override;
+		CPointLight*       CreatePointLight(const std::string& mesh, const std::string& name, const std::string& diffuseMap, const CVector3& colour, const float& strength, CVector3 position, CVector3 rotation, float scale) override;
 	};
 }

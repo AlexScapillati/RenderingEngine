@@ -8,9 +8,7 @@ class CDirectionalLight;
 class CSpotLight;
 class CPointLight;
 class CLight;
-
-template <typename Impl>
-class IEngine<Impl>;
+class IEngine;
 
 class CGameObjectManager
 {

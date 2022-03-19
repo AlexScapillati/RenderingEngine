@@ -10,28 +10,25 @@ namespace DX11
 class CDX11Scene;
 class CDX11Gui;
 
-	class CDX11Engine : public IEngine<CDX11Engine>
+	class CDX11Engine : public IEngine
 	{
 		//------------------------------------------------
 		// Usage
 		//------------------------------------------------
 
 		public:
-
-			friend class IEngine<CDX11Engine>;
-
 			CDX11Engine(HINSTANCE hInstance, int nCmdShow);
 
 			// Inherited via IEngine
-			bool UpdateImpl();
-			void FinalizeFrameImpl() ;
+			bool Update() override;
+			void FinalizeFrame() override;
 
-			void ResizeImpl(UINT x, UINT y);
+			void Resize(UINT x, UINT y) override;
 
 			ID3D11Device*        GetDevice() const;
 			ID3D11DeviceContext* GetContext() const;
 
-			~CDX11Engine() ;
+			~CDX11Engine() override;
 
 			//------------------------------------------------
 			// Data
@@ -180,70 +177,62 @@ class CDX11Gui;
 
 			bool    CreateStates();
 
-			void     CreateScene(std::string fileName) ;
+			void     CreateScene(std::string fileName) override;
 
-			CGameObject* CreateObjectImpl(const std::string& mesh,
+			CGameObject* CreateObject(const std::string& mesh,
 					const std::string& name,
 					const std::string& diffuseMap,
 					CVector3 position,
 					CVector3 rotation,
-					float scale) ;
-
-			CSky* CreateSkyImpl(const std::string& mesh,
+					float scale) override;
+			CSky* CreateSky(const std::string& mesh,
 					const std::string& name,
 					const std::string& diffuseMap,
 					CVector3 position,
 					CVector3 rotation,
-					float scale) ;
-
-			CPlant* CreatePlantImpl(const std::string& mesh,
+					float scale) override;
+			CPlant* CreatePlant(const std::string& mesh,
 					const std::string& name,
 					CVector3 position,
 					CVector3 rotation,
-					float scale) ;
-
-			CGameObject* CreateObjectImpl(const std::string& dirPath,
+					float scale) override;
+			CGameObject* CreateObject(const std::string& dirPath,
 					const std::string& name,
 					CVector3 position,
 					CVector3 rotation,
-					float scale) ;
-
-			CLight* CreateLightImpl(const std::string& mesh,
+					float scale) override;
+			CLight* CreateLight(const std::string& mesh,
 					const std::string& name,
 					const std::string& diffuseMap,
 					const CVector3& colour,
 					const float& strength,
 					CVector3 position,
 					CVector3 rotation,
-					float scale) ;
-
-			CSpotLight* CreateSpotLightImpl(const std::string& mesh,
+					float scale) override;
+			CSpotLight* CreateSpotLight(const std::string& mesh,
 					const std::string& name,
 					const std::string& diffuseMap,
 					const CVector3& colour,
 					const float& strength,
 					CVector3 position,
 					CVector3 rotation,
-					float scale) ;
-
-			CDirectionalLight* CreateDirectionalLightImpl(const std::string& mesh,
+					float scale) override;
+			CDirectionalLight* CreateDirectionalLight(const std::string& mesh,
 					const std::string& name,
 					const std::string& diffuseMap,
 					const CVector3& colour,
 					const float& strength,
 					CVector3 position,
 					CVector3 rotation,
-					float scale) ;
-
-
-			CPointLight* CreatePointLightImpl(const std::string& mesh,
+					float scale) override;
+			CPointLight* CreatePointLight(const std::string& mesh,
 					const std::string& name,
 					const std::string& diffuseMap,
 					const CVector3& colour,
 					const float& strength,
 					CVector3 position,
 					CVector3 rotation,
-					float scale) ;
+					float scale) override;
 	};
 	
 }

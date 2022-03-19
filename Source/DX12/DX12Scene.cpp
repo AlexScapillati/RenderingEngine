@@ -1,17 +1,24 @@
 #include "DX12Scene.h"
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 #include "DX12AmbientMap.h"
 #include "DX12Engine.h"
 =======
 >>>>>>> parent of 5f2c2d1 (Working on IBL - DX12)
-#include "DX12DescriptorHeap.h"
+=======
 #include "DX12Engine.h"
+
+#include "DX12AmbientMap.h"
+>>>>>>> parent of 78525fa (Merge pull request #2 from AlexScapillati/TryingPolymorphism)
+#include "DX12DescriptorHeap.h"
 #include "DX12Texture.h"
+
+#include "Objects/DX12Light.h"
+
 #include "../Window.h"
 #include "../../Common/LevelImporter.h"
 #include "../../Common/Camera.h"
-#include "Objects/DX12Light.h"
 
 namespace DX12
 {
@@ -87,7 +94,7 @@ namespace DX12
 	}
 
 
-	void CDX12Scene::RenderSceneImpl(float& frameTime)
+	void CDX12Scene::RenderScene(float& frameTime)
 	{
 		// Render from lights
 		{
@@ -150,7 +157,7 @@ namespace DX12
 		}
 	}
 
-	void CDX12Scene::RenderSceneFromCameraImpl(CCamera* camera)
+	void CDX12Scene::RenderSceneFromCamera(CCamera* camera)
 	{
 		// Set camera matrices in the constant buffer and send over to GPU
 
@@ -185,11 +192,12 @@ namespace DX12
 		mShadowMaps.clear();
 	}
 
-	ImTextureID CDX12Scene::GetTextureSRVImpl()
+	ImTextureID CDX12Scene::GetTextureSRV()
 	{
 		return reinterpret_cast<ImTextureID>(mSceneTexture->mHandle.mGpu.ptr);
 	}
-	void CDX12Scene::ResizeImpl(UINT newX, UINT newY)
+
+	void CDX12Scene::Resize(UINT newX, UINT newY)
 	{
 		return;
 		mCamera->SetAspectRatio(float(newX) / float(newY));
@@ -209,7 +217,13 @@ namespace DX12
 		InitFrameDependentStuff();
 	}
 
-	void CDX12Scene::PostProcessingPassImpl() {  }
-	void CDX12Scene::RenderToDepthMapImpl() { }
-	void CDX12Scene::DisplayPostProcessingEffectsImpl() {  }
+	CDX12Scene::~CDX12Scene()
+	{
+	}
+
+	void CDX12Scene::UpdateScene(float& frameTime) { CScene::UpdateScene(frameTime); }
+	void CDX12Scene::Save(std::string fileName) { CScene::Save(fileName); }
+	void CDX12Scene::PostProcessingPass() {  }
+	void CDX12Scene::RenderToDepthMap() { }
+	void CDX12Scene::DisplayPostProcessingEffects() {  }
 }

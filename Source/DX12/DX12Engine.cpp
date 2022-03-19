@@ -1,9 +1,5 @@
 #include "DX12Engine.h"
 
-#include "../Common/CGameObjectManager.h"
-#include "D3D12Helpers.h"
-#include "DX12ConstantBuffer.h"
-#include "DX12DescriptorHeap.h"
 #include "D3D12Helpers.h"
 #include "DX12ConstantBuffer.h"
 #include "DX12DescriptorHeap.h"
@@ -70,7 +66,7 @@ namespace DX12
 
 	CDX12Engine::~CDX12Engine() { Flush(); }
 
-	bool CDX12Engine::UpdateImpl()
+	bool CDX12Engine::Update()
 	{
 		// Main message loop - this is a Windows equivalent of the loop in a TL-Engine application
 		MSG msg = {};
@@ -111,7 +107,7 @@ namespace DX12
 
 					PIXEndEvent(mCommandList.Get());
 
-					FinalizeFrameImpl();
+					FinalizeFrame();
 
 					Present();
 				}
@@ -174,7 +170,7 @@ namespace DX12
 				mCommandList->Reset(mCommandAllocators[mCurrentBackBufferIndex].Get(), nullptr));
 	}
 
-	void CDX12Engine::FinalizeFrameImpl()
+	void CDX12Engine::FinalizeFrame()
 	{
 		// Present
 		{
@@ -340,11 +336,13 @@ namespace DX12
 		}
 	}
 
-	void CDX12Engine::CreateSceneImpl(std::string fileName)
+	void CDX12Engine::CreateScene(std::string fileName)
 	{
 		mScene = std::make_unique<CDX12Scene>(this, fileName);
 	}
-	CGameObject* CDX12Engine::CreateObjectImpl(const std::string& mesh,
+
+
+	CGameObject* CDX12Engine::CreateObject(const std::string& mesh,
 										   const std::string& name,
 										   const std::string& diffuseMap,
 										   CVector3           position,
@@ -356,7 +354,7 @@ namespace DX12
 		return obj;
 	}
 
-	CSky* CDX12Engine::CreateSkyImpl(const std::string& mesh,
+	CSky* CDX12Engine::CreateSky(const std::string& mesh,
 								 const std::string& name,
 								 const std::string& diffuseMap,
 								 CVector3           position,
@@ -368,7 +366,7 @@ namespace DX12
 		return s;
 	}
 
-	CPlant* CDX12Engine::CreatePlantImpl(const std::string& id,
+	CPlant* CDX12Engine::CreatePlant(const std::string& id,
 									 const std::string& name,
 									 CVector3           position,
 									 CVector3           rotation,
@@ -379,18 +377,18 @@ namespace DX12
 		return p;
 	}
 
-	CGameObject* CDX12Engine::CreateObjectImpl(const std::string& dirPath,
+	CGameObject* CDX12Engine::CreateObject(const std::string& dirPath,
 										   const std::string& name,
 										   CVector3           position,
 										   CVector3           rotation,
-										   float              scale
+										   float              scale)
 	{
 		auto o = new CDX12GameObject(this, dirPath, name, position, rotation, scale);
 		mObjManager->AddObject(o);
 		return o;
 	}
 
-	CLight* CDX12Engine::CreateLightImpl(const std::string& mesh,
+	CLight* CDX12Engine::CreateLight(const std::string& mesh,
 									 const std::string& name,
 									 const std::string& diffuseMap,
 									 const CVector3&    colour,
@@ -404,7 +402,7 @@ namespace DX12
 		return l;
 	}
 
-	CSpotLight* CDX12Engine::CreateSpotLightImpl(const std::string& mesh,
+	CSpotLight* CDX12Engine::CreateSpotLight(const std::string& mesh,
 											 const std::string& name,
 											 const std::string& diffuseMap,
 											 const CVector3&    colour,
@@ -418,7 +416,7 @@ namespace DX12
 		return s;
 	}
 
-	CDirectionalLight* CDX12Engine::CreateDirectionalLightImpl(const std::string& mesh,
+	CDirectionalLight* CDX12Engine::CreateDirectionalLight(const std::string& mesh,
 														   const std::string& name,
 														   const std::string& diffuseMap,
 														   const CVector3&    colour,
@@ -432,7 +430,7 @@ namespace DX12
 		return d;
 	}
 
-	CPointLight* CDX12Engine::CreatePointLightImpl(const std::string& mesh,
+	CPointLight* CDX12Engine::CreatePointLight(const std::string& mesh,
 											   const std::string& name,
 											   const std::string& diffuseMap,
 											   const CVector3&    colour,
@@ -452,7 +450,7 @@ namespace DX12
 		WaitForFenceValue(mFence, fenceValueForSignal, mFenceEvent);
 	}
 
-	void CDX12Engine::ResizeImpl(UINT width,
+	void CDX12Engine::Resize(UINT width,
 							 UINT height)
 	{
 		if (mWindow->GetWindowWidth() != width || mWindow->GetWindowHeight() != height)

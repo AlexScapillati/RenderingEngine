@@ -1,10 +1,9 @@
-
+#pragma once
 
 #include "LevelImporter.h"
 
 #include <stdexcept>
 
-#include "CGameObjectManager.h"
 #include "../Engine.h"
 #include "..\Common/Camera.h"
 #include "..\Common/CScene.h"
@@ -13,7 +12,8 @@
 #include "../Common/CPostProcess.h"
 #include "../DX11/DX11Engine.h"
 
-bool CLevelImporter::LoadScene(const std::string& level )
+bool CLevelImporter::LoadScene(const std::string& level,
+	CScene* scene)
 {
 	tinyxml2::XMLDocument doc;
 
@@ -31,7 +31,7 @@ bool CLevelImporter::LoadScene(const std::string& level )
 		{
 			try
 			{
-				ParseScene(element);
+				ParseScene(element, scene);
 			}
 			catch (const std::exception& e)
 			{
@@ -45,7 +45,8 @@ bool CLevelImporter::LoadScene(const std::string& level )
 	return true;
 }
 
-void CLevelImporter::SaveScene(std::string& fileName /* ="" */)
+void CLevelImporter::SaveScene(std::string& fileName /* ="" */,
+	CScene* ptrScene)
 {
 	if (fileName.empty())
 	{
@@ -65,7 +66,8 @@ void CLevelImporter::SaveScene(std::string& fileName /* ="" */)
 
 	const auto entities = scene->InsertNewChildElement("Entities");
 
-	SaveObjects(entities);
+	SaveObjects(entities, ptrScene);
+
 
 	const auto ppEffects = scene->InsertNewChildElement("PostProcessingEffects");
 
@@ -79,6 +81,12 @@ void CLevelImporter::SaveScene(std::string& fileName /* ="" */)
 	}
 }
 
+CLevelImporter::CLevelImporter(IEngine* engine)
+{
+	mEngine = engine;
+}
+
+
 void CLevelImporter::SavePositionRotationScale(tinyxml2::XMLElement* obj,
 	CGameObject* it)
 {
@@ -91,7 +99,8 @@ void CLevelImporter::SavePositionRotationScale(tinyxml2::XMLElement* obj,
 	SaveVector3(it->Scale(), childEl);
 }
 
-void CLevelImporter::SaveObjects(tinyxml2::XMLElement* el)
+void CLevelImporter::SaveObjects(tinyxml2::XMLElement* el,
+	CScene* ptrScene)
 {
 	//----------------------------------------------------
 	//	Game Objects
@@ -237,7 +246,7 @@ void CLevelImporter::SaveObjects(tinyxml2::XMLElement* el)
 	//	Camera
 	//----------------------------------------------------
 
-	const auto camera = mEngine->GetScene()->GetCamera();
+	const auto camera = ptrScene->GetCamera();
 
 	const auto obj = el->InsertNewChildElement("Entity");
 	obj->SetAttribute("Type", "Camera");
@@ -257,7 +266,8 @@ void CLevelImporter::SaveVector3(CVector3              v,
 	el->SetAttribute("Z", v.z);
 }
 
-bool CLevelImporter::ParseScene(tinyxml2::XMLElement* sceneEl)
+bool CLevelImporter::ParseScene(tinyxml2::XMLElement* sceneEl,
+	CScene* scene)
 {
 	auto element = sceneEl->FirstChildElement();
 
@@ -269,7 +279,7 @@ bool CLevelImporter::ParseScene(tinyxml2::XMLElement* sceneEl)
 		{
 			try
 			{
-				ParseEntities(element);
+				ParseEntities(element, scene);
 			}
 			catch (const std::exception& e)
 			{
@@ -295,7 +305,8 @@ CVector3 LoadVector3(tinyxml2::XMLElement* el)
 	};
 }
 
-void CLevelImporter::LoadObject(tinyxml2::XMLElement* currEntity)
+void CLevelImporter::LoadObject(tinyxml2::XMLElement* currEntity,
+	CScene* scene)
 {
 	std::string ID;
 	std::string mesh;
@@ -375,7 +386,8 @@ void CLevelImporter::LoadObject(tinyxml2::XMLElement* currEntity)
 
 }
 
-void CLevelImporter::LoadPointLight(tinyxml2::XMLElement* currEntity)
+void CLevelImporter::LoadPointLight(tinyxml2::XMLElement* currEntity,
+	CScene* scene)
 {
 	std::string mesh;
 	std::string name;
@@ -435,7 +447,8 @@ void CLevelImporter::LoadPointLight(tinyxml2::XMLElement* currEntity)
 	mEngine->GetObjManager()->AddPointLight(obj);
 }
 
-void CLevelImporter::LoadLight(tinyxml2::XMLElement* currEntity)
+void CLevelImporter::LoadLight(tinyxml2::XMLElement* currEntity,
+	CScene* scene)
 {
 	std::string mesh;
 	std::string name;
@@ -496,7 +509,8 @@ void CLevelImporter::LoadLight(tinyxml2::XMLElement* currEntity)
 }
 
 
-void CLevelImporter::LoadSpotLight(tinyxml2::XMLElement* currEntity)
+void CLevelImporter::LoadSpotLight(tinyxml2::XMLElement* currEntity,
+	CScene* scene)
 {
 	std::string mesh;
 	std::string name;
@@ -557,7 +571,8 @@ void CLevelImporter::LoadSpotLight(tinyxml2::XMLElement* currEntity)
 }
 
 
-void CLevelImporter::LoadDirLight(tinyxml2::XMLElement* currEntity)
+void CLevelImporter::LoadDirLight(tinyxml2::XMLElement* currEntity,
+	CScene* scene)
 {
 	std::string mesh;
 	std::string name;
@@ -618,7 +633,8 @@ void CLevelImporter::LoadDirLight(tinyxml2::XMLElement* currEntity)
 }
 
 
-void CLevelImporter::LoadSky(tinyxml2::XMLElement* currEntity)
+void CLevelImporter::LoadSky(tinyxml2::XMLElement* currEntity,
+	CScene* scene)
 {
 	std::string mesh;
 	std::string name;
@@ -669,7 +685,8 @@ void CLevelImporter::LoadSky(tinyxml2::XMLElement* currEntity)
 
 }
 
-void CLevelImporter::LoadCamera(tinyxml2::XMLElement* currEntity)
+void CLevelImporter::LoadCamera(tinyxml2::XMLElement* currEntity,
+	CScene* scene)
 {
 	std::string mesh;
 	std::string diffuse;
@@ -693,15 +710,16 @@ void CLevelImporter::LoadCamera(tinyxml2::XMLElement* currEntity)
 		rot = ToRadians(LoadVector3(rotationEl));
 	}
 
-	mEngine->GetScene()->SetCamera(new CCamera(pos, rot, FOV, aspectRatio, nearClip, farClip));
+	scene->SetCamera(new CCamera(pos, rot, FOV, aspectRatio, nearClip, farClip));
 
-	if (!mEngine->GetScene()->GetCamera())
+	if (!scene->GetCamera())
 	{
 		throw std::runtime_error("Error initializing camera");
 	}
 }
 
-void CLevelImporter::LoadPlant(tinyxml2::XMLElement* currEntity)
+void CLevelImporter::LoadPlant(tinyxml2::XMLElement* currEntity,
+	CScene* scene)
 {
 	std::string ID;
 	std::string name;
@@ -850,7 +868,8 @@ void CLevelImporter::ParsePostProcessingEffects(tinyxml2::XMLElement* curr)
 	}
 }
 
-bool CLevelImporter::ParseEntities(tinyxml2::XMLElement* entitiesEl)
+bool CLevelImporter::ParseEntities(tinyxml2::XMLElement* entitiesEl,
+	CScene* scene)
 {
 	auto currEntity = entitiesEl->FirstChildElement();
 
@@ -868,35 +887,35 @@ bool CLevelImporter::ParseEntities(tinyxml2::XMLElement* entitiesEl)
 
 				if (typeValue == "GameObject")
 				{
-					LoadObject(currEntity );
+					LoadObject(currEntity, scene);
 				}
 				else if (typeValue == "Light")
 				{
-					LoadLight(currEntity );
+					LoadLight(currEntity, scene);
 				}
 				else if (typeValue == "PointLight")
 				{
-					LoadPointLight(currEntity );
+					LoadPointLight(currEntity, scene);
 				}
 				else if (typeValue == "DirectionalLight")
 				{
-					LoadDirLight(currEntity );
+					LoadDirLight(currEntity, scene);
 				}
 				else if (typeValue == "SpotLight")
 				{
-					LoadSpotLight(currEntity );
+					LoadSpotLight(currEntity, scene);
 				}
 				else if (typeValue == "Sky")
 				{
-					LoadSky(currEntity );
+					LoadSky(currEntity, scene);
 				}
 				else if (typeValue == "Plant")
 				{
-					LoadPlant(currEntity );
+					LoadPlant(currEntity, scene);
 				}
 				else if (typeValue == "Camera")
 				{
-					LoadCamera(currEntity );
+					LoadCamera(currEntity, scene);
 				}
 			}
 		}

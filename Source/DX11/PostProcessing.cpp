@@ -3,16 +3,6 @@
 // Complementary of the class CScene
 //--------------------------------------------------------------------------------------
 
-#include "DX11Common.h"
-#include "Objects\DX11GameObject.h"
-#include "Objects\DX11DirLight.h"
-#include "../Common/CGameObjectManager.h"
-#include "..\Common/Camera.h"
-#include "..\External\imgui\imgui.h"
-#include "Objects\DX11PointLight.h"
-#include "Objects\DX11SpotLight.h"
-#include "..\External\imgui\imgui.h"
-=======
 #include <stdexcept>
 
 #include "DX11Common.h"
@@ -517,7 +507,7 @@ namespace DX11
 		mEngine->GetContext()->PSSetShaderResources(0, 1, &nullSRV);
 	}
 
-	void CDX11Scene::PostProcessingPassImpl()
+	void CDX11Scene::PostProcessingPass()
 	{
 		//display the post processing effects in a window
 
@@ -648,7 +638,7 @@ namespace DX11
 		}
 	}
 
-	void CDX11Scene::RenderToDepthMapImpl()
+	void CDX11Scene::RenderToDepthMap()
 	{
 		// Select the shadow map texture as the current depth buffer. We will not be rendering any pixel colours
 		// Also clear the the shadow map depth buffer to the far distance
@@ -666,7 +656,7 @@ namespace DX11
 		}
 	}
 
-	void CDX11Scene::DisplayPostProcessingEffectsImpl()
+	void CDX11Scene::DisplayPostProcessingEffects()
 	{
 
 
