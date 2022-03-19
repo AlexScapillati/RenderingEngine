@@ -26,6 +26,7 @@ template <typename Impl>
 class IEngine
 {
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 public:
 
 	//*******************************
@@ -147,6 +148,8 @@ protected:
 
 	std::string mPostProcessingFolder;
 =======
+=======
+>>>>>>> Stashed changes
 	public:
 		//*******************************
 		//****  Functions 
@@ -282,5 +285,8 @@ protected:
 		std::string mShaderFolder;
 
 		std::string mPostProcessingFolder;
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 };

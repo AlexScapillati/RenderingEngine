@@ -8,22 +8,24 @@ class CDirectionalLight;
 class CSpotLight;
 class CPointLight;
 class CLight;
+<<<<<<< Updated upstream
 
 template <typename Impl>
 class IEngine<Impl>;
+=======
+>>>>>>> Stashed changes
 
 class CGameObjectManager
 {
 	
 	public:
-
-		CGameObjectManager()                                      = delete;
+		
 		CGameObjectManager(const CGameObjectManager&)             = delete;
 		CGameObjectManager(const CGameObjectManager&&)            = delete;
 		CGameObjectManager& operator=(const CGameObjectManager&)  = delete;
 		CGameObjectManager& operator=(const CGameObjectManager&&) = delete;
 
-		CGameObjectManager(IEngine* engine);
+		CGameObjectManager();
 
 		void AddObject		(CGameObject* obj);
 		void AddLight		(CLight* obj);
@@ -44,7 +46,7 @@ class CGameObjectManager
 		CSky*			 mSky = nullptr;
 
 	private:
-		IEngine*		 mEngine;
+
 		int              mMaxSize;
 		int              mMaxShadowMaps;
 	};

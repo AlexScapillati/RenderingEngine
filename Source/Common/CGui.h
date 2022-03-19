@@ -13,6 +13,7 @@ class IEngine;
 class CGui
 {
 	public:
+
 		virtual ~CGui() = default;
 
 		CGui(IEngine* engine);
