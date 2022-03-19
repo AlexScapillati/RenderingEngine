@@ -11,15 +11,9 @@
 =======
 #pragma once
 #include "DX11Scene.h"
-<<<<<<< Updated upstream
 #include "DX11Common.h"
 #include "Objects\DX11GameObject.h"
 #include "Objects\DX11DirLight.h"
-=======
-#include "../Common/CGameObjectManager.h"
-#include "..\Common/Camera.h"
-#include "..\External\imgui\imgui.h"
->>>>>>> Stashed changes
 #include "Objects\DX11PointLight.h"
 #include "Objects\DX11SpotLight.h"
 #include "..\External\imgui\imgui.h"

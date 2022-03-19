@@ -3,6 +3,7 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 #include "DX12AmbientMap.h"
 #include "DX12Engine.h"
 =======
@@ -20,6 +21,9 @@
 #include "DX12AmbientMap.h"
 >>>>>>> parent of 78525fa (Merge pull request #2 from AlexScapillati/TryingPolymorphism)
 #include "DX12DescriptorHeap.h"
+=======
+#include "DX12DescriptorHeap.h"
+>>>>>>> parent of e03ed59 (Static Polymorphic attemp)
 #include "DX12Texture.h"
 
 #include "Objects/DX12Light.h"
@@ -89,6 +93,7 @@ namespace DX12
 
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 	void CDX12Scene::RenderScene(float& frameTime)
 =======
 <<<<<<< Updated upstream
@@ -106,6 +111,10 @@ namespace DX12
 
 			for (const auto& l : objm->mSpotLights)
 >>>>>>> Stashed changes
+=======
+			const auto heapProperties = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
+			for (int i = 0; i < CDX12Engine::mNumFrames; i++)
+>>>>>>> parent of e03ed59 (Static Polymorphic attemp)
 			{
 				const auto result = mEngine->mDevice->CreateCommittedResource(
 					&heapProperties,
@@ -232,6 +241,7 @@ namespace DX12
 		return reinterpret_cast<ImTextureID>(mSceneTexture->mHandle.mGpu.ptr);
 	}
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 	void CDX12Scene::Resize(UINT newX, UINT newY)
 =======
@@ -243,6 +253,10 @@ namespace DX12
 	void CDX12Scene::ResizeImpl(UINT newX, UINT newY)
 >>>>>>> Stashed changes
 >>>>>>> parent of 7bb1619 (Merge branch 'main' into TryingPolymorphism)
+=======
+	
+	void CDX12Scene::Resize(UINT newX, UINT newY)
+>>>>>>> parent of e03ed59 (Static Polymorphic attemp)
 	{
 		return;
 		mEngine->Flush();

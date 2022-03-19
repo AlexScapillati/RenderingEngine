@@ -6,11 +6,14 @@
 #include "DX11Scene.h"
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 #include <stdexcept>
 
 =======
 <<<<<<< Updated upstream
 >>>>>>> parent of 7bb1619 (Merge branch 'main' into TryingPolymorphism)
+=======
+>>>>>>> parent of e03ed59 (Static Polymorphic attemp)
 #include "DX11Common.h"
 #include "Objects/DX11SpotLight.h"
 #include "Objects/DX11DirLight.h"
@@ -23,6 +26,7 @@
 
 #include "../Common/LevelImporter.h"
 #include "..\Window.h"
+<<<<<<< HEAD
 =======
 #include <deque>
 #include <stdexcept>
@@ -33,6 +37,8 @@
 >>>>>>> parent of 7bb1619 (Merge branch 'main' into TryingPolymorphism)
 #include "Objects/DX11SpotLight.h"
 >>>>>>> Stashed changes
+=======
+>>>>>>> parent of e03ed59 (Static Polymorphic attemp)
 
 namespace DX11
 {

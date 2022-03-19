@@ -1,19 +1,17 @@
 #include "DX12Engine.h"
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 #include "D3D12Helpers.h"
 #include "DX12ConstantBuffer.h"
 #include "DX12DescriptorHeap.h"
 #include "DX12Gui.h"
 =======
 <<<<<<< Updated upstream
+=======
+>>>>>>> parent of e03ed59 (Static Polymorphic attemp)
 #include "..\Window.h"
 
-=======
-#include "../Common/CGameObjectManager.h"
-#include "D3D12Helpers.h"
-#include "DX12ConstantBuffer.h"
->>>>>>> Stashed changes
 #include "DX12DescriptorHeap.h"
 #include "DX12ConstantBuffer.h"
 
@@ -263,8 +261,8 @@ namespace DX12
 =======
 	
 
-<<<<<<< Updated upstream
 	CGameObject* CDX12Engine::CreateObject(const std::string& mesh, const std::string& name, const std::string& diffuseMap, CVector3 position, CVector3 rotation, float scale)
+<<<<<<< HEAD
 =======
 
 	CGameObject* CDX12Engine::CreateObjectImpl(const std::string& mesh,
@@ -275,10 +273,13 @@ namespace DX12
 										   CVector3           rotation,
 										   float              scale)
 >>>>>>> Stashed changes
+=======
+>>>>>>> parent of e03ed59 (Static Polymorphic attemp)
 	{
 		return new CDX12GameObject(this, mesh, name, diffuseMap, position, rotation, scale);
 	}
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 	CSky* CDX12Engine::CreateSky(const std::string& mesh,
 =======
@@ -293,10 +294,14 @@ namespace DX12
 								 CVector3           rotation,
 								 float              scale)
 >>>>>>> Stashed changes
+=======
+	CSky* CDX12Engine::CreateSky(const std::string& mesh, const std::string& name, const std::string& diffuseMap, CVector3 position, CVector3 rotation, float scale)
+>>>>>>> parent of e03ed59 (Static Polymorphic attemp)
 	{
 		return new CDX12Sky(this, mesh, name, diffuseMap, position, rotation, scale);
 	}
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 	CPlant* CDX12Engine::CreatePlant(const std::string& id,
 =======
@@ -310,10 +315,14 @@ namespace DX12
 									 CVector3           rotation,
 									 float              scale)
 >>>>>>> Stashed changes
+=======
+	CPlant* CDX12Engine::CreatePlant(const std::string& id, const std::string& name, CVector3 position, CVector3 rotation, float scale)
+>>>>>>> parent of e03ed59 (Static Polymorphic attemp)
 	{
 		return new CDX12Plant(this, id, name, position, rotation, scale);
 	}
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 	CGameObject* CDX12Engine::CreateObject(const std::string& dirPath,
 =======
@@ -330,10 +339,14 @@ namespace DX12
 =======
 >>>>>>> Stashed changes
 >>>>>>> parent of 7bb1619 (Merge branch 'main' into TryingPolymorphism)
+=======
+	CGameObject* CDX12Engine::CreateObject(const std::string& dirPath, const std::string& name, CVector3 position, CVector3 rotation, float scale)
+>>>>>>> parent of e03ed59 (Static Polymorphic attemp)
 	{
 		return new CDX12GameObject(this, dirPath, name, position, rotation, scale);
 	}
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 	CLight* CDX12Engine::CreateLight(const std::string& mesh,
 =======
@@ -350,10 +363,14 @@ namespace DX12
 									 CVector3           rotation,
 									 float              scale)
 >>>>>>> Stashed changes
+=======
+	CLight* CDX12Engine::CreateLight(const std::string& mesh, const std::string& name, const std::string& diffuseMap, const CVector3& colour, const float& strength, CVector3 position, CVector3 rotation, float scale)
+>>>>>>> parent of e03ed59 (Static Polymorphic attemp)
 	{
 		return new CDX12Light(this, mesh, name, diffuseMap, colour, strength,position, rotation, scale);
 	}
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 	CSpotLight* CDX12Engine::CreateSpotLight(const std::string& mesh,
 =======
@@ -370,10 +387,14 @@ namespace DX12
 											 CVector3           rotation,
 											 float              scale)
 >>>>>>> Stashed changes
+=======
+	CSpotLight* CDX12Engine::CreateSpotLight(const std::string& mesh, const std::string& name, const std::string& diffuseMap, const CVector3& colour, const float& strength, CVector3 position, CVector3 rotation, float scale)
+>>>>>>> parent of e03ed59 (Static Polymorphic attemp)
 	{
 		return new CDX12SpotLight(this, mesh, name, diffuseMap, colour, strength, position, rotation, scale);
 	}
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 	CDirectionalLight* CDX12Engine::CreateDirectionalLight(const std::string& mesh,
 =======
@@ -390,10 +411,14 @@ namespace DX12
 														   CVector3           rotation,
 														   float              scale)
 >>>>>>> Stashed changes
+=======
+	CDirectionalLight* CDX12Engine::CreateDirectionalLight(const std::string& mesh, const std::string& name, const std::string& diffuseMap, const CVector3& colour, const float& strength, CVector3 position, CVector3 rotation, float scale)
+>>>>>>> parent of e03ed59 (Static Polymorphic attemp)
 	{
 		return new CDX12DirectionalLight(this, mesh, name, diffuseMap, colour, strength, position, rotation, scale);
 	}
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 	CPointLight* CDX12Engine::CreatePointLight(const std::string& mesh,
 =======
@@ -410,6 +435,9 @@ namespace DX12
 											   CVector3           rotation,
 											   float              scale)
 >>>>>>> Stashed changes
+=======
+	CPointLight* CDX12Engine::CreatePointLight(const std::string& mesh, const std::string& name, const std::string& diffuseMap, const CVector3& colour, const float& strength, CVector3 position, CVector3 rotation, float scale)
+>>>>>>> parent of e03ed59 (Static Polymorphic attemp)
 	{
 		return new CDX12PointLight(this, mesh, name, diffuseMap, colour, strength, position, rotation, scale);
 	}
@@ -421,6 +449,7 @@ namespace DX12
 	}
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 	void CDX12Engine::Resize(UINT width,
 =======
 <<<<<<< Updated upstream
@@ -430,6 +459,9 @@ namespace DX12
 >>>>>>> parent of 7bb1619 (Merge branch 'main' into TryingPolymorphism)
 							 UINT height)
 >>>>>>> Stashed changes
+=======
+	void CDX12Engine::Resize(UINT width, UINT height)
+>>>>>>> parent of e03ed59 (Static Polymorphic attemp)
 	{
 		if (mWindow->GetWindowWidth() != width || mWindow->GetWindowHeight() != height)
 		{

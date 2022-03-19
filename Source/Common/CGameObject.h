@@ -72,6 +72,7 @@ public:
 	void                      SetScale(float scale);
 	void                      SetWorldMatrix(CMatrix4x4 matrix, int node = 0);
 <<<<<<< HEAD
+<<<<<<< HEAD
 	void                      GetFilesInFolder(IEngine* engine, std::string& dirPath, std::vector<std::string>& fileNames) const;
 	std::string               TextureFileName();
 	bool					  IsPbr();
@@ -85,6 +86,10 @@ public:
 	bool                      IsPbr();
 >>>>>>> Stashed changes
 >>>>>>> parent of 7bb1619 (Merge branch 'main' into TryingPolymorphism)
+=======
+	void                      GetFilesInFolder(IEngine* engine, std::string& dirPath, std::vector<std::string>& fileNames) const;
+	std::string				  TextureFileName();
+>>>>>>> parent of e03ed59 (Static Polymorphic attemp)
 	std::vector<std::string>& GetMeshes();
 
 	//-------------------------------------

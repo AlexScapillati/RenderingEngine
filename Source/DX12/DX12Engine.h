@@ -32,19 +32,10 @@ namespace DX12
 	{
 	public:
 
-<<<<<<< Updated upstream
 		CDX12Engine() = delete;
 		CDX12Engine(const CDX12Engine&) = delete;
 		CDX12Engine(const CDX12Engine&&) = delete;
 		CDX12Engine& operator=(const CDX12Engine&) = delete;
-=======
-		friend class IEngine<CDX12Engine>;
-
-		CDX12Engine()                               = delete;
-		CDX12Engine(const CDX12Engine&)             = delete;
-		CDX12Engine(const CDX12Engine&&)            = delete;
-		CDX12Engine& operator=(const CDX12Engine&)  = delete;
->>>>>>> Stashed changes
 		CDX12Engine& operator=(const CDX12Engine&&) = delete;
 
 
@@ -53,6 +44,7 @@ namespace DX12
 		~CDX12Engine() override;
 
 		// Inherited via IEngine
+<<<<<<< HEAD
 <<<<<<< HEAD
 		bool UpdateImpl() ;
 <<<<<<< HEAD
@@ -136,6 +128,14 @@ namespace DX12
 =======
 		void FinalizeFrame() override;
 >>>>>>> parent of 78525fa (Merge pull request #2 from AlexScapillati/TryingPolymorphism)
+=======
+		bool Update() override;
+
+		// Inherited via IEngine
+		void Resize(UINT x, UINT y) override;
+
+		void FinalizeFrame() override;
+>>>>>>> parent of e03ed59 (Static Polymorphic attemp)
 		void Present();
 
 

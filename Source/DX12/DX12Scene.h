@@ -5,6 +5,7 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 <<<<<<< Updated upstream
 =======
 >>>>>>> parent of 100d753 (Merge pull request #3 from AlexScapillati/TryingPolymorphism)
@@ -24,10 +25,13 @@
 <<<<<<< HEAD
 =======
 =======
+=======
+>>>>>>> parent of e03ed59 (Static Polymorphic attemp)
 #include "DX12Engine.h"
 >>>>>>> parent of 5f2c2d1 (Working on IBL - DX12)
 #include "../Common/CScene.h"
 #include "DX12PipelineObject.h"
+<<<<<<< HEAD
 
 =======
 #include "../Common/CScene.h"
@@ -35,6 +39,8 @@
 
 #include <vector>
 >>>>>>> Stashed changes
+=======
+>>>>>>> parent of e03ed59 (Static Polymorphic attemp)
 
 
 >>>>>>> Stashed changes
@@ -107,6 +113,7 @@ class CDX12GameObject;
 		std::unique_ptr<CDX12RenderTarget> mSceneTexture;
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 <<<<<<< Updated upstream
 
@@ -134,12 +141,17 @@ class CDX12GameObject;
 
 		std::unique_ptr<CDX12AmbientMap> mAmbientMap;
 			
+=======
+
+		std::unique_ptr<CDX12PBRPSO> mPso;
+>>>>>>> parent of e03ed59 (Static Polymorphic attemp)
 
 	private:
 		//--------------------------------------------------------------------------------------
 		// Scene Data
 		//--------------------------------------------------------------------------------------
 		CDX12Engine* mEngine = nullptr;
+<<<<<<< HEAD
 <<<<<<< HEAD
 =======
 <<<<<<< Updated upstream
@@ -156,5 +168,7 @@ class CDX12GameObject;
 
 >>>>>>> Stashed changes
 >>>>>>> parent of 7bb1619 (Merge branch 'main' into TryingPolymorphism)
+=======
+>>>>>>> parent of e03ed59 (Static Polymorphic attemp)
 	};
 }
