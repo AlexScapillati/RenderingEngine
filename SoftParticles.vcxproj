@@ -114,6 +114,7 @@
     </FxCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Source\DX12\DX12AmbientMap.cpp" />
     <ClCompile Include="Source\DX12\Objects\DX12DirectionalLight.cpp" />
     <ClCompile Include="Source\DX12\Objects\DX12PointLight.cpp" />
     <ClCompile Include="Source\Common\CGameObject.cpp" />
@@ -178,6 +179,7 @@
     <Xml Include="Scene2.xml" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Source\DX12\DX12AmbientMap.h" />
     <ClInclude Include="Source\DX12\Objects\DX12DirectionalLight.h" />
     <ClInclude Include="Source\DX12\Objects\DX12PointLight.h" />
     <ClInclude Include="Source\Common\CLight.h" />

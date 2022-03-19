@@ -1,9 +1,12 @@
 #include "DX12SpotLight.h"
 
+#include "../DX12Engine.h"
+
 #include "../DX12DescriptorHeap.h"
 #include "../DX12PipelineObject.h"
 #include "../DX12Texture.h"
 #include "../../Common/CGameObjectManager.h"
+
 
 namespace DX12
 {

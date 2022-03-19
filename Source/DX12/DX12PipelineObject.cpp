@@ -1,5 +1,5 @@
 #include "DX12PipelineObject.h"
-#include "DX12RootSignature.h"
+
 #include "DX12Shader.h"
 
 namespace DX12

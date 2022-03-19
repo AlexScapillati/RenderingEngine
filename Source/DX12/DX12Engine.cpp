@@ -4,6 +4,7 @@
 #include "DX12ConstantBuffer.h"
 #include "DX12DescriptorHeap.h"
 #include "DX12Gui.h"
+#include "DX12PipelineObject.h"
 #include "DX12Scene.h"
 #include "DX12Shader.h"
 #include "DX12Texture.h"

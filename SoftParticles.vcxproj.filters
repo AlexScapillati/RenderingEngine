@@ -173,6 +173,9 @@
     <ClCompile Include="Source\DX12\Objects\DX12DirectionalLight.cpp">
       <Filter>Engine\DX12\Objects</Filter>
     </ClCompile>
+    <ClCompile Include="Source\DX12\DX12AmbientMap.cpp">
+      <Filter>Engine\DX12\Objects</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="External">
@@ -396,6 +399,9 @@
     </ClInclude>
     <ClInclude Include="Source\DX12\Objects\DX12DirectionalLight.h">
       <Filter>Engine\DX12\Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\DX12\DX12AmbientMap.h">
+      <Filter>Engine\DX12</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

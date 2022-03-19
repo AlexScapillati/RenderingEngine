@@ -72,6 +72,7 @@ void CScene::UpdateScene(float& frameTime)
 	{
 		mLockFPS = !mLockFPS;
 	}
+	
 
 	// Show frame time / FPS in the window title //
 	const auto   fpsUpdateTime = 0.5f; // How long between updates (in seconds)

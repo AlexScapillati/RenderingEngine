@@ -299,6 +299,8 @@ namespace DX11
 			mEngine->GetContext()->PSSetConstantBuffers(1, 1, gPerFrameConstantBuffer.GetAddressOf());
 			mEngine->GetContext()->VSSetConstantBuffers(1, 1, gPerFrameConstantBuffer.GetAddressOf());
 
+			mEngine->GetObjManager()->mSky->Render();
+
 			//render just the objects that can cast shadows
 			for (const auto& it : mEngine->GetObjManager()->mObjects)
 			{

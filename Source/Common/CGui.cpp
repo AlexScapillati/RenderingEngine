@@ -705,6 +705,8 @@ void CGui::DisplayPropertiesWindow() const
 				{
 					dirLight->SetWidth(width);
 				}
+
+
 			}
 			else if (const auto point = dynamic_cast<CPointLight*>(mSelectedObj))
 			{
@@ -714,6 +716,8 @@ void CGui::DisplayPropertiesWindow() const
 				{
 					point->SetShadowMapSize((int)pow<int, int>(2, size));
 				}
+
+
 			}
 		}
 

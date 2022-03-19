@@ -1,12 +1,15 @@
 #pragma once
 
-#include "DX12Engine.h"
-#include "../Common/CScene.h"
-#include "DX12PipelineObject.h"
+#include <vector>
 
+#include "../Common/CScene.h"
 
 namespace DX12
 {
+	class CDX12DescriptorHeap;
+	class CDX12RenderTarget;
+	class CDX12Engine;
+	class CDX12AmbientMap;
 	class CDX12DepthStencil;
 	class CDX12GameObject;
 
@@ -59,9 +62,12 @@ namespace DX12
 		void DisplayPostProcessingEffects() override;
 
 		std::unique_ptr<CDX12RenderTarget> mSceneTexture;
-		std::unique_ptr<CDX12DepthStencil> mDepthStencils[CDX12Engine::mNumFrames];
+		std::unique_ptr<CDX12DepthStencil> mDepthStencils[3];
 		
 		std::unique_ptr<CDX12DescriptorHeap> mDSVDescriptorHeap;
+
+
+		std::unique_ptr<CDX12AmbientMap> mAmbientMap;
 			
 
 	private:

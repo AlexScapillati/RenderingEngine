@@ -39,10 +39,10 @@ class CGameObjectManager
 		std::deque<CPointLight*> mPointLights {};
 		std::deque<CSpotLight*> mSpotLights {};
 		std::deque<CDirectionalLight*> mDirLights {};
+		CSky*			 mSky = nullptr;
 
 	private:
 		IEngine*		 mEngine;
-		CSky*			 mSky = nullptr;
 		int              mMaxSize;
 		int              mMaxShadowMaps;
 	};
