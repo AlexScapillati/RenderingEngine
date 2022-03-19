@@ -119,7 +119,6 @@
     <ClCompile Include="Source\DX12\Objects\DX12PointLight.cpp" />
     <ClCompile Include="Source\Common\CGameObject.cpp" />
     <ClCompile Include="Source\Common\CGameObjectManager.cpp" />
-    <ClCompile Include="Source\Common\CGui.cpp" />
     <ClCompile Include="Source\DX12\DX12Shader.cpp" />
     <ClCompile Include="Source\DX12\DX12RootSignature.cpp" />
     <ClCompile Include="Source\DX12\DX12PipelineObject.cpp" />

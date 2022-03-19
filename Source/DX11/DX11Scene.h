@@ -21,11 +21,11 @@ class CCamera;
 namespace DX11
 {
 
-	class CDX11Scene : public CScene<CDX11Scene>
+	class CDX11Scene : public CScene<CDX11Scene,CDX11Engine>
 	{
 	public:
 
-		friend class CScene<CDX11Scene>;
+		friend class CScene<CDX11Scene,CDX11Engine>;
 
 		void InitTextures();
 

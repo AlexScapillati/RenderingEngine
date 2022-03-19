@@ -6,22 +6,15 @@
 #include "DX11Scene.h"
 
 #include <deque>
-#include <stdexcept>
-#include "DX11Common.h"
-#include "../Common/CGameObjectManager.h"
-#include "..\Common/Camera.h"
-<<<<<<< Updated upstream
-#include "Objects/DX11DirLight.h"
-#include "Objects/DX11Plant.h"
-
 #include <deque>
 #include <stdexcept>
+#include <stdexcept>
 
 #include "DX11Common.h"
 #include "../Common/CGameObjectManager.h"
 #include "..\Common/Camera.h"
-=======
->>>>>>> Stashed changes
+#include "Objects/DX11DirLight.h"
+#include "Objects/DX11Plant.h"
 #include "Objects/DX11SpotLight.h"
 
 namespace DX11
@@ -299,8 +292,6 @@ namespace DX11
 	// Update models and camera. frameTime is the time passed since the last frame
 	void CDX11Scene::UpdateSceneImpl(float& frameTime)
 	{
-
-		CScene::UpdateScene(frameTime);
 
 		// Post processing settings - all data for post-processes is updated every frame whether in use or not (minimal cost)
 
