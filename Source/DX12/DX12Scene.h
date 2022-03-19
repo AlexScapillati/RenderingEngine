@@ -67,7 +67,7 @@ namespace DX12
 		std::unique_ptr<CDX12DescriptorHeap> mDSVDescriptorHeap;
 
 
-		std::unique_ptr<CDX12AmbientMap> mAmbientMap;
+		std::vector<std::unique_ptr<CDX12AmbientMap>> mAmbientMaps;
 			
 
 	private:

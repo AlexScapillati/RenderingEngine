@@ -162,11 +162,13 @@ cbuffer PerModelConstants : register(b0) // The b1 gives this constant buffer th
              
     float3 gObjectColour; // Used for tinting light models
     float gParallaxDepth; // Used in the pixel shader to control how much the polygons are bumpy
+
     float gHasOpacityMap;
     float gHasAoMap;
     float gHasRoughnessMap;
     float gHasAmbientMap;
     float gHasMetallnessMap;
+
     float gRoughness;
     float gMetalness;
 
@@ -241,7 +243,7 @@ NormalMappingPixelShaderInput VSMain(TangentVertex input)
 
     result.worldNormal = mul(gWorldMatrix, float4(input.normal,0)).xyz;
 
-    result.worldPosition = worldPosition;
+    result.worldPosition = worldPosition.xyz;
     result.worldTangent = input.tangent;
 
     return result;
@@ -270,7 +272,7 @@ Texture2D DisplacementMap   : register(t3);
 Texture2D NormalMap         : register(t4);
 Texture2D MetalnessMap      : register(t5);
 TextureCube IBLMap          : register(t6);
-Texture2D ShadowMaps        : register(t7);
+Texture2D ShadowMap         : register(t7);
 
 //--------------------------------------------------------------------------------------
 // Constants
@@ -614,8 +616,14 @@ float4 PSMain(NormalMappingPixelShaderInput input) : SV_TARGET
 			// Detail: 2D position x & y get perspective divide, then converted from range -1->1 to UV range 0->1. Also flip V axis
             float2 shadowMapUV = 0.5f * projection.xy / projection.w + float2(0.5f, 0.5f);
             shadowMapUV.y = 1.0f - shadowMapUV.y; // Check if pixel is within light cone
-            
-        	resDiffuse += CalculateLight(gSpotLights[j].pos, gSpotLights[j].intensity, gSpotLights[j].colour, resDiffuse, resSpecular, textureNormal, cameraDirection, input.worldPosition, roughness, albedo);
+
+            // Get depth of this pixel if it were visible from the light (another advanced projection step)
+            const float depthFromLight = projection.z / projection.w - gDepthAdjust; //*** Adjustment so polygons don't shadow themselves
+
+            const float depth = ShadowMap.Sample(PointClamp,shadowMapUV).r;
+
+            if (depthFromLight < depth)
+        		resDiffuse += CalculateLight(gSpotLights[j].pos, gSpotLights[j].intensity, gSpotLights[j].colour, resDiffuse, resSpecular, textureNormal, cameraDirection, input.worldPosition, roughness, albedo);
         }
     }
 

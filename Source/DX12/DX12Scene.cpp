@@ -21,7 +21,7 @@ namespace DX12
 		{
 			InitFrameDependentStuff();
 
-			mAmbientMap = std::make_unique<CDX12AmbientMap>(engine, 32, mEngine->mRTVDescriptorHeap.get(), mEngine->mSRVDescriptorHeap.get(), mEngine->mDSVDescriptorHeap.get());
+			mAmbientMaps.push_back(std::make_unique<CDX12AmbientMap>(engine, 512, mEngine->mRTVDescriptorHeap.get(), mEngine->mSRVDescriptorHeap.get(), mEngine->mDSVDescriptorHeap.get()));
 
 		}
 		catch (const std::runtime_error& e) { throw std::runtime_error(e.what()); }
@@ -118,7 +118,7 @@ namespace DX12
 		{
 			CMatrix4x4 mat = MatrixIdentity();
 
-			auto ptr = mAmbientMap->RenderFromThis(&mat);
+			auto ptr = mAmbientMaps.front()->RenderFromThis(&mat);
 			if(ptr)
 			{
 				mEngine->mSRVDescriptorHeap->Set();
@@ -132,7 +132,7 @@ namespace DX12
 		{
 			const FLOAT clearColor[] = { 0.4f,0.6f,0.9f,1.0f };
 
-				mEngine->mSRVDescriptorHeap->Set();
+			mEngine->mSRVDescriptorHeap->Set();
 
 			const auto rtv = mSceneTexture->mRTVHandle.mCpu;
 
@@ -141,18 +141,8 @@ namespace DX12
 			mSceneTexture->Barrier(D3D12_RESOURCE_STATE_RENDER_TARGET);
 			mDepthStencils[mEngine->mCurrentBackBufferIndex]->Barrier(D3D12_RESOURCE_STATE_DEPTH_WRITE);
 
-			const auto vp = CD3DX12_VIEWPORT(
-				0.0f,
-				0.0f,
-				static_cast<FLOAT>(mViewportX),
-				static_cast<FLOAT>(mViewportY));
-
-			const auto sr = CD3DX12_RECT(
-				0,
-				0,
-				mViewportX,
-				mViewportY);
-
+			const auto vp = CD3DX12_VIEWPORT(0.0f,0.0f,static_cast<FLOAT>(mViewportX),static_cast<FLOAT>(mViewportY));
+			const auto sr = CD3DX12_RECT(0,0,(LONG)mViewportX,(LONG)mViewportY);
 
 			{
 				PIXBeginEvent(mEngine->mCommandList.Get(), 0, "Rendering");

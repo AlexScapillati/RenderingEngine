@@ -51,7 +51,7 @@ namespace DX12
 				&heapProperties,
 				D3D12_HEAP_FLAG_NONE,
 				&desc,
-				D3D12_RESOURCE_STATE_GENERIC_READ,
+				D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
 				&clearValue,
 				IID_PPV_ARGS(mResource.GetAddressOf())));
 
@@ -119,21 +119,20 @@ namespace DX12
 		mEngine->mCommandList->RSSetViewports(1, &mVp);
 		mEngine->mCommandList->RSSetScissorRects(1, &mScissorsRect);
 
-		auto barrier = CD3DX12_RESOURCE_BARRIER::Transition(
+		D3D12_RESOURCE_BARRIER barrier[] =
+		{
+			CD3DX12_RESOURCE_BARRIER::Transition(
 			mResource.Get(),
-			D3D12_RESOURCE_STATE_GENERIC_READ,
-			D3D12_RESOURCE_STATE_RENDER_TARGET);
-
-		mEngine->mCommandList->ResourceBarrier(1, &barrier);
-
-		barrier = CD3DX12_RESOURCE_BARRIER::Transition(
+			D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
+			D3D12_RESOURCE_STATE_RENDER_TARGET),
+			CD3DX12_RESOURCE_BARRIER::Transition(
 			mDepthBufferResource.Get(),
 			D3D12_RESOURCE_STATE_DEPTH_READ,
-			D3D12_RESOURCE_STATE_DEPTH_WRITE);
+			D3D12_RESOURCE_STATE_DEPTH_WRITE)
+		};
 
 
-		mEngine->mCommandList->ResourceBarrier(1, &barrier);
-
+		mEngine->mCommandList->ResourceBarrier(2, barrier);
 
 		float mSides[6][3] = {
 			// Starting from facing down the +ve Z direction, left handed rotations
@@ -159,7 +158,7 @@ namespace DX12
 				MatrixRotationZ(rotation.z) * MatrixRotationX(rotation.x) * MatrixRotationY(rotation.y) *
 				MatrixTranslation(pos);
 
-			const FLOAT clearColor[] = { 0.4f,0.6f,0.9f,1.0f };
+			constexpr FLOAT clearColor[] = { 0.4f,0.6f,0.9f,1.0f };
 			mEngine->mCommandList->ClearRenderTargetView(mRtvHandle[i].mCpu, clearColor, 0, nullptr);
 			mEngine->mCommandList->ClearDepthStencilView(mDsvHandle.mCpu, D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
 
@@ -169,8 +168,7 @@ namespace DX12
 			mEngine->mPerFrameConstants.projectionMatrix = MakeProjectionMatrix(1.0f, ToRadians(90.f));
 			mEngine->mPerFrameConstants.viewProjectionMatrix = mEngine->mPerFrameConstants.viewMatrix * mEngine->mPerFrameConstants.projectionMatrix;
 
-			mEngine->mPerFrameConstantBuffer->Copy(mEngine->mPerFrameConstants);
-
+			mEngine->mPerFrameConstantBuffer->Copy(mEngine->mPerFrameConstantBuffer);
 
 			mEngine->GetObjManager()->mSky->Render();
 
@@ -183,19 +181,17 @@ namespace DX12
 		// restore original matrix
 		*mat = originalMatrix;
 
-		barrier = CD3DX12_RESOURCE_BARRIER::Transition(
+		barrier[0] = CD3DX12_RESOURCE_BARRIER::Transition(
 			mResource.Get(),
 			D3D12_RESOURCE_STATE_RENDER_TARGET,
-			D3D12_RESOURCE_STATE_GENERIC_READ);
+			D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
 
-		mEngine->mCommandList->ResourceBarrier(1, &barrier);
-
-		barrier = CD3DX12_RESOURCE_BARRIER::Transition(
+		barrier[1] = CD3DX12_RESOURCE_BARRIER::Transition(
 			mDepthBufferResource.Get(),
 			D3D12_RESOURCE_STATE_DEPTH_WRITE,
 			D3D12_RESOURCE_STATE_DEPTH_READ);
 
-		mEngine->mCommandList->ResourceBarrier(1, &barrier);
+		mEngine->mCommandList->ResourceBarrier(2, barrier);
 
 		PIXEndEvent(mEngine->mCommandList.Get());
 

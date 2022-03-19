@@ -51,7 +51,7 @@ CWindow::CWindow(HINSTANCE hInstance, int nCmdShow)
 	wcex.style = CS_HREDRAW | CS_VREDRAW;
 	wcex.lpfnWndProc = WndProc;    // Which function deals with windows messages
 	wcex.cbClsExtra = 0;
-	wcex.cbWndExtra = 0; SIID_APPLICATION;
+	wcex.cbWndExtra =  SIID_APPLICATION;
 	wcex.hInstance = hInstance;
 	wcex.hIcon = stockIcon.hIcon; // Which icon to use for the window
 	wcex.hCursor = LoadCursor(nullptr, IDC_ARROW); // What cursor appears over the window
@@ -66,7 +66,7 @@ CWindow::CWindow(HINSTANCE hInstance, int nCmdShow)
 
 	// Select the type of window to show our application in
 	const DWORD windowStyle = WS_OVERLAPPEDWINDOW; // Standard window
-	//DWORD windowStyle = WS_POPUP;          // Alternative: borderless. If you also set the viewport size to the monitor resolution, you
+	//const DWORD windowStyle = WS_POPUP;          // Alternative: borderless. If you also set the viewport size to the monitor resolution, you
 											 // get a "fullscreen borderless" window, which works better with alt-tab than DirectX fullscreen,
 											 // which is an option in Direct3DSetup.cpp
 

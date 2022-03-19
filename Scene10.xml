@@ -3,26 +3,15 @@
         <Shaders/>
     </Default>
     <Entities>
-        <Entity Type="GameObject" Name="Ground">
-            <Geometry/>
-            <Position X="0" Y="0" Z="0"/>
+        <Entity Type="GameObject" Name="Aspen Tree Trunk_tk3tbeida_3D Assembly">
+            <Geometry ID="Aspen Tree Trunk_tk3tbeida_3D Assembly///Aspen Tree Trunk_LOD0_.fbx"/>
+            <Position X="82.563828" Y="-16.55875" Z="-32.264385"/>
             <Rotation X="-0" Y="0" Z="0"/>
-            <Scale X="1" Y="1" Z="1"/>
-        </Entity>
-        <Entity Type="GameObject" Name="Cube">
-            <Geometry/>
-            <Position X="0" Y="10" Z="20"/>
-            <Rotation X="-0" Y="0" Z="0"/>
-            <Scale X="1" Y="1" Z="1"/>
-        </Entity>
-        <Entity Type="GameObject" Name="Roman Statue_tfprbilda_3D Asset">
-            <Geometry/>
-            <Position X="0" Y="2.2029595" Z="-8.208931"/>
-            <Rotation X="-0" Y="-179.5327" Z="0"/>
-            <Scale X="0.49999982" Y="0.5" Z="0.49999982"/>
+            <Scale X="0.5" Y="0.5" Z="0.5"/>
+            <AmbientMap Enabled="true" Size="1"/>
         </Entity>
         <Entity Type="SpotLight" Name="Light">
-            <Geometry Mesh="Light.x" Diffuse=""/>
+            <Geometry Mesh="Light.x" Diffuse="Flare.jpg"/>
             <Position X="10" Y="46.58963" Z="32.704338"/>
             <Rotation X="63.379845" Y="180" Z="180"/>
             <Scale X="1" Y="1" Z="1"/>
@@ -30,7 +19,7 @@
             <Strength S="1000"/>
         </Entity>
         <Entity Type="SpotLight" Name="Light">
-            <Geometry Mesh="Light.x" Diffuse=""/>
+            <Geometry Mesh="Light.x" Diffuse="Flare.jpg"/>
             <Position X="5.5086222" Y="78.383926" Z="50.311771"/>
             <Rotation X="-0" Y="-171.32977" Z="0"/>
             <Scale X="10" Y="10" Z="10"/>

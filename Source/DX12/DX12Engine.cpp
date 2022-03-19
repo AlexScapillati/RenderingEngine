@@ -188,9 +188,18 @@ namespace DX12
 	{
 		mFrameFenceValues[mCurrentBackBufferIndex] = Signal();
 
+		DXGI_FRAME_STATISTICS o;
+		mSwapChain->GetFrameStatistics(&o);
+
+		DXGI_PRESENT_PARAMETERS parameters = { 0 };
+		parameters.DirtyRectsCount = 0;
+		parameters.pDirtyRects = nullptr;
+		parameters.pScrollRect = nullptr;
+		parameters.pScrollOffset = nullptr;
+
 		const UINT syncInterval = mScene->GetLockFps() ? 1 : 0;
-		const UINT presentFlags = !mScene->GetLockFps() ? DXGI_PRESENT_ALLOW_TEARING : 0;
-		if (FAILED(mSwapChain->Present(syncInterval, presentFlags)))
+		const UINT presentFlags = !mScene->GetLockFps() ? DXGI_PRESENT_ALLOW_TEARING : 0 ;
+		if (FAILED(mSwapChain->Present1(syncInterval, presentFlags,&parameters)))
 		{
 			throw std::runtime_error("Error presenting");
 		}
@@ -333,7 +342,7 @@ namespace DX12
 			{
 				throw std::runtime_error("Error waiting for the fence");
 			}
-			::WaitForSingleObject(fenceEvent, static_cast<DWORD>(duration.count()));
+			::WaitForSingleObjectEx(fenceEvent, static_cast<DWORD>(duration.count()),FALSE);
 		}
 	}
 
@@ -826,7 +835,7 @@ namespace DX12
 			swapChainDesc.BufferCount = mNumFrames;
 			swapChainDesc.SwapEffect  = DXGI_SWAP_EFFECT_FLIP_DISCARD;
 			// It is recommended to always allow tearing if tearing support is available.
-			swapChainDesc.Flags = CheckTearingSupport() ? DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING : 0;
+			swapChainDesc.Flags = (CheckTearingSupport() ? DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING : 0) | DXGI_SWAP_CHAIN_FLAG_FRAME_LATENCY_WAITABLE_OBJECT;
 
 			ComPtr<IDXGISwapChain1> swapChain1;
 			if (FAILED(
@@ -838,12 +847,15 @@ namespace DX12
 
 			// Disable the Alt+Enter fullscreen toggle feature. Switching to fullscreen
 			// will be handled manually.
-			if (FAILED(dxgiFactory4->MakeWindowAssociation(mWindow->GetHandle(), DXGI_MWA_NO_ALT_ENTER))) { throw std::runtime_error("Error"); }
+			ThrowIfFailed(dxgiFactory4->MakeWindowAssociation(mWindow->GetHandle(), DXGI_MWA_NO_ALT_ENTER));
 
 			if (FAILED(swapChain1.As(&mSwapChain)))
 			{
 				throw std::runtime_error("Error casting swap chain");
 			}
+
+			mSwapChain->SetMaximumFrameLatency(3);
+
 		}
 
 		mCurrentBackBufferIndex = mSwapChain->GetCurrentBackBufferIndex();

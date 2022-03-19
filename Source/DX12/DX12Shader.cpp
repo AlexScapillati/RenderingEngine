@@ -34,11 +34,23 @@ namespace DX12
 			UINT compileFlags = 0;
 #endif
 
-			ThrowIfFailed(
+			ID3D10Blob* errorBlob;
+			
 				D3DCompileFromFile(
 					std::wstring(absolutePath.begin(), absolutePath.end()).c_str(),
 					nullptr, nullptr, "PSMain", "ps_5_0",
-					compileFlags, 0, &mShaderBlob, nullptr));
+					compileFlags, 0, &mShaderBlob, &errorBlob);
+
+
+#if defined(_DEBUG)
+			if (errorBlob)
+			{
+				OutputDebugStringA((char*)errorBlob->GetBufferPointer());
+				errorBlob->Release();
+				throw std::runtime_error((char*)errorBlob->GetBufferPointer());
+			}
+#endif
+
 		}
 		else
 		{
