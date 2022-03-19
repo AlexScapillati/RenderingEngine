@@ -707,6 +707,7 @@ void CGui::DisplayPropertiesWindow() const
 				}
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 
 
@@ -715,6 +716,10 @@ void CGui::DisplayPropertiesWindow() const
 
 
 >>>>>>> parent of 32b3477 (Merge pull request #4 from AlexScapillati/TryingPolymorphism)
+=======
+
+
+>>>>>>> parent of cbe79af (IDK)
 			}
 			else if (const auto point = dynamic_cast<CPointLight*>(mSelectedObj))
 			{
@@ -726,6 +731,7 @@ void CGui::DisplayPropertiesWindow() const
 				}
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 
 
@@ -734,6 +740,10 @@ void CGui::DisplayPropertiesWindow() const
 
 
 >>>>>>> parent of 32b3477 (Merge pull request #4 from AlexScapillati/TryingPolymorphism)
+=======
+
+
+>>>>>>> parent of cbe79af (IDK)
 			}
 		}
 
