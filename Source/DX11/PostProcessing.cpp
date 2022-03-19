@@ -5,9 +5,15 @@
 
 #pragma once
 #include "DX11Scene.h"
+<<<<<<< Updated upstream
 #include "DX11Common.h"
 #include "Objects\DX11GameObject.h"
 #include "Objects\DX11DirLight.h"
+=======
+#include "../Common/CGameObjectManager.h"
+#include "..\Common/Camera.h"
+#include "..\External\imgui\imgui.h"
+>>>>>>> Stashed changes
 #include "Objects\DX11PointLight.h"
 #include "Objects\DX11SpotLight.h"
 #include "..\External\imgui\imgui.h"
@@ -509,7 +515,7 @@ namespace DX11
 		mEngine->GetContext()->PSSetShaderResources(0, 1, &nullSRV);
 	}
 
-	void CDX11Scene::PostProcessingPass()
+	void CDX11Scene::PostProcessingPassImpl()
 	{
 		//display the post processing effects in a window
 
@@ -640,7 +646,7 @@ namespace DX11
 		}
 	}
 
-	void CDX11Scene::RenderToDepthMap()
+	void CDX11Scene::RenderToDepthMapImpl()
 	{
 		// Select the shadow map texture as the current depth buffer. We will not be rendering any pixel colours
 		// Also clear the the shadow map depth buffer to the far distance
@@ -658,7 +664,7 @@ namespace DX11
 		}
 	}
 
-	void CDX11Scene::DisplayPostProcessingEffects()
+	void CDX11Scene::DisplayPostProcessingEffectsImpl()
 	{
 
 

@@ -5,7 +5,6 @@
 #include "../Math/CMatrix4x4.h"
 
 enum KeyCode;
-class IEngine;
 
 class CGameObject
 {
@@ -71,8 +70,14 @@ public:
 	void                      SetScale(CVector3 scale, int node = 0);
 	void                      SetScale(float scale);
 	void                      SetWorldMatrix(CMatrix4x4 matrix, int node = 0);
+<<<<<<< Updated upstream
 	void                      GetFilesInFolder(IEngine* engine, std::string& dirPath, std::vector<std::string>& fileNames) const;
 	std::string				  TextureFileName();
+=======
+	void                      GetFilesInFolder(std::string& mediaFolder, std::string& dirPath, std::vector<std::string>& fileNames) const;
+	std::string               TextureFileName();
+	bool                      IsPbr();
+>>>>>>> Stashed changes
 	std::vector<std::string>& GetMeshes();
 
 	//-------------------------------------

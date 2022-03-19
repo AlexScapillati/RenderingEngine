@@ -9,12 +9,12 @@
 #include "../Math/CMatrix4x4.h"
 #include "../Common.h"
 
-void CGameObject::GetFilesInFolder(IEngine* engine, std::string& dirPath, std::vector<std::string>& fileNames) const
+void CGameObject::GetFilesInFolder(std::string& mediaFolder, std::string& dirPath, std::vector<std::string>& fileNames) const
 {
 	//iterate through the directory
 	std::filesystem::recursive_directory_iterator iter(dirPath);
 
-	dirPath.replace(0, engine->GetMediaFolder().size(), "");
+	dirPath.replace(0, mediaFolder.size(), "");
 
 	if (dirPath[dirPath.size() - 1] != '/') dirPath.push_back('/');
 

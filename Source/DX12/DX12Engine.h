@@ -18,28 +18,45 @@ namespace DX12
 	class CDX12Gui;
 	class CDX12Shader;
 
-	class CDX12Engine final : public IEngine
+	class CDX12Engine final : public IEngine<CDX12Engine>
 	{
 	public:
 
+<<<<<<< Updated upstream
 		CDX12Engine() = delete;
 		CDX12Engine(const CDX12Engine&) = delete;
 		CDX12Engine(const CDX12Engine&&) = delete;
 		CDX12Engine& operator=(const CDX12Engine&) = delete;
+=======
+		friend class IEngine<CDX12Engine>;
+
+		CDX12Engine()                               = delete;
+		CDX12Engine(const CDX12Engine&)             = delete;
+		CDX12Engine(const CDX12Engine&&)            = delete;
+		CDX12Engine& operator=(const CDX12Engine&)  = delete;
+>>>>>>> Stashed changes
 		CDX12Engine& operator=(const CDX12Engine&&) = delete;
 
 
 		CDX12Engine(HINSTANCE hInstance, int nCmdShow);
 
-		~CDX12Engine() override;
+		~CDX12Engine() ;
 
 		// Inherited via IEngine
-		bool Update() override;
+		bool UpdateImpl() ;
 
 		// Inherited via IEngine
+<<<<<<< Updated upstream
 		void Resize(UINT x, UINT y) override;
+=======
+		void ResizeImpl(UINT x, UINT y) ;
 
-		void FinalizeFrame() override;
+		void FinalizeFrameImpl();
+
+		void CreatePipelineStateObjects();
+>>>>>>> Stashed changes
+
+
 		void Present();
 
 
@@ -215,14 +232,14 @@ namespace DX12
 			HANDLE                    fenceEvent,
 			std::chrono::milliseconds duration = std::chrono::milliseconds::max());
 
-		void			   CreateScene(std::string fileName) override;
-		CGameObject*       CreateObject(const std::string& mesh, const std::string& name, const std::string& diffuseMap, CVector3 position, CVector3 rotation, float scale) override;
-		CSky*              CreateSky(const std::string& mesh, const std::string& name, const std::string& diffuseMap, CVector3 position, CVector3 rotation, float scale) override;
-		CPlant*            CreatePlant(const std::string& id, const std::string& name, CVector3 position, CVector3 rotation, float scale) override;
-		CGameObject*       CreateObject(const std::string& dirPath, const std::string& name, CVector3 position, CVector3 rotation, float scale) override;
-		CLight*            CreateLight(const std::string& mesh, const std::string& name, const std::string& diffuseMap, const CVector3& colour, const float& strength, CVector3 position, CVector3 rotation, float scale) override;
-		CSpotLight*        CreateSpotLight(const std::string& mesh, const std::string& name, const std::string& diffuseMap, const CVector3& colour, const float& strength, CVector3 position, CVector3 rotation, float scale) override;
-		CDirectionalLight* CreateDirectionalLight(const std::string& mesh, const std::string& name, const std::string& diffuseMap, const CVector3& colour, const float& strength, CVector3 position, CVector3 rotation, float scale) override;
-		CPointLight*       CreatePointLight(const std::string& mesh, const std::string& name, const std::string& diffuseMap, const CVector3& colour, const float& strength, CVector3 position, CVector3 rotation, float scale) override;
+		void			   CreateSceneImpl(std::string fileName) ;
+		CGameObject*       CreateObjectImpl(const std::string& mesh, const std::string& name, const std::string& diffuseMap, CVector3 position, CVector3 rotation, float scale) ;
+		CSky*              CreateSkyImpl(const std::string& mesh, const std::string& name, const std::string& diffuseMap, CVector3 position, CVector3 rotation, float scale) ;
+		CPlant*            CreatePlantImpl(const std::string& id, const std::string& name, CVector3 position, CVector3 rotation, float scale) ;
+		CGameObject*       CreateObjectImpl(const std::string& dirPath, const std::string& name, CVector3 position, CVector3 rotation, float scale) ;
+		CLight*            CreateLightImpl(const std::string& mesh, const std::string& name, const std::string& diffuseMap, const CVector3& colour, const float& strength, CVector3 position, CVector3 rotation, float scale) ;
+		CSpotLight*        CreateSpotLightImpl(const std::string& mesh, const std::string& name, const std::string& diffuseMap, const CVector3& colour, const float& strength, CVector3 position, CVector3 rotation, float scale) ;
+		CDirectionalLight* CreateDirectionalLightImpl(const std::string& mesh, const std::string& name, const std::string& diffuseMap, const CVector3& colour, const float& strength, CVector3 position, CVector3 rotation, float scale) ;
+		CPointLight*       CreatePointLightImpl(const std::string& mesh, const std::string& name, const std::string& diffuseMap, const CVector3& colour, const float& strength, CVector3 position, CVector3 rotation, float scale) ;
 	};
 }
