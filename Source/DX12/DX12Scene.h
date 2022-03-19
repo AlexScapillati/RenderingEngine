@@ -1,11 +1,15 @@
 #pragma once
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 <<<<<<< Updated upstream
+=======
+>>>>>>> parent of 100d753 (Merge pull request #3 from AlexScapillati/TryingPolymorphism)
 #include "DX12Engine.h"
 #include "../Common/CScene.h"
 #include "DX12PipelineObject.h"
 #include <vector>
+<<<<<<< HEAD
 =======
 =======
 #include "DX12Engine.h"
@@ -17,6 +21,8 @@
 #include <vector>
 
 >>>>>>> Stashed changes
+=======
+>>>>>>> parent of 100d753 (Merge pull request #3 from AlexScapillati/TryingPolymorphism)
 
 namespace DX12
 {
@@ -75,20 +81,10 @@ namespace DX12
 			
 >>>>>>> parent of 5f2c2d1 (Working on IBL - DX12)
 
-<<<<<<< Updated upstream
 
 		//--------------------------------------------------------------------------------------
 		// Scene Data
 		//--------------------------------------------------------------------------------------
-=======
-		//--------------------------------------------------------------------------------------
-		// Scene Data
-		//--------------------------------------------------------------------------------------
-
-	private:
-
-		CDX12Engine* mEngine = nullptr;
->>>>>>> Stashed changes
 
 	private:
 
@@ -100,9 +96,5 @@ namespace DX12
 		//--------------------------------------------------------------------------------------
 
 		void InitFrameDependentStuff();
-<<<<<<< Updated upstream
-=======
-
->>>>>>> Stashed changes
 	};
 }

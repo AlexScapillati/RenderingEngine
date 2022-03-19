@@ -8,24 +8,22 @@ class CDirectionalLight;
 class CSpotLight;
 class CPointLight;
 class CLight;
-<<<<<<< Updated upstream
 
 template <typename Impl>
 class IEngine<Impl>;
-=======
->>>>>>> Stashed changes
 
 class CGameObjectManager
 {
 	
 	public:
-		
+
+		CGameObjectManager()                                      = delete;
 		CGameObjectManager(const CGameObjectManager&)             = delete;
 		CGameObjectManager(const CGameObjectManager&&)            = delete;
 		CGameObjectManager& operator=(const CGameObjectManager&)  = delete;
 		CGameObjectManager& operator=(const CGameObjectManager&&) = delete;
 
-		CGameObjectManager();
+		CGameObjectManager(IEngine* engine);
 
 		void AddObject		(CGameObject* obj);
 		void AddLight		(CLight* obj);
@@ -46,11 +44,15 @@ class CGameObjectManager
 
 	private:
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 =======
 		IEngine*		 mEngine;
 		CSky*			 mSky = nullptr;
 >>>>>>> parent of 5f2c2d1 (Working on IBL - DX12)
+=======
+		IEngine*		 mEngine;
+>>>>>>> parent of 100d753 (Merge pull request #3 from AlexScapillati/TryingPolymorphism)
 		int              mMaxSize;
 		int              mMaxShadowMaps;
 	};

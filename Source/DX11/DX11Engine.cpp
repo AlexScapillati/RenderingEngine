@@ -341,20 +341,12 @@ namespace DX11
 		}
 	}
 
-<<<<<<< Updated upstream
-=======
-
->>>>>>> Stashed changes
 	void CDX11Engine::CreateSceneImpl(std::string fileName)
 	{
 		if (mScene) mScene = nullptr;
 		mScene = std::make_unique<CDX11Scene>(this,fileName);
 	}
-<<<<<<< Updated upstream
   
-=======
-
->>>>>>> Stashed changes
 	CGameObject* CDX11Engine::CreateObjectImpl(const std::string& mesh,
 		const std::string& name,
 		const std::string& diffuseMap,
@@ -379,11 +371,7 @@ namespace DX11
 		mObjManager->AddSky(s);
 		return s;
 	}
-<<<<<<< Updated upstream
   
-=======
-
->>>>>>> Stashed changes
 	CPlant* CDX11Engine::CreatePlantImpl(const std::string& id,
 		const std::string& name,
 		CVector3           position,
@@ -396,10 +384,7 @@ namespace DX11
 	}
 
 	CGameObject* CDX11Engine::CreateObjectImpl(const std::string& dirPath,
-<<<<<<< Updated upstream
 
-=======
->>>>>>> Stashed changes
 		const std::string& name,
 		CVector3           position,
 		CVector3           rotation,

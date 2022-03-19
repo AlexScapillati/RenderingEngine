@@ -189,10 +189,6 @@ namespace DX12
 	{
 		return reinterpret_cast<ImTextureID>(mSceneTexture->mHandle.mGpu.ptr);
 	}
-<<<<<<< Updated upstream
-=======
-
->>>>>>> Stashed changes
 	void CDX12Scene::ResizeImpl(UINT newX, UINT newY)
 	{
 		return;

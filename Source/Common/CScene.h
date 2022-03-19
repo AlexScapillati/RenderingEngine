@@ -25,7 +25,6 @@ class CCamera;
 template <typename Impl>
 class CScene
 {
-<<<<<<< Updated upstream
 
 public:
 
@@ -38,20 +37,6 @@ public:
 	CScene(IEngine<Impl>* engine, std::string fileName)
 	{
 
-=======
-
-public:
-
-	~CScene() = default;
-
-	//--------------------------------------------------------------------------------------
-	// Scene Implementation Independent Stuff
-	//--------------------------------------------------------------------------------------
-
-	CScene(IEngine<Impl>* engine, std::string fileName)
-	{
-
->>>>>>> Stashed changes
 		mEngine = engine;
 		mWindow = mEngine->GetWindow();
 		mFileName = fileName;
@@ -60,7 +45,6 @@ public:
 		// Scene Geometry and Layout
 		//--------------------------------------------------------------------------------------
 
-<<<<<<< Updated upstream
 <<<<<<< Updated upstream
 		virtual void Save(std::string fileName = "");
 		virtual void Resize(UINT newX, UINT newY) = 0;
@@ -105,8 +89,6 @@ public:
 		ColourRGBA mBackgroundColor = { 0.3f,0.3f,0.4f,1.0f };
 		float    gSpecularPower   = 256; // Specular power //will be removed since it will be dependent on the material
 =======
-=======
->>>>>>> Stashed changes
 		try
 		{
 
@@ -246,8 +228,5 @@ protected:
 	CVector3 gAmbientColour = { 0.03f,0.03f,0.04f }; // Background level of light (slightly bluish to match the far background, which is dark blue)
 	ColourRGBA mBackgroundColor = { 0.3f,0.3f,0.4f,1.0f };
 	float    gSpecularPower = 256; // Specular power //will be removed since it will be dependent on the material
-<<<<<<< Updated upstream
->>>>>>> Stashed changes
-=======
 >>>>>>> Stashed changes
 };

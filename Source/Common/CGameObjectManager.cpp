@@ -2,8 +2,9 @@
 
 #include "CLight.h"
 
-CGameObjectManager::CGameObjectManager()
+CGameObjectManager::CGameObjectManager(IEngine* engine)
 {
+	mEngine = engine;
 	mMaxSize = 100;
 	mMaxShadowMaps = 10;
 }
