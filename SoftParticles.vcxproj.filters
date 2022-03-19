@@ -174,12 +174,15 @@
     <ClCompile Include="Source\DX12\Objects\DX12DirectionalLight.cpp">
       <Filter>Engine\DX12\Objects</Filter>
     </ClCompile>
+<<<<<<< HEAD
 =======
     <ClCompile Include="Source\Common\CLight.cpp">
       <Filter>Engine\Common</Filter>
     </ClCompile>
     <ClCompile Include="Main.cpp" />
 >>>>>>> parent of 7bb1619 (Merge branch 'main' into TryingPolymorphism)
+=======
+>>>>>>> parent of 5f2c2d1 (Working on IBL - DX12)
   </ItemGroup>
   <ItemGroup>
     <Filter Include="External">
@@ -405,8 +408,11 @@
     <ClInclude Include="Source\DX12\Objects\DX12DirectionalLight.h">
       <Filter>Engine\DX12\Objects</Filter>
     </ClInclude>
+<<<<<<< HEAD
 =======
 >>>>>>> parent of 7bb1619 (Merge branch 'main' into TryingPolymorphism)
+=======
+>>>>>>> parent of 5f2c2d1 (Working on IBL - DX12)
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Source\Shaders\DepthOnly_ps.hlsl">

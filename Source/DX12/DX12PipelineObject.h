@@ -1,15 +1,21 @@
 #pragma once
 <<<<<<< HEAD
 
+<<<<<<< HEAD
 =======
 #include "DX12Engine.h"
 >>>>>>> parent of 7bb1619 (Merge branch 'main' into TryingPolymorphism)
+=======
+>>>>>>> parent of 5f2c2d1 (Working on IBL - DX12)
 #include "DX12RootSignature.h"
 #include "DX12Shader.h"
 
 namespace DX12
 {
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> parent of 5f2c2d1 (Working on IBL - DX12)
 	class CDX12PBRPSO
 =======
 
@@ -89,6 +95,7 @@ namespace DX12
 			CDX12DepthOnlyPSO(CDX12Engine* engine, bool requireTangents);
 			void Set(ID3D12GraphicsCommandList* commandList);
 
+<<<<<<< HEAD
 			CDX12Engine* mEngine;
 			std::unique_ptr<CDX12DepthOnlyRootSignature> mRootSignature;
 			ComPtr<ID3D12PipelineState> mPipelineState;
@@ -104,6 +111,14 @@ namespace DX12
 		std::unique_ptr<CDX12PipelineObject> PSO;
 		std::unique_ptr<CDX12PBRRootSignature> mPBRRootSignature;
 >>>>>>> parent of 7bb1619 (Merge branch 'main' into TryingPolymorphism)
+=======
+			CDX12DepthOnlyPSO(CDX12Engine* engine, bool requireTangents);
+			void Set(ID3D12GraphicsCommandList* commandList);
+
+			CDX12Engine* mEngine;
+			std::unique_ptr<CDX12DepthOnlyRootSignature> mRootSignature;
+			ComPtr<ID3D12PipelineState> mPipelineState;
+>>>>>>> parent of 5f2c2d1 (Working on IBL - DX12)
 	};
 
 }

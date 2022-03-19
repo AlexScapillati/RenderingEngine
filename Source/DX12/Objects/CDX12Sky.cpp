@@ -1,6 +1,9 @@
 #include "CDX12Sky.h"
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> parent of 5f2c2d1 (Working on IBL - DX12)
 #include "../../Common/CScene.h"
 #include "../DX12PipelineObject.h"
 

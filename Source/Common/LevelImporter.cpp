@@ -381,10 +381,14 @@ void CLevelImporter::LoadObject(tinyxml2::XMLElement* currEntity,
 
 		// Add it to the object manager
 <<<<<<< HEAD
+<<<<<<< HEAD
 		if (obj) mEngine->GetObjManager()->AddObject(obj);
 =======
 		if (obj) scene->GetObjectManager()->AddObject(obj);
 >>>>>>> parent of 7bb1619 (Merge branch 'main' into TryingPolymorphism)
+=======
+		if (obj) mEngine->GetObjManager()->AddObject(obj);
+>>>>>>> parent of 5f2c2d1 (Working on IBL - DX12)
 	}
 	else
 	{
@@ -392,10 +396,14 @@ void CLevelImporter::LoadObject(tinyxml2::XMLElement* currEntity,
 
 		// Add it to the object manager
 <<<<<<< HEAD
+<<<<<<< HEAD
 		if (obj) mEngine->GetObjManager()->AddObject(obj);
 =======
 		if (obj) scene->GetObjectManager()->AddObject(obj);
 >>>>>>> parent of 7bb1619 (Merge branch 'main' into TryingPolymorphism)
+=======
+		if (obj) mEngine->GetObjManager()->AddObject(obj);
+>>>>>>> parent of 5f2c2d1 (Working on IBL - DX12)
 	}
 
 
@@ -464,10 +472,14 @@ void CLevelImporter::LoadPointLight(tinyxml2::XMLElement* currEntity,
 	auto obj = mEngine->CreatePointLight(mesh, name, diffuse, colour, strength, pos, rot, scale);
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 	mEngine->GetObjManager()->AddPointLight(obj);
 =======
 	scene->GetObjectManager()->AddPointLight(obj);
 >>>>>>> parent of 7bb1619 (Merge branch 'main' into TryingPolymorphism)
+=======
+	mEngine->GetObjManager()->AddPointLight(obj);
+>>>>>>> parent of 5f2c2d1 (Working on IBL - DX12)
 }
 
 void CLevelImporter::LoadLight(tinyxml2::XMLElement* currEntity,
@@ -529,10 +541,14 @@ void CLevelImporter::LoadLight(tinyxml2::XMLElement* currEntity,
 	auto obj = mEngine->CreateLight(mesh, name, diffuse, colour, strength, pos, rot, scale);
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 	mEngine->GetObjManager()->AddLight(obj);
 =======
 	scene->GetObjectManager()->AddLight(obj);
 >>>>>>> parent of 7bb1619 (Merge branch 'main' into TryingPolymorphism)
+=======
+	mEngine->GetObjManager()->AddLight(obj);
+>>>>>>> parent of 5f2c2d1 (Working on IBL - DX12)
 }
 
 
@@ -595,10 +611,14 @@ void CLevelImporter::LoadSpotLight(tinyxml2::XMLElement* currEntity,
 	auto obj = mEngine->CreateSpotLight(mesh, name, diffuse, colour, strength, pos, rot, scale);
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 	mEngine->GetObjManager()->AddSpotLight(obj);
 =======
 	scene->GetObjectManager()->AddSpotLight(obj);
 >>>>>>> parent of 7bb1619 (Merge branch 'main' into TryingPolymorphism)
+=======
+	mEngine->GetObjManager()->AddSpotLight(obj);
+>>>>>>> parent of 5f2c2d1 (Working on IBL - DX12)
 }
 
 
@@ -661,10 +681,14 @@ void CLevelImporter::LoadDirLight(tinyxml2::XMLElement* currEntity,
 	auto obj = mEngine->CreateDirectionalLight(mesh, name, diffuse, colour, strength, pos, rot, scale);
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 	mEngine->GetObjManager()->AddDirLight(obj);
 =======
 	scene->GetObjectManager()->AddDirLight(obj);
 >>>>>>> parent of 7bb1619 (Merge branch 'main' into TryingPolymorphism)
+=======
+	mEngine->GetObjManager()->AddDirLight(obj);
+>>>>>>> parent of 5f2c2d1 (Working on IBL - DX12)
 }
 
 
@@ -717,10 +741,14 @@ void CLevelImporter::LoadSky(tinyxml2::XMLElement* currEntity,
 	CSky* obj = mEngine->CreateSky(mesh, name, diffuse, pos, rot, scale);
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 	mEngine->GetObjManager()->AddSky(obj);
 =======
 	scene->GetObjectManager()->AddSky(obj);
 >>>>>>> parent of 7bb1619 (Merge branch 'main' into TryingPolymorphism)
+=======
+	mEngine->GetObjManager()->AddSky(obj);
+>>>>>>> parent of 5f2c2d1 (Working on IBL - DX12)
 
 }
 

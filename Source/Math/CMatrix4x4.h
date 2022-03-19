@@ -176,6 +176,9 @@ CMatrix4x4 MakeProjectionMatrix(float aspectRatio = 4.0f / 3.0f, float FOVx = To
 
 CMatrix4x4 MakeOrthogonalMatrix(float width, float height, float nearClip, float farClip);
 
+<<<<<<< HEAD
 =======
 >>>>>>> parent of 7bb1619 (Merge branch 'main' into TryingPolymorphism)
+=======
+>>>>>>> parent of 5f2c2d1 (Working on IBL - DX12)
 #endif // _CMATRIX4X4_H_DEFINED_

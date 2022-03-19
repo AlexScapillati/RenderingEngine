@@ -10,6 +10,7 @@ namespace DX12
 	public:
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 		CDX12RootSignature(CDX12Engine* engine, CD3DX12_VERSIONED_ROOT_SIGNATURE_DESC rootSignatureDesc)
 =======
 		CDX12RootSignature(CDX12Engine* engine,
@@ -18,6 +19,9 @@ namespace DX12
 			CD3DX12_ROOT_PARAMETER1* rootParameters,
 			D3D12_STATIC_SAMPLER_DESC samplerDesc)
 >>>>>>> parent of 7bb1619 (Merge branch 'main' into TryingPolymorphism)
+=======
+		CDX12RootSignature(CDX12Engine* engine, CD3DX12_VERSIONED_ROOT_SIGNATURE_DESC rootSignatureDesc)
+>>>>>>> parent of 5f2c2d1 (Working on IBL - DX12)
 			:
 			mEngine(engine)
 		{
@@ -31,10 +35,14 @@ namespace DX12
 			}
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> parent of 5f2c2d1 (Working on IBL - DX12)
 			// Serialize the root signature.
 			ComPtr<ID3DBlob> rootSignatureBlob;
 			ComPtr<ID3DBlob> errorBlob;
 			D3DX12SerializeVersionedRootSignature(&rootSignatureDesc, featureData.HighestVersion, &rootSignatureBlob, &errorBlob);
+<<<<<<< HEAD
 =======
 			CD3DX12_VERSIONED_ROOT_SIGNATURE_DESC rootSignatureDescription;
 			rootSignatureDescription.Init_1_1(countOfRootParameters, rootParameters, 1u, &samplerDesc, flags);
@@ -55,6 +63,19 @@ namespace DX12
 			ThrowIfFailed(mEngine->mDevice->CreateRootSignature(0, rootSignatureBlob->GetBufferPointer(),
 				rootSignatureBlob->GetBufferSize(), IID_PPV_ARGS(&mRootSignature)));
 
+=======
+
+			if (errorBlob)
+			{
+				OutputDebugStringA((char*)errorBlob->GetBufferPointer());
+				errorBlob->Release();
+			}
+
+			// Create the root signature.
+			ThrowIfFailed(mEngine->mDevice->CreateRootSignature(0, rootSignatureBlob->GetBufferPointer(),
+				rootSignatureBlob->GetBufferSize(), IID_PPV_ARGS(&mRootSignature)));
+
+>>>>>>> parent of 5f2c2d1 (Working on IBL - DX12)
 			NAME_D3D12_OBJECT(mRootSignature);
 		}
 
@@ -77,6 +98,9 @@ namespace DX12
 		{
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> parent of 5f2c2d1 (Working on IBL - DX12)
 			// Allow input layout and deny unnecessary access to certain pipeline stages.
 			D3D12_ROOT_SIGNATURE_FLAGS rootSignatureFlags =
 				D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT |
@@ -105,6 +129,7 @@ namespace DX12
 					ranges[i].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, j);
 					i++;
 				}
+<<<<<<< HEAD
 
 				ranges[i].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 6);
 
@@ -112,6 +137,15 @@ namespace DX12
 				ranges[i].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 7);
 				
 
+=======
+
+				ranges[i].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 6);
+
+				i++;
+				ranges[i].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 7);
+				
+
+>>>>>>> parent of 5f2c2d1 (Working on IBL - DX12)
 			}
 
 			// Create root parameters
@@ -154,6 +188,7 @@ namespace DX12
 		CDX12SkyRootSignature(CDX12Engine* engine)
 			: mEngine(engine)
 		{
+<<<<<<< HEAD
 =======
 			enum
 			{
@@ -169,6 +204,8 @@ namespace DX12
 			};
 
 >>>>>>> parent of 7bb1619 (Merge branch 'main' into TryingPolymorphism)
+=======
+>>>>>>> parent of 5f2c2d1 (Working on IBL - DX12)
 			// Allow input layout and deny unnecessary access to certain pipeline stages.
 			D3D12_ROOT_SIGNATURE_FLAGS rootSignatureFlags =
 				D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT |
@@ -176,6 +213,7 @@ namespace DX12
 				D3D12_ROOT_SIGNATURE_FLAG_DENY_DOMAIN_SHADER_ROOT_ACCESS |
 				D3D12_ROOT_SIGNATURE_FLAG_DENY_GEOMETRY_SHADER_ROOT_ACCESS;
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 
 			constexpr auto numTextures = 1;
@@ -194,6 +232,25 @@ namespace DX12
 					ranges[i].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, i);
 				}
 
+=======
+
+			constexpr auto numTextures = 1;
+			constexpr auto numConstantBuffers = 6;
+			constexpr auto totRanges = numConstantBuffers + numTextures;
+
+			// constant root parameters that are used by the vertex shader.
+			CD3DX12_DESCRIPTOR_RANGE1 ranges[totRanges] = {};
+			CD3DX12_ROOT_PARAMETER1 rootParameters[totRanges] = {};
+
+			// Create descriptor ranges
+			{
+				auto i = 0u;
+				for (; i < numConstantBuffers; ++i)
+				{
+					ranges[i].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, i);
+				}
+
+>>>>>>> parent of 5f2c2d1 (Working on IBL - DX12)
 				for (auto j = 0u; j < numTextures; ++j)
 				{
 					ranges[i].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, j);
@@ -283,6 +340,7 @@ namespace DX12
 
 			CD3DX12_VERSIONED_ROOT_SIGNATURE_DESC rootSignatureDescription;
 			rootSignatureDescription.Init_1_1(_countof(rootParameters), rootParameters, 1u, &samplerDesc, rootSignatureFlags);
+<<<<<<< HEAD
 
 			mRootSignature = std::make_unique<CDX12RootSignature>(engine, rootSignatureDescription);
 =======
@@ -318,6 +376,10 @@ namespace DX12
 
 			mRootSignature = std::make_unique<CDX12RootSignature>(engine, rootSignatureFlags, 9, rootParameters, samplerDesc);
 >>>>>>> parent of 7bb1619 (Merge branch 'main' into TryingPolymorphism)
+=======
+
+			mRootSignature = std::make_unique<CDX12RootSignature>(engine, rootSignatureDescription);
+>>>>>>> parent of 5f2c2d1 (Working on IBL - DX12)
 		}
 
 		CDX12Engine* mEngine;

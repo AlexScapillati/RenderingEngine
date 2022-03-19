@@ -19,6 +19,9 @@ enum KeyCode;
 namespace DX12
 {
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> parent of 5f2c2d1 (Working on IBL - DX12)
 	
 class CDX12Engine;
 
@@ -91,8 +94,11 @@ class CDX12Engine;
 		// It will hold all the textures and send them to the shader with RenderMaterial()
 		std::unique_ptr<CDX12Material> mMaterial;
 
+<<<<<<< HEAD
 =======
 >>>>>>> parent of 7bb1619 (Merge branch 'main' into TryingPolymorphism)
+=======
+>>>>>>> parent of 5f2c2d1 (Working on IBL - DX12)
 	};
 
 	class CDX12Plant : public CDX12GameObject, public CPlant

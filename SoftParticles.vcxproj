@@ -115,6 +115,9 @@
   </ItemDefinitionGroup>
   <ItemGroup>
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> parent of 5f2c2d1 (Working on IBL - DX12)
     <ClCompile Include="Source\DX12\Objects\DX12DirectionalLight.cpp" />
     <ClCompile Include="Source\DX12\Objects\DX12PointLight.cpp" />
 =======
@@ -181,6 +184,9 @@
   </ItemGroup>
   <ItemGroup>
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> parent of 5f2c2d1 (Working on IBL - DX12)
     <ClInclude Include="Source\DX12\Objects\DX12DirectionalLight.h" />
     <ClInclude Include="Source\DX12\Objects\DX12PointLight.h" />
 =======

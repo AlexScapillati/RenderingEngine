@@ -70,6 +70,7 @@ namespace DX11
 				Microsoft::WRL::ComPtr<ID3D11DepthStencilView>   depthStencilView; // The depth stencil view to set it as the render target
 				Microsoft::WRL::ComPtr<ID3D11RenderTargetView>   RTV[6];           // The 6 different render targets, one for each face, to bind to the render target
 				UINT                                             size;             // Size of each face of the cubemap
+<<<<<<< HEAD
 =======
 				bool                             enabled;
 				ComPtr<ID3D11Texture2D>          map;              // The actual texture stored on the GPU side (cubemap)
@@ -79,6 +80,8 @@ namespace DX11
 				ComPtr<ID3D11RenderTargetView>   RTV[6];           // The 6 different render targets, one for each face, to bind to the render target
 				UINT                             size;             // Size of each face of the cubemap
 >>>>>>> parent of 7bb1619 (Merge branch 'main' into TryingPolymorphism)
+=======
+>>>>>>> parent of 5f2c2d1 (Working on IBL - DX12)
 
 				// Getters and Setters for the size
 				UINT Size() const;

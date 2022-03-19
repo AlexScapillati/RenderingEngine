@@ -4,6 +4,9 @@
 namespace DX12
 {
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> parent of 5f2c2d1 (Working on IBL - DX12)
 	class CDX12DescriptorHeap;
 =======
 >>>>>>> parent of 7bb1619 (Merge branch 'main' into TryingPolymorphism)

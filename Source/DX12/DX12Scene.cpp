@@ -4,6 +4,7 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 #include "DX12AmbientMap.h"
 #include "DX12Engine.h"
 =======
@@ -22,6 +23,8 @@
 >>>>>>> parent of 78525fa (Merge pull request #2 from AlexScapillati/TryingPolymorphism)
 #include "DX12DescriptorHeap.h"
 =======
+=======
+>>>>>>> parent of 5f2c2d1 (Working on IBL - DX12)
 #include "DX12DescriptorHeap.h"
 >>>>>>> parent of e03ed59 (Static Polymorphic attemp)
 #include "DX12Texture.h"
@@ -116,6 +119,7 @@ namespace DX12
 			for (int i = 0; i < CDX12Engine::mNumFrames; i++)
 >>>>>>> parent of e03ed59 (Static Polymorphic attemp)
 			{
+<<<<<<< HEAD
 				const auto result = mEngine->mDevice->CreateCommittedResource(
 					&heapProperties,
 					D3D12_HEAP_FLAG_NONE,
@@ -126,6 +130,11 @@ namespace DX12
 					);
 
 <<<<<<< HEAD
+=======
+				mShadowMaps.push_back(l->RenderFromThis());
+			}
+
+>>>>>>> parent of 5f2c2d1 (Working on IBL - DX12)
 			PIXEndEvent(mEngine->mCommandList.Get());
 		}
 
@@ -210,6 +219,8 @@ namespace DX12
 <<<<<<< HEAD
 		mEngine->mPbrPso->Set(mEngine->mCommandList.Get());
 
+		mEngine->mPbrPso->Set(mEngine->mCommandList.Get());
+
 		mEngine->mSRVDescriptorHeap->Set();
 
 		if (!mShadowMaps.empty())
@@ -218,6 +229,7 @@ namespace DX12
 			// Convert back from void* to handle*
 			auto handle = *static_cast<CD3DX12_GPU_DESCRIPTOR_HANDLE*>(ptr);
 			//mEngine->mCommandList->SetGraphicsRootDescriptorTable(13, handle);
+<<<<<<< HEAD
 =======
 		if (!mObjManager->mLights.empty())
 		{
@@ -225,6 +237,8 @@ namespace DX12
 			const SLight lightInfo             = { light->Position(),static_cast<float>(*light->Enabled()),light->GetColour(), light->GetStrength() };
 			mEngine->mPerFrameLights.lights[0] = lightInfo;
 >>>>>>> parent of 7bb1619 (Merge branch 'main' into TryingPolymorphism)
+=======
+>>>>>>> parent of 5f2c2d1 (Working on IBL - DX12)
 		}
 
 		mEngine->CopyBuffers();

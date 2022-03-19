@@ -55,10 +55,14 @@ class CGameObjectManager
 =======
 		IEngine*		 mEngine;
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> parent of b0bd427 (Up)
 =======
 		CSky*			 mSky;
 >>>>>>> parent of 7bb1619 (Merge branch 'main' into TryingPolymorphism)
+=======
+		CSky*			 mSky = nullptr;
+>>>>>>> parent of 5f2c2d1 (Working on IBL - DX12)
 		int              mMaxSize;
 		int              mMaxShadowMaps;
 	};

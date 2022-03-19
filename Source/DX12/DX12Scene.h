@@ -6,6 +6,7 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 <<<<<<< Updated upstream
 =======
 >>>>>>> parent of 100d753 (Merge pull request #3 from AlexScapillati/TryingPolymorphism)
@@ -49,11 +50,19 @@
 =======
 >>>>>>> parent of b0bd427 (Up)
 
+=======
+#include "DX12Engine.h"
+>>>>>>> parent of 5f2c2d1 (Working on IBL - DX12)
 #include "../Common/CScene.h"
+#include "DX12PipelineObject.h"
+
 
 namespace DX12
 {
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> parent of 5f2c2d1 (Working on IBL - DX12)
 	class CDX12DepthStencil;
 	class CDX12GameObject;
 =======
@@ -114,6 +123,7 @@ class CDX12GameObject;
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 <<<<<<< Updated upstream
 
@@ -140,6 +150,11 @@ class CDX12GameObject;
 >>>>>>> parent of 7bb1619 (Merge branch 'main' into TryingPolymorphism)
 
 		std::unique_ptr<CDX12AmbientMap> mAmbientMap;
+=======
+		std::unique_ptr<CDX12DepthStencil> mDepthStencils[CDX12Engine::mNumFrames];
+		
+		std::unique_ptr<CDX12DescriptorHeap> mDSVDescriptorHeap;
+>>>>>>> parent of 5f2c2d1 (Working on IBL - DX12)
 			
 =======
 

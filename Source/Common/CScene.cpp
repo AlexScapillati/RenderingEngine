@@ -77,6 +77,7 @@ void CScene::UpdateScene(float& frameTime)
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 	
 >>>>>>> parent of 100d753 (Merge pull request #3 from AlexScapillati/TryingPolymorphism)
@@ -85,6 +86,8 @@ void CScene::UpdateScene(float& frameTime)
 >>>>>>> parent of b0bd427 (Up)
 =======
 >>>>>>> parent of 7bb1619 (Merge branch 'main' into TryingPolymorphism)
+=======
+>>>>>>> parent of 5f2c2d1 (Working on IBL - DX12)
 
 	// Show frame time / FPS in the window title //
 	const auto   fpsUpdateTime = 0.5f; // How long between updates (in seconds)

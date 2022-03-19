@@ -6,6 +6,7 @@
 #include "DX12ConstantBuffer.h"
 #include "DX12DescriptorHeap.h"
 #include "DX12Gui.h"
+<<<<<<< HEAD
 =======
 <<<<<<< Updated upstream
 =======
@@ -16,6 +17,8 @@
 #include "DX12ConstantBuffer.h"
 
 >>>>>>> parent of 7bb1619 (Merge branch 'main' into TryingPolymorphism)
+=======
+>>>>>>> parent of 5f2c2d1 (Working on IBL - DX12)
 #include "DX12Scene.h"
 #include "DX12Gui.h"
 #include "D3D12Helpers.h"
