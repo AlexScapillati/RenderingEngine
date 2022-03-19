@@ -2,6 +2,7 @@
 #include "DX12Texture.h"
 #include "DX12ConstantBuffer.h"
 #include "DX12DescriptorHeap.h"
+#include "DX12Engine.h"
 #include "ResourceUploadBatch.h"
 
 #include "../DirectXTK12/Inc/DDSTextureLoader.h"
@@ -10,6 +11,12 @@
 
 namespace DX12
 {
+	CDX12Texture::CDX12Texture(CDX12Engine* engine, CDX12DescriptorHeap* heap)
+	{
+		mPtrEngine = engine;
+		mDescriptorIndex = heap->Top();
+		mHandle = heap->Add();
+	}
 
 	CDX12Texture::CDX12Texture(CDX12Engine* engine, Resource r)
 	{
@@ -17,22 +24,25 @@ namespace DX12
 		r.Swap(mResource);
 	}
 
-	CDX12Texture::CDX12Texture(CDX12Engine* engine, std::string& filename)
+	CDX12Texture::CDX12Texture(CDX12Engine* engine,
+		std::string& filename,
+		CDX12DescriptorHeap* heap)
 	{
 		mPtrEngine = engine;
 
-		mDescriptorIndex = mPtrEngine->mSRVDescriptorHeap->Top();
-		mHandle = mPtrEngine->mSRVDescriptorHeap->Add();
+		mDescriptorIndex = heap->Top();
+		mHandle = heap->Add();
 
 		LoadTexture(filename);
 	}
 
-	CDX12Texture::CDX12Texture(CDX12Engine* engine, D3D12_RESOURCE_DESC desc)
+	CDX12Texture::CDX12Texture(CDX12Engine* engine, D3D12_RESOURCE_DESC desc,
+		CDX12DescriptorHeap* heap)
 	{
 		mPtrEngine = engine;
 
-		mDescriptorIndex = mPtrEngine->mSRVDescriptorHeap->Top();
-		mHandle = mPtrEngine->mSRVDescriptorHeap->Add();
+		mDescriptorIndex = heap->Top();
+		mHandle = heap->Add();
 
 		CreateTexture(desc);
 	}
@@ -76,13 +86,11 @@ namespace DX12
 
 		const auto resourceFlags = D3D12_RESOURCE_FLAG_NONE;
 
-		const bool isSrgb = false; filename.find("Albedo") != std::string::npos;
+		const bool isSrgb = filename.find("Albedo") != std::string::npos;
 
-		auto ddsFlags = isSrgb ? DirectX::DDS_LOADER_FORCE_SRGB : DirectX::DDS_LOADER_DEFAULT;
-		auto wicFlags = isSrgb ? DirectX::WIC_LOADER_FORCE_SRGB : DirectX::WIC_LOADER_DEFAULT;
+		auto ddsFlags = isSrgb ? DirectX::DDS_LOADER_FORCE_SRGB | DirectX::DDS_LOADER_MIP_AUTOGEN : DirectX::DDS_LOADER_DEFAULT;
+		auto wicFlags = isSrgb ? DirectX::WIC_LOADER_FORCE_SRGB | DirectX::WIC_LOADER_MIP_AUTOGEN : DirectX::WIC_LOADER_DEFAULT ;
 
-		ddsFlags |= DirectX::DDS_LOADER_MIP_AUTOGEN;
-		wicFlags |= DirectX::WIC_LOADER_MIP_AUTOGEN;
 
 		// DDS files need a different function from other files
 		std::string dds = ".dds"; // So check the filename extension (case insensitive)
@@ -129,7 +137,7 @@ namespace DX12
 
 	void CDX12Texture::CreateTexture(D3D12_RESOURCE_DESC desc)
 	{
-		D3D12_CLEAR_VALUE clearValue = { DXGI_FORMAT_R8G8B8A8_UNORM, { 0.f, 0.f, 0.f, 0.f } };
+		D3D12_CLEAR_VALUE clearValue = { desc.Format };
 
 		const auto heapProperties = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
 
@@ -146,15 +154,39 @@ namespace DX12
 
 		mCurrentResourceState = D3D12_RESOURCE_STATE_COMMON;
 
-		DirectX::CreateShaderResourceView(device, mResource.Get(), mHandle.mCpu);
+		DirectX::CreateShaderResourceView(device, mResource.Get(), mHandle.mCpu, desc.Dimension == D3D12_RESOURCE_DIMENSION_TEXTURE3D);
 
 		device->Release();
 	}
 
-	CDX12RenderTarget::CDX12RenderTarget(CDX12Engine* engine, Resource r) : CDX12Texture(engine, r)
+
+	void CDX12Texture::CreateTexture(D3D12_RESOURCE_DESC desc, D3D12_CLEAR_VALUE clearValue)
 	{
-		mRTVDescriptorIndex = mPtrEngine->mRTVDescriptorHeap->Top();
-		mRTVHandle = mPtrEngine->mRTVDescriptorHeap->Add();
+		const auto heapProperties = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
+
+		const auto device = mPtrEngine->mDevice.Get();
+
+		device->CreateCommittedResource(
+			&heapProperties,
+			D3D12_HEAP_FLAG_ALLOW_ALL_BUFFERS_AND_TEXTURES,
+			&desc,
+			D3D12_RESOURCE_STATE_COMMON,
+			&clearValue,
+			IID_PPV_ARGS(mResource.GetAddressOf()));
+
+
+		mCurrentResourceState = D3D12_RESOURCE_STATE_COMMON;
+
+		DirectX::CreateShaderResourceView(device, mResource.Get(), mHandle.mCpu, desc.Dimension == D3D12_RESOURCE_DIMENSION_TEXTURE3D);
+
+		device->Release();
+	}
+
+
+	CDX12RenderTarget::CDX12RenderTarget(CDX12Engine* engine, Resource r, CDX12DescriptorHeap* rtvHeap) : CDX12Texture(engine, r)
+	{
+		mRTVDescriptorIndex = rtvHeap->Top();
+		mRTVHandle = rtvHeap->Add();
 
 		const auto device = mPtrEngine->mDevice.Get();
 
@@ -162,10 +194,10 @@ namespace DX12
 		device->Release();
 	}
 
-	CDX12RenderTarget::CDX12RenderTarget(CDX12Engine* engine, D3D12_RESOURCE_DESC desc) : CDX12Texture(engine, desc)
+	CDX12RenderTarget::CDX12RenderTarget(CDX12Engine* engine, D3D12_RESOURCE_DESC desc, CDX12DescriptorHeap* srvHeap, CDX12DescriptorHeap* rtvHeap) : CDX12Texture(engine, desc, srvHeap)
 	{
-		mRTVDescriptorIndex = mPtrEngine->mRTVDescriptorHeap->Top();
-		mRTVHandle = mPtrEngine->mRTVDescriptorHeap->Add();
+		mRTVDescriptorIndex = rtvHeap->Top();
+		mRTVHandle = rtvHeap->Add();
 
 		const auto device = mPtrEngine->mDevice.Get();
 		device->CreateRenderTargetView(mResource.Get(), nullptr, mRTVHandle.mCpu);
@@ -175,4 +207,35 @@ namespace DX12
 	CDX12RenderTarget::~CDX12RenderTarget()
 	{
 	}
+
+
+	CDX12DepthStencil::CDX12DepthStencil(CDX12Engine* engine, const D3D12_RESOURCE_DESC& desc,
+		CDX12DescriptorHeap* srvHeap, CDX12DescriptorHeap* dsvHeap) : CDX12Texture(engine, srvHeap)
+	{
+
+		mDSVDescriptorIndex = dsvHeap->Top();
+		mDSVHandle = dsvHeap->Add();
+
+		D3D12_CLEAR_VALUE clearValue;
+		clearValue.Format = DXGI_FORMAT_D32_FLOAT;
+		clearValue.DepthStencil.Depth = 1.0f;
+		clearValue.DepthStencil.Stencil = 0;
+
+		const auto heapProperties = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
+
+		const auto device = mPtrEngine->mDevice.Get();
+
+		device->CreateCommittedResource(
+			&heapProperties,
+			D3D12_HEAP_FLAG_ALLOW_ALL_BUFFERS_AND_TEXTURES,
+			&desc,
+			D3D12_RESOURCE_STATE_COMMON,
+			&clearValue,
+			IID_PPV_ARGS(mResource.GetAddressOf()));
+
+		device->CreateDepthStencilView(mResource.Get(), nullptr, mDSVHandle.mCpu);
+
+		device->Release();
+	}
+
 }

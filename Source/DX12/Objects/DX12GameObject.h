@@ -6,24 +6,24 @@
 
 #pragma once
 
-#include <memory>
+#include "../DX12Common.h"
 
 #include "../../Common/CGameObject.h"
-#include "../../Math/CVector3.h"
 
+#include "../CDX12Material.h"
 #include "../DX12Mesh.h"
 
 enum KeyCode;
 
 namespace DX12
 {
-class CDX12Material;
-class CDX12Engine;
+	class CDX12AmbientMap;
 
-	class CDX12GameObject : public CGameObject
+	class CDX12Engine;
+
+	class CDX12GameObject : virtual public CGameObject
 	{
 	public:
-		~CDX12GameObject() override = default;
 
 		//-------------------------------------
 		// Construction / Usage
@@ -75,14 +75,18 @@ class CDX12Engine;
 
 		CDX12Engine* mEngine;
 
-		// The acutual mesh class
+		// The actual mesh class
 		std::unique_ptr<CDX12Mesh> mMesh;
+
+		// The material
+		// It will hold all the textures and send them to the shader with RenderMaterial()
+		std::unique_ptr<CDX12Material> mMaterial;
 	};
 
 	class CDX12Plant : public CDX12GameObject, public CPlant
 	{
 		public:
-			explicit CDX12Plant(CDX12GameObject& cdx12GameObject)
+		    CDX12Plant(CDX12GameObject& cdx12GameObject)
 				: CDX12GameObject(cdx12GameObject)
 			{
 			}

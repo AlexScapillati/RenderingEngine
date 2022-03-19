@@ -1,4 +1,5 @@
 #pragma once
+
 #include "DX11Light.h"
 
 
@@ -17,13 +18,11 @@ namespace DX11
 			CVector3 position = { 0.0f,0.0f,0.0f },
 			CVector3 rotation = { 0.0f,0.0f,0.0f },
 			float scale = 1.0f);
-
-		CDX11PointLight(CDX11PointLight& p);
-
+		
 		void Render(bool basicGeometry = false) override;
 		void SetShadowMapSize(int size) override;
-
-		ID3D11ShaderResourceView** RenderFromThis();
+		void* GetSRV() override;
+		void* RenderFromThis() override;
 
 		~CDX11PointLight() override;
 
@@ -39,6 +38,6 @@ namespace DX11
 
 		void InitTextures();
 	public:
-		void LoadNewMesh(std::string newMesh) override;
+		void  LoadNewMesh(std::string newMesh) override;
 	};
 }

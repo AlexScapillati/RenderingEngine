@@ -56,8 +56,7 @@ public:
 		//--------------------------------------------------------------------------------------
 		// Getters 
 		//--------------------------------------------------------------------------------------
-
-		auto  GetObjectManager() const { return mObjManager.get(); }
+		
 		auto  GetViewportSize() const { return CVector2((float)mViewportX, (float)mViewportY); }
 		auto  GetViewportX() const { return mViewportX; }
 		auto  GetViewportY() const { return mViewportY; }
@@ -73,14 +72,13 @@ public:
 		//--------------------------------------------------------------------------------------
 		// Private Variables
 		//--------------------------------------------------------------------------------------
-
-		std::unique_ptr<CGameObjectManager> mObjManager;
+		
 		std::unique_ptr<CCamera>            mCamera;
 
 		// Lock FPS to monitor refresh rate, which will typically set it to 60fps. Press 'p' to toggle to full fps
 		bool         mLockFPS     = true;
-		UINT         mViewportX   = 1024;
-		UINT         mViewportY   = 720;
+		UINT         mViewportX   = 1920;
+		UINT         mViewportY   = 1080;
 		int          mPcfSamples  = 4;
 		CGameObject* mSelectedObj = nullptr;
 		CWindow*     mWindow      = nullptr;

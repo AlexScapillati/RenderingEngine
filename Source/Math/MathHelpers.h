@@ -2,11 +2,11 @@
 // Math convenience functions
 //--------------------------------------------------------------------------------------
 
-#ifndef _MATH_HELPERS_H_DEFINED_
-#define _MATH_HELPERS_H_DEFINED_
+#pragma once
 
 #include <cmath>
 #include <stdint.h>
+
 
 // Surprisingly, pi is not *officially* defined anywhere in C++
 const float PI = 3.14159265359f;
@@ -87,7 +87,3 @@ inline void SinCos
     *pSin = sinf( x );
     *pCos = cosf( x );
 }
-
-
-
-#endif // _MATH_HELPERS_H_DEFINED_

@@ -4,20 +4,16 @@
 
 #pragma once
 
-#include "..\Math\CVector2.h"
-#include "..\Math\CVector3.h"
-#include "..\Math\CVector4.h"
-#include "..\Math\CMatrix4x4.h"
-
-#include "../Common/CPostProcess.h"
-
 #include <d3d11.h>
 #include <wrl.h>
 
+#include "../Common/CPostProcess.h"
+#include "..\Math\CMatrix4x4.h"
+#include "..\Math\CVector2.h"
+#include "..\Math\CVector3.h"
+#include "..\Math\CVector4.h"
+
 using namespace Microsoft::WRL;
-
-
-
 
 namespace DX11
 {

@@ -4,15 +4,11 @@
 // Holds a pointer to a mesh as well as position, rotation and scaling, which are converted to a world matrix when required
 // This is more of a convenience class, the Mesh class does most of the difficult work.
 
-#include <codecvt>
-#include <locale>
-#include <utility>
-
 #include "DX11GameObject.h"
-#include "../DX11Material.h"
-#include "../GraphicsHelpers.h"
+
 #include "../DX11Engine.h"
 #include "../DX11Scene.h"
+#include "../GraphicsHelpers.h"
 #include "../../Utility/HelperFunctions.h"
 
 
@@ -76,7 +72,8 @@ namespace DX11
 	}
 
 
-	CDX11GameObject::CDX11GameObject(CDX11Engine* engine, std::string dirPath, std::string name, CVector3 position /*= { 0,0,0 }*/, CVector3 rotation /*= { 0,0,0 }*/, float scale /*= 1*/): CGameObject()
+	CDX11GameObject::CDX11GameObject(CDX11Engine* engine,
+									 const std::string& dirPath, std::string name, CVector3 position /*= { 0,0,0 }*/, CVector3 rotation /*= { 0,0,0 }*/, float scale /*= 1*/): CGameObject()
 	{
 		mEngine = engine;
 
@@ -302,8 +299,10 @@ namespace DX11
 			mEngine->GetContext()->PSSetConstantBuffers(1, 1, gPerFrameConstantBuffer.GetAddressOf());
 			mEngine->GetContext()->VSSetConstantBuffers(1, 1, gPerFrameConstantBuffer.GetAddressOf());
 
+			mEngine->GetObjManager()->mSky->Render();
+
 			//render just the objects that can cast shadows
-			for (const auto& it : mEngine->GetScene()->GetObjectManager()->mObjects)
+			for (const auto& it : mEngine->GetObjManager()->mObjects)
 			{
 				// Do not render this object
 				if (it != this)

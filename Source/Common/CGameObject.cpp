@@ -35,7 +35,14 @@ void CGameObject::GetFilesInFolder(std::string& mediaFolder, std::string& dirPat
 
 std::string CGameObject::TextureFileName()
 {
-	return mTextureFiles.front();
+	if (!mTextureFiles.empty())
+		return mTextureFiles.front();
+	else return std::string();
+}
+
+bool CGameObject::IsPbr()
+{
+	return mTextureFiles.size() > 1;
 }
 
 std::vector<std::string>& CGameObject::GetMeshes() { return mMeshFiles; }

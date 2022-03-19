@@ -1,19 +1,18 @@
 #pragma once
 
-<<<<<<< Updated upstream
 #include "DX12Engine.h"
 #include "../Common/CScene.h"
 #include "DX12PipelineObject.h"
-=======
-#include "../Common/CScene.h"
-
 #include <vector>
->>>>>>> Stashed changes
-
 
 namespace DX12
 {
-class CDX12GameObject;
+	class CDX12DescriptorHeap;
+	class CDX12RenderTarget;
+	class CDX12Engine;
+	class CDX12AmbientMap;
+	class CDX12DepthStencil;
+	class CDX12GameObject;
 
 	class CDX12Scene : public CScene<CDX12Scene>
 	{
@@ -33,8 +32,6 @@ class CDX12GameObject;
 		CDX12Scene& operator=(const CDX12Scene&&) = delete;
 
 		CDX12Scene(CDX12Engine* engine, std::string  fileName);
-
-		void InitScene();
 
 		//--------------------------------------------------------------------------------------
 		// Scene Render and Update
@@ -58,14 +55,10 @@ class CDX12GameObject;
 		ImTextureID GetTextureSRVImpl() ;
 
 		std::unique_ptr<CDX12RenderTarget> mSceneTexture;
-<<<<<<< Updated upstream
-
-		std::unique_ptr<CDX12PBRPSO> mPso;
-=======
 		std::unique_ptr<CDX12DepthStencil> mDepthStencils[3];
 		std::unique_ptr<CDX12DescriptorHeap> mDSVDescriptorHeap;
 		std::unique_ptr<CDX12AmbientMap> mAmbientMap;
->>>>>>> Stashed changes
+
 
 		//--------------------------------------------------------------------------------------
 		// Scene Data
@@ -74,9 +67,6 @@ class CDX12GameObject;
 	private:
 
 		CDX12Engine* mEngine = nullptr;
-<<<<<<< Updated upstream
-=======
-
 		std::vector<ImTextureID> mShadowMaps;
 
 		//--------------------------------------------------------------------------------------
@@ -84,7 +74,5 @@ class CDX12GameObject;
 		//--------------------------------------------------------------------------------------
 
 		void InitFrameDependentStuff();
-
->>>>>>> Stashed changes
 	};
 }

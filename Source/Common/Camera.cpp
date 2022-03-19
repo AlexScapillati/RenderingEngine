@@ -238,3 +238,4 @@ CVector2 CCamera::PixelSizeInWorldSpace(float Z, unsigned int viewportWidth, uns
 	// Return world size of single pixel at given Z distance
 	return { viewportSizeAtZ.x / viewportWidth, viewportSizeAtZ.y / viewportHeight };
 }
+

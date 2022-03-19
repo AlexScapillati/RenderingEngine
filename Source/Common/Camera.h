@@ -5,10 +5,10 @@
 
 #pragma once
 
-#include "..\Math\CVector3.h"
-#include "..\Math\CVector2.h"
+#include "../Math/MathHelpers.h"
 #include "..\Math\CMatrix4x4.h"
-#include "..\Math/MathHelpers.h"
+#include "..\Math\CVector2.h"
+#include "..\Math\CVector3.h"
 #include "..\Utility/Input.h"
 
 class CCamera
@@ -29,7 +29,7 @@ public:
 	CCamera(CVector3 position = {0,0,0}, CVector3 rotation = {0,0,0}, 
            float fov = PI/3, float aspectRatio = 16.0f / 9.0f, float nearClip = 0.1f, float farClip = 10000.0f);
 
-	~CCamera(){};
+	~CCamera(){}
 
 
 	// Control the camera's position and rotation using keys provided

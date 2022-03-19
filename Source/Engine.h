@@ -10,6 +10,7 @@
 
 // Forward declarations
 
+class CGameObjectManager;
 class CGui;
 class CPlant;
 class CSky;
@@ -111,26 +112,17 @@ public:
 	//*******************************
 	//**** Setters / Getters
 
-	auto GetTimer() const
-	{
-		return mTimer;
-	}
+	auto GetTimer() const { return mTimer; }
 
-	auto GetWindow() const
-	{
-		return mWindow.get();
-	}
+	auto GetWindow() const { return mWindow.get(); }
 
-	auto GetScene() const
-	{
-		return mScene.get();
-	}
+	auto GetScene() const { return mScene.get(); }
 
+	auto& GetMediaFolder() const { return mMediaFolder; }
 
-	auto& GetMediaFolder()
-	{
-		return mMediaFolder;
-	}
+	auto& GetShaderFolder() const { return mShaderFolder; }
+
+	auto GetObjManager() const { return mObjManager.get(); }
 
 	virtual ~IEngine() = default;
 
@@ -142,6 +134,8 @@ protected:
 	Timer mTimer;
 
 	std::unique_ptr<CScene> mScene;
+
+	std::unique_ptr<CGameObjectManager> mObjManager;
 
 	std::unique_ptr<CGui> mGui;
 

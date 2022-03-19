@@ -1,21 +1,19 @@
 #pragma once
 
-#include <utility>
-
 #include "DX11GameObject.h"
-#include "DDSTextureLoader.h"
 
 namespace DX11
 {
 	class CDX11Sky final : public CDX11GameObject, public CSky
 	{
 		public:
-			CDX11Sky(CDX11Engine* engine, std::string mesh,
-				std::string   name,
-				std::string  diffuse,
-				CVector3      position = { 0,0,0 },
-				CVector3      rotation = { 0,0,0 },
-				float         scale    = 1)
+			CDX11Sky(CDX11Engine*       engine,
+					 const std::string& mesh,
+					 const std::string& name,
+					 const std::string& diffuse,
+				CVector3                position = { 0,0,0 },
+				CVector3                rotation = { 0,0,0 },
+				float                   scale    = 1)
 				: CDX11GameObject(engine, mesh, name, diffuse, position, rotation, scale)
 			{
 
@@ -127,7 +125,7 @@ namespace DX11
 			}
 
 			bool HasCubeMap() const { return mIsCubeMap; }
-			void LoadNewMesh(std::string newMesh) override { CDX11GameObject::LoadNewMesh(newMesh); };
+			void LoadNewMesh(std::string newMesh) override { CDX11GameObject::LoadNewMesh(newMesh); }
 
 		private:
 	
