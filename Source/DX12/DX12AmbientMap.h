@@ -12,6 +12,9 @@ namespace DX12
 
 			void* RenderFromThis(CMatrix4x4* mat);
 
+
+			bool mEnable;
+
 			CDX12Engine*           mEngine;
 			ComPtr<ID3D12Resource> mResource;
 			ComPtr<ID3D12Resource> mDepthBufferResource;

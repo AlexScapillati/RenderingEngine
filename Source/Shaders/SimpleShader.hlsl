@@ -622,7 +622,7 @@ float4 PSMain(NormalMappingPixelShaderInput input) : SV_TARGET
 
             const float depth = ShadowMap.Sample(PointClamp,shadowMapUV).r;
 
-            if (depthFromLight < depth)
+            //if (depthFromLight < depth)
         		resDiffuse += CalculateLight(gSpotLights[j].pos, gSpotLights[j].intensity, gSpotLights[j].colour, resDiffuse, resSpecular, textureNormal, cameraDirection, input.worldPosition, roughness, albedo);
         }
     }
@@ -720,7 +720,7 @@ float4 PSMain(NormalMappingPixelShaderInput input) : SV_TARGET
 
 		    // Compare pixel depth from light with depth held in shadow map of the light. If shadow map depth is less than something is nearer
 		    // to the light than this pixel - so the pixel gets no effect from this light
-            if (depthFromLight > 0)
+            //if (depthFromLight > 0)
             {
                 // Calculate lighting
                 resDiffuse += CalculateLight(gPointLights[l].pos, gPointLights[l].intensity, gPointLights[l].colour, resDiffuse, resSpecular, textureNormal, cameraDirection, input.worldPosition, roughness, albedo);

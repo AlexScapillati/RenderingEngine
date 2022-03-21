@@ -11,7 +11,7 @@ namespace DX12
 		mEngine(e),
 		mSize(size)
 	{
-
+		mEnable = false;
 		mVp = CD3DX12_VIEWPORT(0.f, 0.f, static_cast<float>(mSize), static_cast<float>(mSize));
 		mScissorsRect = { 0,0,mSize,mSize };
 
@@ -112,6 +112,8 @@ namespace DX12
 
 	void* CDX12AmbientMap::RenderFromThis(CMatrix4x4* mat)
 	{
+
+		if (!mEnable) return nullptr;
 
 		PIXBeginEvent(mEngine->mCommandList.Get(),0,L"AmbientMapRendering");
 
