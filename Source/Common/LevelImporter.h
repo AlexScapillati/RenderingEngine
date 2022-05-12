@@ -1,6 +1,7 @@
 #pragma once
 
 #include "..\External/tinyxml2/tinyxml2.h"
+
 #include <string>
 
 class CGameObject;
@@ -16,15 +17,11 @@ public:
 	// Scene Parser
 	//--------------------------------------------------------------------------------------
 
-	bool LoadScene(const std::string& level, CScene* scene);
+	static bool LoadScene(const std::string& level, IEngine* engine);
 
-	void SaveScene(std::string& fileName, CScene* ptrScene);
+	static void SaveScene(std::string& fileName);
 
-	CLevelImporter(IEngine* engine);
-
-private:
-	
-	IEngine* mEngine;
+};
 
 	void ParsePostProcessingEffects(tinyxml2::XMLElement* curr);
 	
@@ -32,27 +29,26 @@ private:
 
 	void SavePositionRotationScale(tinyxml2::XMLElement* obj, CGameObject* it);
 
-	void SaveObjects(tinyxml2::XMLElement* el, CScene* ptrScene);
+	void SaveObjects(tinyxml2::XMLElement* el);
 
 	void SaveVector3(CVector3 v, tinyxml2::XMLElement* el);
 
-	bool ParseScene(tinyxml2::XMLElement* sceneEl, CScene* scene);
+	bool ParseScene(tinyxml2::XMLElement* sceneEl);
 
-	void LoadObject(tinyxml2::XMLElement* currEntity, CScene* scene);
+	void LoadObject(tinyxml2::XMLElement* currEntity);
 
-	void LoadPointLight(tinyxml2::XMLElement* currEntity, CScene* scene);
+	void LoadPointLight(tinyxml2::XMLElement* currEntity);
 
-	void LoadLight(tinyxml2::XMLElement* currEntity, CScene* scene);
+	void LoadLight(tinyxml2::XMLElement* currEntity);
 
-	void LoadSpotLight(tinyxml2::XMLElement* currEntity, CScene* scene);
+	void LoadSpotLight(tinyxml2::XMLElement* currEntity);
 
-	void LoadDirLight(tinyxml2::XMLElement* currEntity, CScene* scene);
+	void LoadDirLight(tinyxml2::XMLElement* currEntity);
 
-	void LoadSky(tinyxml2::XMLElement* currEntity, CScene* scene);
+	void LoadSky(tinyxml2::XMLElement* currEntity);
 
-	void LoadCamera(tinyxml2::XMLElement* currEntity, CScene* scene);
+	void LoadCamera(tinyxml2::XMLElement* currEntity);
 
-	void LoadPlant(tinyxml2::XMLElement* currEntity, CScene* scene);
+	void LoadPlant(tinyxml2::XMLElement* currEntity);
 
-	bool ParseEntities(tinyxml2::XMLElement* entitiesEl, CScene* scene);
-};
+	bool ParseEntities(tinyxml2::XMLElement* entitiesEl);

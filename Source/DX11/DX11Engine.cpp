@@ -7,6 +7,7 @@
 #include "DX11Gui.h"
 #include "../Utility/Input.h"
 
+#include "../Common/CGameObjectManager.h"
 #include "DX11Scene.h"
 #include "Objects/DX11DirLight.h"
 #include "Objects/DX11GameObject.h"

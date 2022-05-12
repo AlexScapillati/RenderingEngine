@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <DirectXMath.h>
 
 /*-----------------------------------------------------------------------------------------
 	Member functions
@@ -252,6 +253,16 @@ CMatrix4x4 InverseAffine(const CMatrix4x4& m)
 	mOut.e33 = 1.0f;
 
 	return mOut;
+}
+
+CMatrix4x4 Inverse(const CMatrix4x4& m)
+{
+	DirectX::XMMATRIX dxm(&m.e00);
+	DirectX::XMVECTOR det;
+	auto im = XMMatrixInverse(&det, dxm);
+	CMatrix4x4 out;
+	out.SetValues(&im.r->m128_f32[0]);
+	return out;
 }
 
 // Make this matrix an affine 3D transformation matrix to face from current position to given target (in the Z direction)

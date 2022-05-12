@@ -7,6 +7,7 @@
 *.o
 *.obj
 *.cso
+*.pdb
 
 # Precompiled Headers
 *.gch
@@ -25,7 +26,6 @@
 *.lai
 *.la
 *.a
-*.lib
 
 # Executables
 *.exe

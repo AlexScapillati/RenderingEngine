@@ -14,12 +14,10 @@ class CLight : virtual public CGameObject
 		void      SetStrength(float strength) { mStrength = strength; }
 		CVector3& GetColour() { return mColour; }
 		float&    GetStrength() { return mStrength; }
-		virtual void Render(bool basicGeometry = false) override = 0;
-		virtual void LoadNewMesh(std::string newMesh) override = 0;
 
 	protected:
 		CVector3 mColour;
-		float    mStrength  =1;
+		float    mStrength;
 };
 
 class CSpotLight : virtual public CLight
@@ -37,9 +35,6 @@ class CSpotLight : virtual public CLight
 
 		int&   GetShadowMapSize() { return mShadowMapSize; }
 		float& GetConeAngle() { return mConeAngle; }
-
-		virtual void   Render(bool basicGeometry = false) override = 0;
-		virtual void   LoadNewMesh(std::string newMesh) override = 0;
 
 	protected:
 		int   mShadowMapSize = 0;
@@ -60,8 +55,6 @@ class CDirectionalLight : virtual public CLight
 			CLight(col, s), mShadowMapSize(shadowMapSize), mWidth(width), mHeight(height), mNearClip(nearClip), mFarClip(farClip){}
  
 		virtual void SetShadowMapSize(int s) = 0;
-		virtual void   Render(bool basicGeometry = false) override = 0;
-		virtual void   LoadNewMesh(std::string newMesh) override = 0;
 		virtual void* RenderFromThis() = 0;
 
 		auto GetNearClip() const { return mNearClip; }
@@ -91,8 +84,6 @@ class CPointLight : virtual public CLight
 		CPointLight(const CVector3& col, const float& s, const int& shadowMapSize) : CLight(col,s), mShadowMapSize(shadowMapSize){}
 
 		virtual void SetShadowMapSize(int size) = 0;
-		virtual void Render(bool basicGeometry = false) override = 0;
-		virtual void LoadNewMesh(std::string newMesh) override = 0;
 		virtual void* GetSRV() = 0;
 		virtual void* RenderFromThis() = 0;
 

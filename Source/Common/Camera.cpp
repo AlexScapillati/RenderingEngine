@@ -68,8 +68,7 @@ CMatrix4x4& CCamera::ViewProjectionMatrix()
 }
 
 // Control the camera's position and rotation using keys provided
-void CCamera::Control(float frameTime, KeyCode turnUp, KeyCode turnDown, KeyCode turnLeft, KeyCode turnRight,
-	KeyCode moveForward, KeyCode moveBackward, KeyCode moveLeft, KeyCode moveRight)
+void CCamera::Control(float frameTime)
 {
 	//**** ROTATION ****
 	if (KeyHeld(Key_Down))

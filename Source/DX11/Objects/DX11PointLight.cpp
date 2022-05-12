@@ -3,6 +3,8 @@
 #include <stdexcept>
 
 #include "..\DX11Scene.h"
+#include "../../Common/CGameObjectManager.h"
+
 
 namespace DX11
 {
@@ -183,6 +185,5 @@ namespace DX11
 			i->Release();
 		}
 	}
-
-	void CDX11PointLight::LoadNewMesh(std::string newMesh) { CDX11Light::LoadNewMesh(newMesh); }
+	
 }

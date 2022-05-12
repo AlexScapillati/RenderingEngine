@@ -24,6 +24,7 @@
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>false</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -49,22 +50,18 @@
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)\</OutDir>
     <IncludePath>$(IncludePath)</IncludePath>
-    <LibraryPath>$(ProjectDir)Source\External\DirectXTK12\Bin\Desktop_2019\$(Platform)\$(Configuration);$(ProjectDir);$(ProjectDir)Source\External\DirectXTex\Bin\Desktop_2019\$(Platform)\$(Configuration)\;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(ProjectDir)Source\External\assimp\bin\;$(ProjectDir)Source\External\assimp\lib\;$(ProjectDir)bin\;$(LibraryPath);$(ProjectDir)Source\External\DirectXTex\DirectXTex\Bin\Desktop_2019\$(Platform)\$(Configuration);$(ProjectDir)Source\External\DirectXTK\$(Configuration);$(ProjectDir)Source\External\dxc\lib\x64\;$(ProjectDir)Source\External\dxc\bin\x64\;$(ProjectDir)Source\External\DirectXTK12\Bin\Desktop_2019_Win10\$(Platform)\$(Configuration);%(AdditionalDependencies)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)\</OutDir>
     <IncludePath>$(IncludePath)</IncludePath>
-    <LibraryPath>$ProjectDir)Source\External\assimp\lib\;$(ProjectDir)Source\External\DirectXTK12\Bin\Desktop_2019\$(Platform)\$(Configuration)\;$(ProjectDir)\;$(ProjectDir)Source\External\DirectXTex\Bin\Desktop_2019\$(Platform)\$(Configuration)\;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(ProjectDir)Source\External\assimp\bin\;$(ProjectDir)Source\External\assimp\lib\;$(ProjectDir)bin\;$(LibraryPath);$(ProjectDir)Source\External\DirectXTex\DirectXTex\Bin\Desktop_2019\$(Platform)\$(Configuration);$(ProjectDir)Source\External\DirectXTK\$(Configuration);$(ProjectDir)Source\External\dxc\lib\x64\;$(ProjectDir)Source\External\dxc\bin\x64\;$(ProjectDir)Source\External\DirectXTK12\Bin\Desktop_2019_Win10\$(Platform)\$(Configuration);%(AdditionalDependencies)</LibraryPath>
   </PropertyGroup>
-  <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <VcpkgUseStatic>true</VcpkgUseStatic>
-  </PropertyGroup>
-  <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <VcpkgUseStatic>true</VcpkgUseStatic>
-  </PropertyGroup>
+  <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" />
+  <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Release|x64'" />
   <PropertyGroup Label="Vcpkg">
-    <VcpkgEnableManifest>false</VcpkgEnableManifest>
+    <VcpkgEnabled>false</VcpkgEnabled>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -72,16 +69,20 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS;NOMINMAX</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>Source\External\DirectXTex\WICTextureLoader;Source\External\imgui\FileBrowser;Source\External\tinyxml2;Source\External\imgui;Utility;Math;Source\External\DirectXTex\DirectXTex;Source\External\assimp\include;Source\External\DirectXTK12\Inc;Source\External\DirectXTex\DDSTextureLoader</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>Source\External\DirectXTex\;Source\External\imgui\FileBrowser;Source\External\tinyxml2;Source\External\assimp\include\;Source\External\thread-pool\;Source\External\imgui;Utility;Math;Source\External\DirectXTex\DirectXTex;Source\External\DirectXTK12\Inc\;Source\External\DirectXTK12\;Source\External\assimp\include;Source\External\dxc\inc</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <DisableSpecificWarnings>4250</DisableSpecificWarnings>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>DirectXTK12.lib;DirectXTK.lib;assimp-vc142-mt.lib;d3d11.lib;d3d12.lib;DirectXTex.lib;dxgi.lib;dxguid.lib;d3dcompiler.lib;winmm.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>Source\External\DirectXTex-master\DirectXTex\Bin\Desktop_2019\$(Platform)\$(Configuration);Source\External\DirectXTK\$(Configuration);Source\External\assimp\lib\$(Platform)\;Source\External\DirectXTK12\Bin\Desktop_2019_Win10\$(Platform)\$(Configuration);%(AdditionalDependencies)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>DirectXTK12.lib;DirectXTK.lib;d3d11.lib;d3d12.lib;DirectXTex.lib;dxgi.lib;dxguid.lib;d3dcompiler.lib;dxcompiler.lib;winmm.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;assimp-vc142-mtd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>
+      </AdditionalLibraryDirectories>
     </Link>
     <FxCompile>
       <DisableOptimizations>false</DisableOptimizations>
@@ -95,9 +96,9 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_WINDOWS;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_WINDOWS;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS;NOMINMAX</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>Source\External\DirectXTex\WICTextureLoader;Source\External\imgui\FileBrowser;Source\External\tinyxml2;Source\External\imgui;Utility;Math;Source\External\DirectXTex\DirectXTex;Source\External\assimp\include;Source\External\DirectXTK12\Inc;Source\External\DirectXTex\DDSTextureLoader</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>Source\External\DirectXTex\;Source\External\imgui\FileBrowser;Source\External\tinyxml2;Source\External\assimp\include\;Source\External\thread-pool\;Source\External\imgui;Utility;Math;Source\External\DirectXTex\DirectXTex;Source\External\DirectXTK12\Inc\;Source\External\DirectXTK12\;Source\External\dxc\inc</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <DebugInformationFormat>OldStyle</DebugInformationFormat>
     </ClCompile>
@@ -106,15 +107,27 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>DirectXTK12.lib;DirectXTK.lib;assimp-vc142-mt.lib;d3d11.lib;d3d12.lib;DirectXTex.lib;dxgi.lib;dxguid.lib;d3dcompiler.lib;winmm.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>Source\External\DirectXTex\DirectXTex\Bin\Desktop_2019\$(Platform)\$(Configuration);Source\External\DirectXTK\$(Configuration);Source\External\assimp\lib\;Source\External\assimp\lib\$(Platform)\;Source\External\DirectXTK12\Bin\Desktop_2019_Win10\$(Platform)\$(Configuration);%(AdditionalDependencies)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>DirectXTK12.lib;DirectXTK.lib;d3d11.lib;d3d12.lib;DirectXTex.lib;dxgi.lib;dxguid.lib;d3dcompiler.lib;dxcompiler.lib;winmm.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;assimp-vc142-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>
+      </AdditionalLibraryDirectories>
     </Link>
     <FxCompile>
       <EnableDebuggingInformation>true</EnableDebuggingInformation>
     </FxCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+<<<<<<< HEAD
+    <ClCompile Include="Source\DX12\DXR\DXR.cpp" />
+    <ClCompile Include="Source\DX12\DXR\DXR.h" />
     <ClCompile Include="Source\DX12\DX12AmbientMap.cpp" />
+    <ClCompile Include="Source\DX12\DXR\BottomLevelASGenerator.cpp" />
+    <ClCompile Include="Source\DX12\DXR\RaytracingPipelineGenerator.cpp" />
+    <ClCompile Include="Source\DX12\DXR\RootSignatureGenerator.cpp" />
+    <ClCompile Include="Source\DX12\DXR\ShaderBindingTableGenerator.cpp" />
+    <ClCompile Include="Source\DX12\DXR\TopLevelASGenerator.cpp" />
+=======
+    <ClCompile Include="Source\DX12\DX12AmbientMap.cpp" />
+>>>>>>> parent of a9c1de14 (revert commit)
     <ClCompile Include="Source\DX12\Objects\DX12DirectionalLight.cpp" />
     <ClCompile Include="Source\DX12\Objects\DX12PointLight.cpp" />
     <ClCompile Include="Source\Common\CGameObject.cpp" />
@@ -180,6 +193,14 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\DX12\DX12AmbientMap.h" />
+<<<<<<< HEAD
+    <ClInclude Include="Source\DX12\DXR\BottomLevelASGenerator.h" />
+    <ClInclude Include="Source\DX12\DXR\RaytracingPipelineGenerator.h" />
+    <ClInclude Include="Source\DX12\DXR\RootSignatureGenerator.h" />
+    <ClInclude Include="Source\DX12\DXR\ShaderBindingTableGenerator.h" />
+    <ClInclude Include="Source\DX12\DXR\TopLevelASGenerator.h" />
+=======
+>>>>>>> parent of a9c1de14 (revert commit)
     <ClInclude Include="Source\DX12\Objects\DX12DirectionalLight.h" />
     <ClInclude Include="Source\DX12\Objects\DX12PointLight.h" />
     <ClInclude Include="Source\Common\CLight.h" />
@@ -354,17 +375,33 @@
       <FileType>Document</FileType>
     </None>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Source\Shaders\Hit.hlsl">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="Source\Shaders\Miss.hlsl">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="Source\Shaders\RayGen.hlsl">
+      <FileType>Document</FileType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Library</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">6.3</ShaderModel>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/Fd $(OutDir)/Source/Shaders/%(Filename).cso %(AdditionalOptions)</AdditionalOptions>
+      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+      </EntryPointName>
+    </None>
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
     <Import Project="$(VCTargetsPath)\BuildCustomizations\hlsl.targets" />
+    <Import Project="packages\directxtex_desktop_win10.2022.3.24.1\build\native\directxtex_desktop_win10.targets" Condition="Exists('packages\directxtex_desktop_win10.2022.3.24.1\build\native\directxtex_desktop_win10.targets')" />
     <Import Project="packages\WinPixEventRuntime.1.0.220124001\build\WinPixEventRuntime.targets" Condition="Exists('packages\WinPixEventRuntime.1.0.220124001\build\WinPixEventRuntime.targets')" />
-    <Import Project="packages\directxtk_desktop_win10.2021.11.8.1\build\native\directxtk_desktop_win10.targets" Condition="Exists('packages\directxtk_desktop_win10.2021.11.8.1\build\native\directxtk_desktop_win10.targets')" />
   </ImportGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
+    <Error Condition="!Exists('packages\directxtex_desktop_win10.2022.3.24.1\build\native\directxtex_desktop_win10.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\directxtex_desktop_win10.2022.3.24.1\build\native\directxtex_desktop_win10.targets'))" />
     <Error Condition="!Exists('packages\WinPixEventRuntime.1.0.220124001\build\WinPixEventRuntime.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\WinPixEventRuntime.1.0.220124001\build\WinPixEventRuntime.targets'))" />
-    <Error Condition="!Exists('packages\directxtk_desktop_win10.2021.11.8.1\build\native\directxtk_desktop_win10.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\directxtk_desktop_win10.2021.11.8.1\build\native\directxtk_desktop_win10.targets'))" />
   </Target>
 </Project>

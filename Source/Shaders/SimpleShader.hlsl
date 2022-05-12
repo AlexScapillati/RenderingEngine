@@ -1,23 +1,3 @@
-
-#define ROOT_SIGNATURE \
-					"RootFlags( ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT)," \
-					"CBV(b0, flags = DATA_STATIC), " \
-					"CBV(b1, flags = DATA_STATIC), " \
-					"CBV(b2, flags = DATA_STATIC), " \
-					"CBV(b3, flags = DATA_STATIC), " \
-					"CBV(b4, flags = DATA_STATIC), " \
-					"CBV(b5, flags = DATA_STATIC), " \
-                    "SRV(t0), " \
-                    "SRV(t1), " \
-                    "SRV(t2), " \
-                    "SRV(t3), " \
-                    "SRV(t4), " \
-                    "SRV(t6), " \
-                    "SRV(t7), " \
-                    "StaticSampler(s1)," \
-                    "StaticSampler(s2)"
-
-
 //--------------------------------------------------------------------------------------
 // Shader input / output
 //--------------------------------------------------------------------------------------
@@ -60,12 +40,6 @@ struct LightingPixelShaderInput
     float2 uv : uv; // UVs are texture coordinates. The artist specifies for every vertex which point on the texture is "pinned" to that vertex.
 };
 
-//****| INFO |*******************************************************************************************//
-// Like per-pixel lighting, normal mapping expects the vertex shader to pass over the position and normal.
-// However, it also expects the tangent (see lecturee). Furthermore the normal and tangent are left in
-// model space, i.e. they are not transformed by the world matrix in the vertex shader - just sent as is.
-// This is because the pixel shader will do the matrix transformations for normals in this case
-//*******************************************************************************************************//
 // The data sent from vertex to pixel shaders for normal mapping
 struct NormalMappingPixelShaderInput
 {
@@ -145,17 +119,6 @@ struct sPointLight
 
 static const int MAX_LIGHTS = 64;
 
-// These structures are "constant buffers" - a way of passing variables over from C++ to the GPU
-// They are called constants but that only means they are constant for the duration of a single GPU draw call.
-// These "constants" correspond to variables in C++ that we will change per-model, or per-frame etc.
-
-// In this exercise the matrices used to position the camera are updated from C++ to GPU every frame along with lighting information
-// These variables must match exactly the gPerFrameConstants structure in Scene.cpp
-
-// If we have multiple models then we need to update the world matrix from C++ to GPU multiple times per frame because we
-// only have one world matrix here. Because this data is updated more frequently it is kept in a different buffer for better performance.
-// We also keep other data that changes per-model here
-// These variables must match exactly the gPerModelConstants structure in Scene.cpp
 cbuffer PerModelConstants : register(b0) // The b1 gives this constant buffer the number 1 - used in the C++ code
 {
     float4x4 gWorldMatrix;
@@ -163,16 +126,18 @@ cbuffer PerModelConstants : register(b0) // The b1 gives this constant buffer th
     float3 gObjectColour; // Used for tinting light models
     float gParallaxDepth; // Used in the pixel shader to control how much the polygons are bumpy
 
-    float gHasOpacityMap;
+    float gUseCustomVaues;
     float gHasAoMap;
     float gHasRoughnessMap;
     float gHasAmbientMap;
     float gHasMetallnessMap;
+    float gHasNormalMap;
+    float gHasDisplacementMap;
 
     float gRoughness;
     float gMetalness;
 
-    float padding[37];
+    float padding[35];
 }
 
 
@@ -370,7 +335,7 @@ float3 SampleNormal(float3       position,
 		const float2   textureOffsetDir = mul(cameraModelDir, tangentMatrix).xy;
 
 		// Offset UVs in that direction to account for depth (using height map and some geometry)
-		const float texDepth = 0.06f * (DisplacementMap.Sample(TexSampler, UV).r - 0.5f);
+		const float texDepth = gParallaxDepth * (DisplacementMap.Sample(TexSampler, UV).r - 0.5f);
 		UV += texDepth * textureOffsetDir;
 	}
 
@@ -386,12 +351,7 @@ float3 SampleNormal(float3       position,
 
 float2 ParallaxMapping(float2 UV, float3 v)
 {
-    //------------------------------
-    // Parallax offset mapping
-    
-    //float depth = gParallaxDepth * (DisplacementMap.Sample(TexSampler, UV).r - 0.5f);
-    //return UV + depth * v.xy / v.z; // Remove the / v.z to get parallax offset mapping with limiting
-    
+
     //------------------------------
     // Common linear search for parallax occlusion mapping and relief mapping
     
@@ -403,7 +363,7 @@ float2 ParallaxMapping(float2 UV, float3 v)
     // Determine number of samples based on viewing angle. A more shallow angle needs more samples
     const float minSamples = gParallaxMinSample;
     const float maxSamples = gParallaxMaxSample;
-    const float numSamples = lerp(maxSamples, minSamples, abs(v.z)); // The view vector is in tangent space, so its z value indicates
+    const float numSamples = lerp(maxSamples, minSamples, v.z * v.z); // The view vector is in tangent space, so its z value indicates
                                                                // how much it is pointing directly away from the polygon
     
     // For each step along the ray direction, find the amount to move the UVs and the amount to descend in the height layer
@@ -417,13 +377,8 @@ float2 ParallaxMapping(float2 UV, float3 v)
     float surfaceHeight = DisplacementMap.Sample(TexSampler, UV).r;
     float prevSurfaceHeight = surfaceHeight;
     
-    // Technical point: when sampling a texture DirectX needs the rate of change of the U and V coordinates (called the x and y
-    // gradients). This is used to select a mip-map - if the UVs are changing a lot between each pixel then the texture must be
-    // far away and so a small mip-map is chosen. However, you cannot use the gradient values in a loop (unless it can be unrolled).
-    // So normal texture sampling often cannot be used in a loop. However we can fetch the gradient values before the loop (these
-    // two lines) then use the SampleGrad function, where we can pass them as parameters.
-    const float2 dx = ddx(UV);
-    const float2 dy = ddy(UV);
+    float2 dx = ddx(UV);
+    float2 dy = ddy(UV);
     
     // While ray is above the surface
     while (rayHeight > surfaceHeight)
@@ -434,10 +389,9 @@ float2 ParallaxMapping(float2 UV, float3 v)
 
         // Sample height map again
         prevSurfaceHeight = surfaceHeight;
-        surfaceHeight = NormalMap.SampleGrad(TexSampler, UV, dx, dy).r;
+        surfaceHeight = DisplacementMap.SampleGrad(TexSampler, UV, dx, dy).r;
     }
-
-
+    
     //------------------------------
     // Parallax occulusion mapping
     
@@ -455,7 +409,6 @@ float2 ParallaxMapping(float2 UV, float3 v)
     
     // Also interpolate height value (only needed if doing self-shadowing)
     rayHeight += heightStep * weight;
-    
     
     //-----------------
     // Relief mapping
@@ -484,18 +437,18 @@ float2 ParallaxMapping(float2 UV, float3 v)
 
 float4 PSMain(NormalMappingPixelShaderInput input) : SV_TARGET
 {
-  ////************************
+
+
+	////************************
 	//// Normal Map Extraction
 	////************************
 
 	// Will use the model normal/tangent to calculate matrix for tangent space. The normals for each pixel are *interpolated* from the
 	// vertex normals/tangents. This means they will not be length 1, so they need to be renormalised (same as per-pixel lighting issue)
-    float3 worldNormal = normalize(input.worldNormal);
+    float3 n = normalize(input.worldNormal);
     float3 worldTangent = normalize(input.worldTangent);
     
-    // Calculate the bitangent with the cross product of the world normal and the world tangent
-    float3 worldBitangent = normalize(cross(input.worldNormal, input.worldTangent));
-    
+
 	//****| INFO |**********************************************************************************//
 	// The following few lines are the parallax mapping. Converts the camera direction into model
 	// space and adjusts the UVs based on that and the bump depth of the texel we are looking at
@@ -503,88 +456,66 @@ float4 PSMain(NormalMappingPixelShaderInput input) : SV_TARGET
 	//**********************************************************************************************//
 
 	// Get normalised vector to camera for parallax mapping and specular equation (this vector was calculated later in previous shaders)
-    const float3 cameraDirection = normalize(gCameraPosition - input.worldPosition);
-    
-	// Then transform model-space camera vector into tangent space (texture coordinate space) to give the direction to offset texture
-	// coordinate
-    const float3x3 tangentMatrix = float3x3(worldTangent, worldBitangent, worldNormal);
+    const float3 v = normalize(gCameraPosition - input.worldPosition);
+
+    if (0)
+    {
+		// Calculate the bitangent with the cross product of the world normal and the world tangent
+        float3 worldBitangent = normalize(cross(input.worldNormal, input.worldTangent));
+		// Then transform model-space camera vector into tangent space (texture coordinate space) to give the direction to offset texture
+		// coordinate
+        const float3x3 tangentMatrix = float3x3(worldTangent, worldBitangent, n);
 	
-    // Offset UVs due to parallax mapping, requires view vector (parallax mapping operates in tangent space, so transform vector to tangent space)
-    const float3 tangentSpaceV = mul(cameraDirection, transpose(tangentMatrix));
+		// Offset UVs due to parallax mapping, requires view vector (parallax mapping operates in tangent space, so transform vector to tangent space)
+        const float3 tangentSpaceV = mul(v, transpose(tangentMatrix));
     
-    // Calculate the offset uv coordinate for the lighting calculations
-    const float2 offsetTexCoord = ParallaxMapping(input.uv, tangentSpaceV);
+		// Calculate the offset uv coordinate for the lighting calculations
+        if (gHasDisplacementMap) 
+            input.uv = ParallaxMapping(input.uv, tangentSpaceV);
     
-	//*******************************************
-
-	//****| INFO |**********************************************************************************//
-	// The above chunk of code is used only to calculate "offsetTexCoord", which is the offset in 
-	// which part of the texture we see at this pixel due to it being bumpy. The remaining code is 
-	// exactly the same as normal mapping, but uses offsetTexCoord instead of the usual input.uv
-	//**********************************************************************************************//
-
-	// Get the texture normal from the normal map. The r,g,b pixel values actually store x,y,z components of a normal. However, r,g,b
-	// values are stored in the range 0->1, whereas the x, y & z components should be in the range -1->1. So some scaling is needed
+		// Get the texture normal from the normal map. The r,g,b pixel values actually store x,y,z components of a normal. However, r,g,b
+		// values are stored in the range 0->1, whereas the x, y & z components should be in the range -1->1. So some scaling is needed
     
-    // Get normal from normal map, convert from tangent space to world space
-    float3 tangentSpaceN = normalize(NormalMap.Sample(TexSampler, offsetTexCoord).xyz * 2.0f - 1.0f);
-    tangentSpaceN.y = -tangentSpaceN.y; // All the normal maps have Y up, but to make a LHS with Z outwards and X rightwards, then Y should be down
-    const float3 textureNormal = mul(tangentSpaceN, tangentMatrix);
-    
+		// Get normal from normal map, convert from tangent space to world space
+        float3 tangentSpaceN = normalize(NormalMap.Sample(TexSampler, input.uv).xyz * 2.0f - 1.0f);
+        tangentSpaceN.y = -tangentSpaceN.y; // All the normal maps have Y up, but to make a LHS with Z outwards and X rightwards, then Y should be down
+        n  = mul(tangentSpaceN, tangentMatrix);
+    }
     
 	///////////////////////
     // Texture Sampling
     
-    //Sample the albedo
-    const float3 albedo = AlbedoMap.Sample(TexSampler, offsetTexCoord).rgb;
-    
     // Check for the opacity 
-    const float opacity = AlbedoMap.Sample(TexSampler, offsetTexCoord).a;
-    if (!opacity)
-        discard;
-    
-    
-    // Sample roughness map
-    float roughness = gRoughness;
-    if (gHasRoughnessMap != 0.0f)
-    {
-        roughness = RoughnessMap.Sample(TexSampler, offsetTexCoord).r * gRoughness;
-    }
-    
-    // Sample ambient occlusion map
-    float ao = 1.0f;
-    if (gHasAoMap != 0.0f)
-    {
-        ao = AoMap.Sample(TexSampler, offsetTexCoord).r;
-    }
-    
-    float metalness = gMetalness;
-    if (gHasMetallnessMap != 0.0f)
-    {
-        metalness = MetalnessMap.Sample(TexSampler, offsetTexCoord).r * gMetalness;
-    }
+    if (!AlbedoMap.Sample(TexSampler, input.uv).a) discard;
+
+    //Sample the albedo
+    const float3 albedo    =AlbedoMap.Sample(TexSampler, input.uv).rgb;
+	const float  roughness =lerp(gRoughness, RoughnessMap.Sample(TexSampler, input.uv).r, gHasRoughnessMap && !gUseCustomVaues);
+	const float  ao        =lerp(1.0f, AoMap.Sample(TexSampler, input.uv).r, gHasAoMap);
+    const float metalness =  lerp(gMetalness, MetalnessMap.Sample(TexSampler, input.uv).r, gHasMetallnessMap && !gUseCustomVaues);
     
 	///////////////////////
     // Global illumination
-    const float nDotV = max(dot(textureNormal, cameraDirection), 0.001f);
+    const float nDotV = max(dot(n, v), 0.001f);
 
     // Select specular color based on metalness
     const float3 specularColour = lerp(float3(0.04f, 0.04f, 0.04f), albedo, metalness);
 
     // Reflection vector for sampling the cubemap for specular reflections
-    const float3 r = reflect(-cameraDirection, textureNormal);
+    const float3 r = reflect(-v, n);
 
+	const float roughnessMip = 8 * log(roughness + 1.0f) / log(2); // Heuristic to convert roughness to mip-map. Rougher surfaces will use smaller (blurrier) mip-maps
+   
     // Sample environment cubemap, use small mipmap for diffuse, use mipmap based on roughness for specular
-    const float3 diffuseIBL = IBLMap.SampleLevel(TexSampler, r, 1.0f).rgb * 2.0f; // This approximation gives somewhat weak diffuse, so scale by 2
-    const float roughnessMip = 8 * log2(gRoughness + 1.0f); // Heuristic to convert roughness to mip-map. Rougher surfaces will use smaller (blurrier) mip-maps
-    const float3 specularIBL = IBLMap.SampleLevel(TexSampler, r, roughnessMip).rgb;
+    const float3 diffuseIBL = IBLMap.SampleLevel(TexSampler, r, 8).rgb * 2.0f; // This approximation gives somewhat weak diffuse, so scale by 2
+	const float3 specularIBL = IBLMap.SampleLevel(TexSampler, r, roughnessMip).rgb;
 
     // Fresnel for IBL: when surface is at more of a glancing angle reflection of the scene increases
     const float3 F_IBL = specularColour + (1.0f - specularColour) * pow(max(1.0f - nDotV, 0.0f), 5.0f);
     
     // Overall global illumination - rough approximation
-    float3 resDiffuse =  ao * (albedo * diffuseIBL) + (1.0f - roughness) * F_IBL * specularIBL;
-    
+    float3 resDiffuse = ao * (albedo * diffuseIBL) + (1.0f - roughness) * F_IBL * specularIBL;
+
 	///////////////////////
 	// Calculate lighting
 	
@@ -594,7 +525,7 @@ float4 PSMain(NormalMappingPixelShaderInput input) : SV_TARGET
 	
     for (int i = 0; i < gNumLights && gLights[i].enabled; ++i)
     {
-        resDiffuse += CalculateLight(gLights[i].position, gLights[i].intensity, gLights[i].colour, resDiffuse, resSpecular, textureNormal, cameraDirection, input.worldPosition, roughness, albedo);
+        resDiffuse += CalculateLight(gLights[i].position, gLights[i].intensity, gLights[i].colour, resDiffuse, resSpecular, n, v, input.worldPosition, roughness, albedo);
     }
      
     
@@ -623,7 +554,11 @@ float4 PSMain(NormalMappingPixelShaderInput input) : SV_TARGET
             const float depth = ShadowMap.Sample(PointClamp,shadowMapUV).r;
 
             if (depthFromLight < depth)
+<<<<<<< HEAD
+                resDiffuse += CalculateLight(gSpotLights[j].pos, gSpotLights[j].intensity, gSpotLights[j].colour, resDiffuse, resSpecular, n, v, input.worldPosition, roughness, albedo);
+=======
         		resDiffuse += CalculateLight(gSpotLights[j].pos, gSpotLights[j].intensity, gSpotLights[j].colour, resDiffuse, resSpecular, textureNormal, cameraDirection, input.worldPosition, roughness, albedo);
+>>>>>>> parent of 20e675b8 (lab)
         }
     }
 
@@ -644,7 +579,7 @@ float4 PSMain(NormalMappingPixelShaderInput input) : SV_TARGET
         shadowMapUV.y = 1.0f - shadowMapUV.y; // Check if pixel is within light cone
         
         // Bias slope
-        float bias = gDepthAdjust * tan(acos(dot(textureNormal, lightDir)));
+        float bias = gDepthAdjust * tan(acos(dot(n, lightDir)));
         bias = clamp(bias, 0, 0.01);
         
         // Lighting calculations
@@ -654,12 +589,12 @@ float4 PSMain(NormalMappingPixelShaderInput input) : SV_TARGET
             const float3 lc = gDirLights[k].colour;
 
             // Halfway vector (normal halfway between view and light vector)
-            const float3 h = normalize(l + cameraDirection);
+            const float3 h = normalize(l + v);
 
             // Various dot products used throughout
-            const float nDotL = max(dot(textureNormal, l), 0.001f);
-            const float nDotH = max(dot(textureNormal, h), 0.001f);
-            const float vDotH = max(dot(cameraDirection, h), 0.001f);
+        const float nDotL = max(dot(n, l), 0.001f);
+        const float nDotH = max(dot(n, h), 0.001f);
+            const float vDotH = max(dot(v, h), 0.001f);
 
             // Lambert diffuse
             const float3 lambert = albedo / PI;
@@ -712,7 +647,7 @@ float4 PSMain(NormalMappingPixelShaderInput input) : SV_TARGET
             shadowMapUV.y = 1.0f - shadowMapUV.y; // Check if pixel is within light cone
             
             //Bias slope
-            float bias = gDepthAdjust * tan(acos(dot(textureNormal, lightDir)));
+            float bias = gDepthAdjust * tan(acos(dot(n, lightDir)));
             bias = clamp(bias, 0, 0.01);
             
 		    // Get depth of this pixel if it were visible from the light (another advanced projection step)
@@ -723,7 +658,7 @@ float4 PSMain(NormalMappingPixelShaderInput input) : SV_TARGET
             if (depthFromLight > 0)
             {
                 // Calculate lighting
-                resDiffuse += CalculateLight(gPointLights[l].pos, gPointLights[l].intensity, gPointLights[l].colour, resDiffuse, resSpecular, textureNormal, cameraDirection, input.worldPosition, roughness, albedo);
+                resDiffuse += CalculateLight(gPointLights[l].pos, gPointLights[l].intensity, gPointLights[l].colour, resDiffuse, resSpecular, n, v, input.worldPosition, roughness, albedo);
             }
         }
     }

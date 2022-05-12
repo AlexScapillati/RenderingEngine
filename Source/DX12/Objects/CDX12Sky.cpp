@@ -16,8 +16,7 @@ namespace DX12
 
 		mMesh->mModelConstants.objectColour = { 1.f,1.f,1.f };
 
-		// Set the pipeline state object
-		mEngine->mSkyPso->Set(mEngine->mCommandList.Get());
+		mEngine->SetSkyPSO();
 
 		mMaterial->RenderMaterial();
 
@@ -26,6 +25,5 @@ namespace DX12
 		// Render the mesh
 		mMesh->Render(mWorldMatrices);
 	}
-
-	void CDX12Sky::LoadNewMesh(std::string newMesh) { CDX12GameObject::LoadNewMesh(newMesh); }
+	
 }

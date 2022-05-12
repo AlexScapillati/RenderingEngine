@@ -8,13 +8,13 @@
 #pragma once
 
 #include "..\Math/CMatrix4x4.h"
-#define NOMINMAX // Use this to stop Windows headers defining "min" and "max", which breaks some libraries (e.g. assimp)
 #include <d3d11.h>
 #include <string>
 #include <vector>
-#include <assimp/scene.h>
 
 #include "DX11Engine.h"
+
+struct aiNode;
 
 namespace DX11
 {

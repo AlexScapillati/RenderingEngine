@@ -25,6 +25,5 @@ namespace DX12
 			}
 
 			void Render(bool basicGeometry = false) override;
-			void LoadNewMesh(std::string newMesh) override;
 	};
 }

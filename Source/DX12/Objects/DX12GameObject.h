@@ -9,7 +9,11 @@
 #include "../DX12Common.h"
 
 #include "../../Common/CGameObject.h"
+<<<<<<< HEAD
+#include "../DX12AmbientMap.h"
+=======
 
+>>>>>>> parent of a9c1de14 (revert commit)
 #include "../CDX12Material.h"
 #include "../DX12Mesh.h"
 
@@ -17,8 +21,11 @@ enum KeyCode;
 
 namespace DX12
 {
+<<<<<<< HEAD
+=======
 	class CDX12AmbientMap;
 
+>>>>>>> parent of a9c1de14 (revert commit)
 	class CDX12Engine;
 
 	class CDX12GameObject : virtual public CGameObject
@@ -60,12 +67,16 @@ namespace DX12
 
 
 		CDX12Material* Material() const;
+		CDX12Mesh*  Mesh() const;
 
 		// Delete the current mesh and load the given one. It will not delete the current if the filename is wrong
-		void LoadNewMesh(std::string newMesh) override;
+		void LoadNewMesh(std::string newMesh) final;
 
 		// Render the object
-		void Render(bool basicGeometry = false) override;
+		virtual void Render(bool basicGeometry = false) override;
+
+		void RenderToAmbientMap() final;
+
 
 		//-------------------------------------
 		// Private data / members
@@ -81,6 +92,10 @@ namespace DX12
 		// The material
 		// It will hold all the textures and send them to the shader with RenderMaterial()
 		std::unique_ptr<CDX12Material> mMaterial;
+<<<<<<< HEAD
+		
+=======
+>>>>>>> parent of a9c1de14 (revert commit)
 	};
 
 	class CDX12Plant : public CDX12GameObject, public CPlant
@@ -100,8 +115,7 @@ namespace DX12
 				: CDX12GameObject(engine, id, name, position, rotation, scale)
 			{
 			}
-
-			void LoadNewMesh(std::string newMesh) override;
-			void                                          Render(bool basicGeometry) override;
+			
+			void Render(bool basicGeometry) override;
 	};
 }

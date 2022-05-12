@@ -7,7 +7,6 @@
 // Shader input / output
 //--------------------------------------------------------------------------------------
 
-
 // The structure below describes the vertex data to be sent into the vertex shader for ordinary non-skinned models
 struct BasicVertex
 {
@@ -287,4 +286,3 @@ cbuffer PostProcessingConstants : register(b1)
 }
 
 //**************************
-

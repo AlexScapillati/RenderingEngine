@@ -46,6 +46,5 @@ namespace DX11
 			delete[] prevBlendFactor;
 		}
 	}
-
-	void CDX11Plant::LoadNewMesh(std::string newMesh) { CDX11GameObject::LoadNewMesh(newMesh); }
+	
 }

@@ -176,6 +176,30 @@
     <ClCompile Include="Source\DX12\DX12AmbientMap.cpp">
       <Filter>Engine\DX12\Objects</Filter>
     </ClCompile>
+<<<<<<< HEAD
+    <ClCompile Include="Source\DX12\DXR\DXR.h">
+      <Filter>Engine\DX12\Raytracing</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\DX12\DXR\BottomLevelASGenerator.cpp">
+      <Filter>Engine\DX12\Raytracing\Helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\DX12\DXR\RaytracingPipelineGenerator.cpp">
+      <Filter>Engine\DX12\Raytracing\Helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\DX12\DXR\RootSignatureGenerator.cpp">
+      <Filter>Engine\DX12\Raytracing\Helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\DX12\DXR\ShaderBindingTableGenerator.cpp">
+      <Filter>Engine\DX12\Raytracing\Helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\DX12\DXR\TopLevelASGenerator.cpp">
+      <Filter>Engine\DX12\Raytracing\Helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\DX12\DXR\DXR.cpp">
+      <Filter>Engine\DX12\Raytracing</Filter>
+    </ClCompile>
+=======
+>>>>>>> parent of a9c1de14 (revert commit)
   </ItemGroup>
   <ItemGroup>
     <Filter Include="External">
@@ -213,6 +237,15 @@
     </Filter>
     <Filter Include="Engine\Common">
       <UniqueIdentifier>{210ccbab-5567-457a-82c3-4b84d9f0794d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\DX12\Raytracing">
+      <UniqueIdentifier>{3dca103b-3f30-4fd5-b674-3a623c27c271}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine\DX12\Raytracing\Helpers">
+      <UniqueIdentifier>{8205f4c5-a6fd-4fc9-9bb5-879ad05be0d3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders\DXR">
+      <UniqueIdentifier>{91c7c119-d748-4daa-9013-3a45fb46d16b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -403,6 +436,24 @@
     <ClInclude Include="Source\DX12\DX12AmbientMap.h">
       <Filter>Engine\DX12</Filter>
     </ClInclude>
+<<<<<<< HEAD
+    <ClInclude Include="Source\DX12\DXR\BottomLevelASGenerator.h">
+      <Filter>Engine\DX12\Raytracing\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\DX12\DXR\RaytracingPipelineGenerator.h">
+      <Filter>Engine\DX12\Raytracing\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\DX12\DXR\RootSignatureGenerator.h">
+      <Filter>Engine\DX12\Raytracing\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\DX12\DXR\ShaderBindingTableGenerator.h">
+      <Filter>Engine\DX12\Raytracing\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\DX12\DXR\TopLevelASGenerator.h">
+      <Filter>Engine\DX12\Raytracing\Helpers</Filter>
+    </ClInclude>
+=======
+>>>>>>> parent of a9c1de14 (revert commit)
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Source\Shaders\DepthOnly_ps.hlsl">
@@ -444,5 +495,14 @@
       <Filter>Shaders</Filter>
     </None>
     <None Include="packages.config" />
+    <None Include="Source\Shaders\Hit.hlsl">
+      <Filter>Shaders\DXR</Filter>
+    </None>
+    <None Include="Source\Shaders\Miss.hlsl">
+      <Filter>Shaders\DXR</Filter>
+    </None>
+    <None Include="Source\Shaders\RayGen.hlsl">
+      <Filter>Shaders\DXR</Filter>
+    </None>
   </ItemGroup>
 </Project>

@@ -9,6 +9,7 @@
 
 #include "DX11Common.h"
 #include "..\Window.h"
+#include "../Common/CGameObjectManager.h"
 #include "../Common/LevelImporter.h"
 #include "..\Common/Camera.h"
 #include "Objects/DX11DirLight.h"
@@ -316,9 +317,8 @@ namespace DX11
 	void CDX11Scene::Save(std::string fileName)
 	{
 		if (fileName.empty()) fileName = mFileName;
-
-		CLevelImporter importer(mEngine);
-		importer.SaveScene(fileName, this);
+		
+		CLevelImporter::SaveScene(fileName);
 	}
 
 	void CDX11Scene::Resize(UINT newX, UINT newY)

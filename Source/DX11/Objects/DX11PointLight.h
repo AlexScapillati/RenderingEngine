@@ -37,7 +37,5 @@ namespace DX11
 		ID3D11ShaderResourceView* mShadowMapSRV[6];
 
 		void InitTextures();
-	public:
-		void  LoadNewMesh(std::string newMesh) override;
 	};
 }

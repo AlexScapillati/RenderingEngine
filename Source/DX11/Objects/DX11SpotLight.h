@@ -29,9 +29,7 @@ namespace DX11
 
 	private:
 		void                      InitTextures();
-	public:
-		void LoadNewMesh(std::string newMesh) override;
-	private:
+		
 		ID3D11Texture2D*          mShadowMap{};
 		ID3D11DepthStencilView*   mShadowMapDepthStencil{};
 		ID3D11ShaderResourceView* mShadowMapSRV{};

@@ -35,7 +35,7 @@ namespace DX12
 			uint32_t       numVertices = 0;
 
 			uint32_t                         numIndices;
-			ComPtr<ID3D12Resource>           IndexBuffer;
+			ComPtr<ID3D12Resource>           mIndexBuffer;
 			D3D12_INDEX_BUFFER_VIEW          indexBufferView;
 			std::unique_ptr<unsigned char[]> indices;
 
@@ -94,6 +94,8 @@ namespace DX12
 
 		std::string MeshFileName() const { return mFileName; }
 
+		auto& ModelConstants() { return mModelConstants; }
+
 		//--------------------------------------------------------------------------------------
 		// Private helper functions
 		//--------------------------------------------------------------------------------------
@@ -111,9 +113,11 @@ namespace DX12
 		//--------------------------------------------------------------------------------------
 		// Member data
 		//--------------------------------------------------------------------------------------
-	protected:
 
 		CDX12Engine* mEngine;
+
+		public:
+
 
 		std::string mFileName;			//store the filename for the copy constructor
 		bool hasTangents;			//store if the mesh has tangents, same reason for above
@@ -125,10 +129,6 @@ namespace DX12
 
 		std::unique_ptr<CDX12ConstantBuffer> mModelConstantBuffer;
 
-
-	public:
-
 		PerModelConstants  mModelConstants{};
-
 	};
 }

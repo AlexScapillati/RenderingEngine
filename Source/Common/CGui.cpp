@@ -17,7 +17,9 @@
 #include "../Window.h"
 #include "../Common/CScene.h"
 #include "../DX11/Objects/DX11GameObject.h"
-
+#include "../Common/CGameObjectManager.h"
+#include "../DX12/DX12Scene.h"
+#include "../DX12/DX12AmbientMap.h"
 
 std::string ChooseTexture(bool& selected, imgui_addons::ImGuiFileBrowser fileDialog)
 {
@@ -341,8 +343,8 @@ void CGui::AddObjectsMenu() const
 			}
 
 			// colour button for the light objects
-			static CVector3 col;
-			static float    strenght;
+			static CVector3 col = {1,1,1};
+			static float    strenght = 1000;
 
 			//if the model is a light (hence not a simple object or pbr)
 			if (addType == SimpleLight || addType == DirLight || addType == OmniLight || addType == SpotLight)
@@ -611,12 +613,12 @@ void CGui::DisplayPropertiesWindow() const
 		//display the scale array
 		static auto scale = mSelectedObj->Scale();
 
-		if (ImGui::DragFloat3("Scale", scale.GetValuesArray(), 0.1f, 0.0001f))
+		if (ImGui::DragFloat3("Scale", scale.GetValuesArray(), 0.1f, 0.01f,1000.0f))
 		{
 			mSelectedObj->SetScale(scale);
 		}
 
-		ImGui::DragFloat("ParallaxDepth", &mSelectedObj->ParallaxDepth(), 0.0001f, 0.0f, 1.0f, "%.6f");
+		ImGui::DragFloat("ParallaxDepth", &mSelectedObj->ParallaxDepth(), 0.00001f, 0.0f, .01f, "%.7f");
 
 		ImGui::DragFloat("Roughness", &mSelectedObj->Roughness(), 0.001f);
 		ImGui::DragFloat("Metalness", &mSelectedObj->Metalness(), 0.001f);
@@ -768,7 +770,7 @@ void CGui::DisplayPropertiesWindow() const
 		}
 		else
 		{
-			ImGui::Text("Not supported in DX12");
+
 		}
 	}
 	ImGui::End();

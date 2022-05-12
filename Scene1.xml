@@ -3,7 +3,7 @@
         <Shaders/>
     </Default>
     <Entities>
-      <Entity Type="Plant" Name="Common Fern_rhDso_3D Plant">
+        <Entity Type="Plant" Name="Common Fern_rhDso_3D Plant">
             <Geometry ID="Common Fern_rhDso_3D Plant//Common Fern_LOD0_Var1.fbx"/>
             <Position X="71.438797" Y="-16.941364" Z="-96.924339"/>
             <Rotation X="21.007231" Y="-5.1833267" Z="1.3631645"/>
@@ -70,7 +70,6 @@
             <Rotation X="-0" Y="107.94617" Z="-90.488808"/>
             <Scale X="0.50999933" Y="0.50999933" Z="0.50999933"/>
         </Entity>
-        
         <Entity Type="Plant" Name="newCommon Fern_rhDso_3D Plant">
             <Geometry ID="Common Fern_rhDso_3D Plant//Common Fern_LOD0_Var1.fbx"/>
             <Position X="71.02655" Y="-13.649837" Z="-37.136173"/>
@@ -119,14 +118,12 @@
             <Rotation X="-0" Y="0" Z="0"/>
             <Scale X="0.24000001" Y="0.24000001" Z="0.24000001"/>
         </Entity>
-        
         <Entity Type="GameObject" Name="newnewSalt Bulrush">
             <Geometry ID="Salt Bulrush_uehjcafia_3D Plant/Salt Bulrush_LOD0_Var1.fbx"/>
             <Position X="-8.1422844" Y="-17.654102" Z="-51.301819"/>
             <Rotation X="-0" Y="0" Z="0"/>
             <Scale X="0.14400001" Y="0.14400001" Z="0.14400001"/>
         </Entity>
-      
         <Entity Type="GameObject" Name="newSalt Bulrush_uehjcafia_3D Plant">
             <Geometry ID="Salt Bulrush_uehjcafia_3D Plant/Salt Bulrush_LOD0_Var1.fbx"/>
             <Position X="13.834191" Y="-17.654102" Z="-112.25348"/>
@@ -145,20 +142,19 @@
             <Rotation X="-0" Y="0" Z="0"/>
             <Scale X="0.093312003" Y="0.093312003" Z="0.093312003"/>
         </Entity>
-      
         <Entity Type="Sky" Name="Sphere">
             <Geometry Mesh="Sphere.x" Diffuse="lauter_waterfall.jpg"/>
             <Position X="-57.668186" Y="31.128954" Z="-52.649548"/>
             <Rotation X="-0" Y="0" Z="0"/>
             <Scale X="87.624542" Y="87.624542" Z="87.624542"/>
         </Entity>
-        <Entity Type="Light" Name="Light">
+        <Entity Type="PointLight" Name="Light">
             <Geometry Mesh="Light.x" Diffuse="Flare.jpg"/>
             <Position X="65.454079" Y="23.602657" Z="-90.349228"/>
             <Rotation X="-0" Y="-179.99998" Z="0"/>
             <Scale X="1" Y="1" Z="1"/>
             <Colour X="1" Y="0.99998999" Z="0.99998999"/>
-            <Strength S="10000"/>
+            <Strength S="4000"/>
         </Entity>
         <Entity Type="Camera">
             <Position X="-57.668186" Y="31.128954" Z="-52.649548"/>

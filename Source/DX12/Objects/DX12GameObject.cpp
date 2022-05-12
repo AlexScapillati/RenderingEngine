@@ -1,5 +1,9 @@
 #include "DX12GameObject.h"
 
+<<<<<<< HEAD
+#include "../DX12AmbientMap.h"
+=======
+>>>>>>> parent of a9c1de14 (revert commit)
 #include "../../Utility/HelperFunctions.h"
 
 #include "../DX12Engine.h"
@@ -23,7 +27,6 @@ namespace DX12
 		float              scale)
 	{
 		mEngine = engine;
-		mParallaxDepth = 0.f;
 		mRoughness = 0.5f;
 		mMetalness = 0.0f;
 
@@ -191,6 +194,8 @@ namespace DX12
 
 	CDX12Material* CDX12GameObject::Material() const { return mMaterial.get(); }
 
+	CDX12Mesh* CDX12GameObject::Mesh() const { return mMesh.get(); }
+
 	void CDX12GameObject::LoadNewMesh(std::string newMesh)
 	{
 		try
@@ -202,7 +207,7 @@ namespace DX12
 			const auto prevScale = Scale();
 			const auto prevRotation = Rotation();
 
-			mMesh = std::make_unique<CDX12Mesh>(mEngine,newMesh,IsPbr());
+			mMesh = std::make_unique<CDX12Mesh>(mEngine, newMesh, IsPbr());
 
 			// Recalculate matrix based on mesh
 			mWorldMatrices.resize(mMesh->NumberNodes());
@@ -220,18 +225,35 @@ namespace DX12
 		//if the model is not enable do not render it
 		if (!mEnabled) return;
 
-			// Set the pipeline state object
-		if(!basicGeometry) mEngine->mPbrPso->Set(mEngine->mCommandList.Get());
+		// Set the pipeline state object
+		if (!basicGeometry)
+		{
+			mEngine->SetPBRPSO();
 
-		// Render the material
-		mMaterial->RenderMaterial();
+			// Render the material
+			mMaterial->RenderMaterial();
 
-		mEngine->SetConstantBuffers();
+			auto& cb = mMesh->ModelConstants();
+			cb.hasAoMap = mMaterial->mAo ? 1 : 0;
+			cb.hasNormalMap = mMaterial->mNormal ? 1 : 0;
+			cb.hasMetallnessMap = mMaterial->mMetalness ? 1 : 0;
+			cb.hasRoughnessMap = mMaterial->mRoughness ? 1 : 0;
+			cb.hasDisplacementMap = mMaterial->mDisplacement ? 1 : 0;
+			cb.roughness = mRoughness;
+			cb.metalness = mMetalness;
+			cb.parallaxDepth = mParallaxDepth;
+			cb.useCustomValues = 0;
+		}
 
 		// Render the mesh
 		mMesh->Render(mWorldMatrices);
 	}
 
-	void CDX12Plant::LoadNewMesh(std::string newMesh) { CDX12GameObject::LoadNewMesh(newMesh); }
+	void CDX12GameObject::RenderToAmbientMap()
+	{
+		//TODO
+	}
+
 	void CDX12Plant::Render(bool basicGeometry) { CDX12GameObject::Render(basicGeometry); }
+
 }

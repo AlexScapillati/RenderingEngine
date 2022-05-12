@@ -274,6 +274,7 @@ namespace
             desc.pRootSignature = rootSignature;
 
             ComPtr<ID3D12PipelineState> pso;
+
             ThrowIfFailed(device->CreateComputePipelineState(&desc, IID_GRAPHICS_PPV_ARGS(pso.GetAddressOf())));
 
             SetDebugObjectName(pso.Get(), L"GenerateMips PSO");

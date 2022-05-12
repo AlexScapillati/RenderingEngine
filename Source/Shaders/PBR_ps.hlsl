@@ -255,63 +255,46 @@ float4 main(NormalMappingPixelShaderInput input) : SV_Target
 	///////////////////////
     // Texture Sampling
     
-    //Sample the albedo
-	const float3 albedo = AlbedoMap.Sample(TexSampler, offsetTexCoord).rgb;
-    
     // Check for the opacity 
-	const float opacity = AlbedoMap.Sample(TexSampler, offsetTexCoord).a;
-    if (!opacity)
+    if (!AlbedoMap.Sample(TexSampler, input.uv).a)
         discard;
-    
-    
-    // Sample roughness map
-    float roughness = gRoughness;
-    if (gHasRoughnessMap != 0.0f)
-    {
-        roughness = RoughnessMap.Sample(TexSampler, offsetTexCoord).r * gRoughness;
-    }
-    
-    // Sample ambient occlusion map
-    float ao = 1.0f;
-    if (gHasAoMap != 0.0f)
-    {
-        ao = AOMap.Sample(TexSampler, offsetTexCoord).r;
-    }
-    
-    float metalness = gMetalness;
-    if (gHasMetallnessMap != 0.0f)
-    {
-        metalness = MetalnessMap.Sample(TexSampler, offsetTexCoord).r * gMetalness;
-    }
+
+    //Sample the albedo
+    const float3 albedo = AlbedoMap.Sample(TexSampler, input.uv).rgb;
+    const float roughness = lerp(gRoughness, RoughnessMap.Sample(TexSampler, input.uv).r, gHasRoughnessMap);
+    const float ao = lerp(1.0f, AOMap.Sample(TexSampler, input.uv).r, gHasAoMap);
+    const float metalness = lerp(gMetalness, MetalnessMap.Sample(TexSampler, input.uv).r, gHasMetallnessMap);
     
 	///////////////////////
     // Global illumination
-	const float nDotV = max(dot(textureNormal, cameraDirection), 0.001f);
+    const float nDotV = max(dot(worldNormal, cameraDirection), 0.001f);
 
     // Select specular color based on metalness
-	const float3 specularColour = lerp(float3(0.04f, 0.04f, 0.04f), albedo, metalness);
+    const float3 specularColour = lerp(float3(0.04f, 0.04f, 0.04f), albedo, metalness);
 
     // Reflection vector for sampling the cubemap for specular reflections
-	const float3 r = reflect(-cameraDirection, textureNormal);
+    const float3 r = reflect(-cameraDirection, worldNormal);
 
+    const float roughnessMip = 8 * log(roughness + 1.0f) / log(2); // Heuristic to convert roughness to mip-map. Rougher surfaces will use smaller (blurrier) mip-maps
+   
     // Sample environment cubemap, use small mipmap for diffuse, use mipmap based on roughness for specular
-	const float3 diffuseIBL   = IBLMap.SampleLevel(TexSampler, r, 1.0f).rgb * 2.0f; // This approximation gives somewhat weak diffuse, so scale by 2
-	const float  roughnessMip = 8 * log2(gRoughness + 1.0f);                        // Heuristic to convert roughness to mip-map. Rougher surfaces will use smaller (blurrier) mip-maps
-	const float3 specularIBL  = IBLMap.SampleLevel(TexSampler, r, roughnessMip).rgb;
+    const float3 diffuseIBL = IBLMap.SampleLevel(TexSampler, r, 8).rgb * 2.0f; // This approximation gives somewhat weak diffuse, so scale by 2
+    const float3 specularIBL = IBLMap.SampleLevel(TexSampler, r, roughnessMip).rgb;
 
     // Fresnel for IBL: when surface is at more of a glancing angle reflection of the scene increases
-	const float3 F_IBL = specularColour + (1.0f - specularColour) * pow(max(1.0f - nDotV, 0.0f), 5.0f);
+    const float3 F_IBL = specularColour + (1.0f - specularColour) * pow(max(1.0f - nDotV, 0.0f), 5.0f);
     
     // Overall global illumination - rough approximation
     float3 resDiffuse = ao * (albedo * diffuseIBL) + (1.0f - roughness) * F_IBL * specularIBL;
-    
+
 	///////////////////////
 	// Calculate lighting
 	
 	//// Lights ////
 
 	const float3 resSpecular = specularColour;
-	
+
+    [unroll(64)]
     for (int i = 0; i < gNumLights && gLights[i].enabled; ++i)
     {
         resDiffuse += CalculateLight(gLights[i].position, gLights[i].intensity, gLights[i].colour, resDiffuse, resSpecular, textureNormal, cameraDirection, input.worldPosition, roughness, albedo);
@@ -319,6 +302,7 @@ float4 main(NormalMappingPixelShaderInput input) : SV_Target
      
     
 	//for each spot light
+    [unroll(64)]
     for (int j = 0; j < gNumSpotLights && gSpotLights[j].enabled; ++j)
     {
         const float3 lightDir = normalize(gSpotLights[j].pos - input.worldPosition);
@@ -356,7 +340,7 @@ float4 main(NormalMappingPixelShaderInput input) : SV_Target
         }
     }
     
-    [fastopt]
+    [unroll(64)]
     for (int k = 0; k < gNumDirLights && gDirLights[k].enabled; ++k)
     {
         const float3 lightDir = normalize(gDirLights[k].facing - input.worldPosition);
@@ -431,6 +415,7 @@ float4 main(NormalMappingPixelShaderInput input) : SV_Target
     }
     
     //for each point light
+    [unroll(64)]
     for (int l = 0; l < gNumPointLights && gPointLights[l].enabled; ++l)
     {
         const float3 lightDir = normalize(gPointLights[l].pos - input.worldPosition);

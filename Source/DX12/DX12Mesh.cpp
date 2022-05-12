@@ -2,14 +2,15 @@
 
 #include "DX12Common.h"
 
-#include <assimp/Importer.hpp>
+
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 #include <assimp/DefaultLogger.hpp>
+#include <assimp/Importer.hpp>
 
 #include "DX12ConstantBuffer.h"
-
 #include "DX12Engine.h"
+#include "DXR/DXR.h"
 
 namespace DX12
 {
@@ -26,6 +27,7 @@ namespace DX12
 		mFileName = fileName;
 
 		hasTangents = requireTangents;
+
 
 		Assimp::Importer importer;
 
@@ -216,17 +218,17 @@ namespace DX12
 				*index++ = assimpMesh->mFaces[face].mIndices[2];
 			}
 
-
 			//-----------------------------------
 			//
 			// DirectX Stuff
 			//
 			//-----------------------------------
 
-			auto hProp = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
+			auto hProp = DXR::kUploadHeapProps;
 			auto buffer = CD3DX12_RESOURCE_DESC::Buffer(subMesh.vertexSize * subMesh.numVertices);
 
-			ThrowIfFailed(engine->mDevice->CreateCommittedResource(
+			std::unique_lock l(mEngine->mMutex);
+			ThrowIfFailed(mEngine->mDevice->CreateCommittedResource(
 				&hProp,
 				D3D12_HEAP_FLAG_NONE,
 				&buffer,
@@ -251,23 +253,23 @@ namespace DX12
 			// Index Buffer
 			buffer = CD3DX12_RESOURCE_DESC::Buffer(subMesh.numIndices * sizeof(uint32_t));
 
-			ThrowIfFailed(engine->mDevice->CreateCommittedResource(
+			ThrowIfFailed(mEngine->mDevice->CreateCommittedResource(
 				&hProp,
 				D3D12_HEAP_FLAG_NONE,
 				&buffer,
 				D3D12_RESOURCE_STATE_GENERIC_READ,
 				nullptr,
-				IID_PPV_ARGS(&subMesh.IndexBuffer)));
-			NAME_D3D12_OBJECT(subMesh.IndexBuffer);
+				IID_PPV_ARGS(&subMesh.mIndexBuffer)));
+			NAME_D3D12_OBJECT(subMesh.mIndexBuffer);
 
 			// Copy the data to the index buffer.
 			UINT8* pIndexDataBegin;
-			ThrowIfFailed(subMesh.IndexBuffer->Map(0, &readRange, reinterpret_cast<void**>(&pIndexDataBegin)));
+			ThrowIfFailed(subMesh.mIndexBuffer->Map(0, &readRange, reinterpret_cast<void**>(&pIndexDataBegin)));
 			memcpy(pIndexDataBegin, subMesh.indices.get(), subMesh.numIndices * sizeof(uint32_t));
-			subMesh.IndexBuffer->Unmap(0, nullptr);
+			subMesh.mIndexBuffer->Unmap(0, nullptr);
 
 			// Initialize the index buffer view.
-			subMesh.indexBufferView.BufferLocation = subMesh.IndexBuffer->GetGPUVirtualAddress();
+			subMesh.indexBufferView.BufferLocation = subMesh.mIndexBuffer->GetGPUVirtualAddress();
 			subMesh.indexBufferView.SizeInBytes = sizeof(uint32_t) * subMesh.numIndices;
 			subMesh.indexBufferView.Format = DXGI_FORMAT_R32_UINT;
 		}
@@ -276,8 +278,7 @@ namespace DX12
 		{
 			constexpr UINT constantBufferSize = sizeof(PerModelConstants); // CB size is required to be 256-byte aligned.
 
-			mModelConstantBuffer = std::make_unique<CDX12ConstantBuffer>(mEngine, constantBufferSize);
-
+			mModelConstantBuffer = std::make_unique<CDX12ConstantBuffer>(mEngine, mEngine->mSRVDescriptorHeap.get(), constantBufferSize);
 			mModelConstantBuffer->Copy(mModelConstants);
 		}
 	}
@@ -302,6 +303,8 @@ namespace DX12
 		{
 			// Send this node's matrix to the GPU via a constant buffer
 			mModelConstants.worldMatrix = absoluteMatrices[nodeIndex];
+			mModelConstants.objectColour = CVector3(1.f, 1.f, 1.f);
+			mModelConstants.hasNormalMap = hasTangents;
 
 			mModelConstantBuffer->Copy(mModelConstants);
 
@@ -356,17 +359,19 @@ namespace DX12
 
 	void CDX12Mesh::RenderSubMesh(const SubMesh& subMesh) const
 	{
+		auto commandList = mEngine->mCurrRecordingCommandList;
+
 		// Set vertex buffer as next data source for GPU
-		mEngine->mCommandList->IASetVertexBuffers(0, 1, &subMesh.mVertexBufferView);
+		commandList->IASetVertexBuffers(0, 1, &subMesh.mVertexBufferView);
 
 		// Set index buffer as next data source for GPU, indicate it uses 32-bit integers
-		mEngine->mCommandList->IASetIndexBuffer(&subMesh.indexBufferView);
+		commandList->IASetIndexBuffer(&subMesh.indexBufferView);
 
 		// Using triangle lists only in this class
-		mEngine->mCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 		// Render mesh
-		mEngine->mCommandList->DrawIndexedInstanced(subMesh.numIndices, 1, 0, 0, 0);
+		commandList->DrawIndexedInstanced(subMesh.numIndices, 1, 0, 0, 0);
 	}
 
 }

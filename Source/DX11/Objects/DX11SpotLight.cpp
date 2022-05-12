@@ -4,6 +4,7 @@
 
 #include "../GraphicsHelpers.h"
 #include "../DX11Scene.h"
+#include "../../Common/CGameObjectManager.h"
 
 namespace DX11
 {
@@ -149,8 +150,7 @@ namespace DX11
 			srvDesc.Texture2D.MipLevels       = 1;
 			if (FAILED(mEngine->GetDevice()->CreateShaderResourceView(mShadowMap, &srvDesc, &mShadowMapSRV))) { throw std::runtime_error("Error creating shadow map shader resource view"); }
 		}
-
-	void CDX11SpotLight::LoadNewMesh(std::string newMesh) { LoadNewMesh(newMesh); }
+	
 
 	CDX11SpotLight::~CDX11SpotLight() { Release(); }
 

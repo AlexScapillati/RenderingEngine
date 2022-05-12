@@ -44,8 +44,7 @@ namespace DX11
 			// Folders: NAME_ID_TYPE
 			// Meshes:	NAME_LOD_VARIATION.EXTENTION
 			// Textures: ID_RESOLUTION_TYPE.EXTENTION
-			CDX11GameObject(CDX11Engine* engine,
-							const std::string& id, std::string name, CVector3 position = { 0,0,0 }, CVector3 rotation = { 0,0,0 }, float scale = 1);
+			CDX11GameObject(CDX11Engine* engine,const std::string& id, std::string name, CVector3 position = { 0,0,0 }, CVector3 rotation = { 0,0,0 }, float scale = 1);
 
 			CDX11Mesh* Mesh() const;
 			CDX11Material* Material() const;
@@ -87,12 +86,12 @@ namespace DX11
 			// Returns the ambient map shader resource view (for passing it to the shaders)
 			ID3D11ShaderResourceView* AmbientMapSRV() const;
 
-			void LoadNewMesh(std::string newMesh) override;
+			void LoadNewMesh(std::string newMesh) final;
 
 			ID3D11ShaderResourceView* TextureSRV() const;
 
 			// Render the whole scene from the model perspective. Very expensive, needs optimization
-			void RenderToAmbientMap();
+			void RenderToAmbientMap() override;
 
 		protected:
 			//-------------------------------------

@@ -38,7 +38,6 @@ namespace DX11
 			CDX11Plant(CDX11Plant& p);
 
 			void Render(bool basicGeometry = false) override;
-			void LoadNewMesh(std::string newMesh) override;
 	};
 	
 }

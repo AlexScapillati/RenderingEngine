@@ -23,7 +23,6 @@ namespace DX11
 
 			void  InitTextures();
 			void  Render(bool basicGeometry) override;
-			void  LoadNewMesh(std::string newMesh) override;
 			void* RenderFromThis() override;
 			void  SetShadowMapSize(int s) override;
 

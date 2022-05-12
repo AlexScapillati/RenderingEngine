@@ -8,37 +8,51 @@ namespace DX12
 {
 	class CDX12Engine;
 
+<<<<<<< HEAD
+	class CDX12PSO
+	{
+		
+	};
+
+
+	class CDX12PBRPSO : public CDX12PSO
+=======
 	class CDX12PBRPSO
+>>>>>>> parent of a9c1de14 (revert commit)
 	{
 	public:
 		CDX12PBRPSO(CDX12Engine* engine);
 
-		void Set(ID3D12GraphicsCommandList* commandList);
+		void Set();
 
 		CDX12Engine* mEngine;
 		std::unique_ptr<CDX12PBRRootSignature> mPBRRootSignature;
 		ComPtr<ID3D12PipelineState> mPipelineState;
 	};
 
-	class CDX12SkyPSO
+	class CDX12SkyPSO : public CDX12PSO
 	{
 	public:
 		CDX12SkyPSO(CDX12Engine* engine);
 
-		void Set(ID3D12GraphicsCommandList* commandList);
+		void Set();
 
 		CDX12Engine* mEngine;
 		std::unique_ptr<CDX12SkyRootSignature> mRootSignature;
 		ComPtr<ID3D12PipelineState> mPipelineState;
 	};
 
-	class CDX12DepthOnlyPSO
+	class CDX12DepthOnlyPSO : public CDX12PSO
 	{
 		public:
 
 		CDX12DepthOnlyPSO(CDX12Engine* engine, bool requireTangents);
 
+<<<<<<< HEAD
+		void Set();
+=======
 		void Set(ID3D12GraphicsCommandList* commandList);
+>>>>>>> parent of a9c1de14 (revert commit)
 
 		CDX12Engine* mEngine;
 		std::unique_ptr<CDX12DepthOnlyRootSignature> mRootSignature;

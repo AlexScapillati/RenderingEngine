@@ -6,6 +6,7 @@
 #include "../DX11Scene.h"
 #include "../GraphicsHelpers.h"
 #include "../../Math/CVector3.h"
+#include "../../Common/CGameObjectManager.h"
 
 
 namespace DX11
@@ -150,5 +151,4 @@ namespace DX11
 	}
 
 	void CDX11DirLight::Render(bool basicGeometry) { CDX11GameObject::Render(basicGeometry); }
-	void CDX11DirLight::LoadNewMesh(std::string newMesh) { CDX11GameObject::LoadNewMesh(newMesh); }
 }

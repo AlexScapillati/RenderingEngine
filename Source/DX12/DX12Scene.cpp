@@ -1,15 +1,25 @@
 #include "DX12Scene.h"
-
 #include "DX12Engine.h"
 
 #include "DX12AmbientMap.h"
+<<<<<<< HEAD
+=======
+#include "DX12Engine.h"
+>>>>>>> parent of a9c1de14 (revert commit)
 #include "DX12DescriptorHeap.h"
+#include "DX12PipelineObject.h"
 #include "DX12Texture.h"
+<<<<<<< HEAD
 
+=======
+#include "../Window.h"
+#include "../../Common/Camera.h"
+>>>>>>> parent of a9c1de14 (revert commit)
 #include "Objects/DX12Light.h"
 
 #include "../Window.h"
 #include "../../Common/Camera.h"
+#include "../../Common/CGameObjectManager.h"
 
 namespace DX12
 {
@@ -20,9 +30,15 @@ namespace DX12
 		try
 		{
 			InitFrameDependentStuff();
+<<<<<<< HEAD
+			engine->InitRaytracing();
 
-			mAmbientMaps.push_back(std::make_unique<CDX12AmbientMap>(engine, 512, mEngine->mRTVDescriptorHeap.get(), mEngine->mSRVDescriptorHeap.get(), mEngine->mDSVDescriptorHeap.get()));
+			mAmbientMap = std::make_unique<CDX12AmbientMap>(mEngine, 1024, mEngine->mSRVDescriptorHeap.get());
+=======
 
+			mAmbientMap = std::make_unique<CDX12AmbientMap>(engine, 2048, mEngine->mRTVDescriptorHeap.get(), mEngine->mSRVDescriptorHeap.get(), mEngine->mDSVDescriptorHeap.get());
+
+>>>>>>> parent of a9c1de14 (revert commit)
 		}
 		catch (const std::runtime_error& e) { throw std::runtime_error(e.what()); }
 	}
@@ -35,7 +51,7 @@ namespace DX12
 			D3D12_DESCRIPTOR_HEAP_DESC desc{};
 			desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
 			desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
-			desc.NumDescriptors = 3;
+			desc.NumDescriptors = 10;
 
 			mDSVDescriptorHeap = std::make_unique<CDX12DescriptorHeap>(mEngine, desc);
 			mDSVDescriptorHeap->mDescriptorHeap->SetName(L"DSVDescriptorHeap");
@@ -79,20 +95,40 @@ namespace DX12
 				D3D12_RESOURCE_FLAG_DENY_SHADER_RESOURCE
 			);
 
-			for (int i = 0; i < CDX12Engine::mNumFrames; i++)
+			for (auto i = 0u; i < CDX12Engine::mNumFrames; i++)
 			{
 				mDepthStencils[i] = std::make_unique<CDX12DepthStencil>(mEngine, depth_texture, mEngine->mSRVDescriptorHeap.get(), mDSVDescriptorHeap.get());
 				mDepthStencils[i]->mResource->SetName(L"DepthStencil");
 			}
 		}
+		
 	}
 
 
 	void CDX12Scene::RenderScene(float& frameTime)
 	{
+
+		auto commandList = mEngine->GetCommandList();
+
+		mEngine->mCurrRecordingCommandList = commandList;
+
+		if(mEngine->mRaytracing)
+		{
+			auto prev = mSceneTexture->mCurrentResourceState;
+			mSceneTexture->Barrier( D3D12_RESOURCE_STATE_COPY_DEST);
+
+			commandList->CopyResource(mSceneTexture->mResource.Get(), mEngine->mOutputResource.Get());
+
+			mSceneTexture->Barrier( prev);
+
+			return;
+		}
+		
+		mEngine->mSRVDescriptorHeap->Set();
+
 		// Render from lights
 		{
-			PIXBeginEvent(mEngine->mCommandList.Get(), 0, L"Shadow maps Rendering");
+			PIXBeginEvent(commandList, 0, L"Shadow maps Rendering");
 
 			auto objm = mEngine->GetObjManager();
 
@@ -111,6 +147,39 @@ namespace DX12
 				mShadowMaps.push_back(l->RenderFromThis());
 			}
 
+<<<<<<< HEAD
+			PIXEndEvent(commandList);
+		}
+
+		mEngine->SetPBRPSO();
+
+		// Set the shadow maps
+		if (!mShadowMaps.empty())
+		{
+			if (void* ptr = mShadowMaps.front())
+			{
+				mEngine->mSRVDescriptorHeap->Set();
+				// Convert back from void* to handle*
+				auto handle = *static_cast<CD3DX12_GPU_DESCRIPTOR_HANDLE*>(ptr);
+				mEngine->mCurrRecordingCommandList->SetGraphicsRootDescriptorTable(13, handle);
+			}
+		}
+		
+		// Render the ambient map
+		auto m = MatrixIdentity();
+		if (mAmbientMap) mAmbientMap->RenderFromThis(&m);
+
+		mEngine->SetPBRPSO();
+
+		// Set ambient map
+		mEngine->mSRVDescriptorHeap->Set();
+		// Convert back from void* to handle*
+		auto handle = mEngine->mSRVDescriptorHeap->Get(mAmbientMap->mSrvHandle)->mGpu;
+		commandList->SetGraphicsRootDescriptorTable(12, handle);
+
+		// Set back the current recording command list
+		mEngine->mCurrRecordingCommandList = commandList;
+=======
 			PIXEndEvent(mEngine->mCommandList.Get());
 		}
 
@@ -118,7 +187,7 @@ namespace DX12
 		{
 			CMatrix4x4 mat = MatrixIdentity();
 
-			auto ptr = mAmbientMaps.front()->RenderFromThis(&mat);
+			auto ptr = mAmbientMap->RenderFromThis(&mat);
 			if(ptr)
 			{
 				mEngine->mSRVDescriptorHeap->Set();
@@ -127,41 +196,48 @@ namespace DX12
 			}
 		}
 
+>>>>>>> parent of a9c1de14 (revert commit)
 
 		// Render scene to texture
 		{
 			const FLOAT clearColor[] = { 0.4f,0.6f,0.9f,1.0f };
+<<<<<<< HEAD
+			
+			const auto rtv = mSceneTexture->mRTVHandle->mCpu;
+			const auto dsv = mDSVDescriptorHeap->Get(mEngine->mCurrentBackBufferIndex)->mCpu;
+=======
 
-			mEngine->mSRVDescriptorHeap->Set();
+				mEngine->mSRVDescriptorHeap->Set();
 
 			const auto rtv = mSceneTexture->mRTVHandle.mCpu;
 
 			const auto dsv = mDSVDescriptorHeap->Get(mEngine->mCurrentBackBufferIndex).mCpu;
+>>>>>>> parent of a9c1de14 (revert commit)
 
 			mSceneTexture->Barrier(D3D12_RESOURCE_STATE_RENDER_TARGET);
 			mDepthStencils[mEngine->mCurrentBackBufferIndex]->Barrier(D3D12_RESOURCE_STATE_DEPTH_WRITE);
 
 			const auto vp = CD3DX12_VIEWPORT(0.0f,0.0f,static_cast<FLOAT>(mViewportX),static_cast<FLOAT>(mViewportY));
-			const auto sr = CD3DX12_RECT(0,0,(LONG)mViewportX,(LONG)mViewportY);
+			const auto sr = CD3DX12_RECT(0,0,mViewportX,mViewportY);
 
 			{
-				PIXBeginEvent(mEngine->mCommandList.Get(), 0, "Rendering");
+				PIXBeginEvent(commandList, 0, "Rendering");
 
 				// Set the viewport
-				mEngine->mCommandList->RSSetViewports(1, &vp);
-				mEngine->mCommandList->RSSetScissorRects(1, &sr);
-				mEngine->mCommandList->OMSetRenderTargets(1, &rtv, FALSE, &dsv);
-				mEngine->mCommandList->ClearRenderTargetView(rtv, clearColor, 0, nullptr);
-				mEngine->mCommandList->ClearDepthStencilView(dsv, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
-
+				commandList->RSSetViewports(1, &vp);
+				commandList->RSSetScissorRects(1, &sr);
+				commandList->OMSetRenderTargets(1, &rtv, FALSE, &dsv);
+				commandList->ClearRenderTargetView(rtv, clearColor, 0, nullptr);
+				commandList->ClearDepthStencilView(dsv, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 
 				// Render the models from the camera pov
 				RenderSceneFromCamera(mCamera.get());
-				PIXEndEvent(mEngine->mCommandList.Get());
+
+				PIXEndEvent(commandList);
 			}
 
-			mSceneTexture->Barrier(D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
-			mDepthStencils[mEngine->mCurrentBackBufferIndex]->Barrier(D3D12_RESOURCE_STATE_DEPTH_READ);
+			mSceneTexture->Barrier( D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+			mDepthStencils[mEngine->mCurrentBackBufferIndex]->Barrier( D3D12_RESOURCE_STATE_DEPTH_READ);
 		}
 	}
 
@@ -169,18 +245,23 @@ namespace DX12
 	{
 		// Set camera matrices in the constant buffer and send over to GPU
 
-		mEngine->mCBVDescriptorHeap->Set();
+		mEngine->mSRVDescriptorHeap->Set();
 
-		auto& perFrameConstants = mEngine->mPerFrameConstants;
+		auto& perFrameConstants = mEngine->mPerFrameConstants[mEngine->mCurrentBackBufferIndex];
 		perFrameConstants.cameraMatrix = camera->WorldMatrix();
 		perFrameConstants.viewMatrix = camera->ViewMatrix();
 		perFrameConstants.projectionMatrix = camera->ProjectionMatrix();
 		perFrameConstants.viewProjectionMatrix = camera->ViewProjectionMatrix();
 		perFrameConstants.ambientColour = gAmbientColour;
+		perFrameConstants.parallaxMinSamples = 5;
+		perFrameConstants.parallaxMaxSamples = 20;
 
 		mEngine->UpdateLightsBuffers();
 
 		mEngine->CopyBuffers();
+<<<<<<< HEAD
+		
+=======
 
 		mEngine->mSRVDescriptorHeap->Set();
 
@@ -195,6 +276,7 @@ namespace DX12
 		}
 
 
+>>>>>>> parent of a9c1de14 (revert commit)
 		mEngine->GetObjManager()->RenderAllObjects();
 
 		mShadowMaps.clear();
@@ -202,17 +284,24 @@ namespace DX12
 
 	ImTextureID CDX12Scene::GetTextureSRV()
 	{
-		return reinterpret_cast<ImTextureID>(mSceneTexture->mHandle.mGpu.ptr);
+		return reinterpret_cast<ImTextureID>(mSceneTexture->mSrvHandle->mGpu.ptr);
 	}
 
 	void CDX12Scene::Resize(UINT newX, UINT newY)
 	{
-		return;
 		mCamera->SetAspectRatio(float(newX) / float(newY));
+
+		return;
 
 		mViewportX = newX;
 		mViewportY = newY;
+		
 
+		mEngine->Flush();
+		mEngine->WaitForGpu();
+
+		mEngine->mCurrRecordingCommandList->Close();
+		mEngine->mCommandAllocators[mEngine->mCurrentBackBufferIndex]->Reset();
 
 		for (int i = 0; i < CDX12Engine::mNumFrames; ++i)
 		{
@@ -223,11 +312,17 @@ namespace DX12
 		mDSVDescriptorHeap = nullptr;
 
 		InitFrameDependentStuff();
+
+		mEngine->Flush();
+
+		mEngine->mCurrRecordingCommandList->Reset(mEngine->mCommandAllocators[mEngine->mCurrentBackBufferIndex].Get(),nullptr);
 	}
 
 	CDX12Scene::~CDX12Scene()
 	{
 	}
+
+	// Not implemented
 
 	void CDX12Scene::UpdateScene(float& frameTime) { CScene::UpdateScene(frameTime); }
 	void CDX12Scene::Save(std::string fileName) { CScene::Save(fileName); }

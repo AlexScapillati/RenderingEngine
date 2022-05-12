@@ -5,6 +5,10 @@
 namespace DX12
 {
 
+
+	IDxcBlob* CompileShader(LPCWSTR fileName, std::vector<LPCWSTR>& args);
+
+
 	class CDX12Shader
 	{
 	public:
@@ -13,7 +17,7 @@ namespace DX12
 
 		CDX12Engine* mEngine;
 		std::string mPath;
-		ComPtr<ID3DBlob> mShaderBlob;
+		ComPtr<IDxcBlob> mShaderBlob;
 	};
 
 	class CDX12PixelShader : public CDX12Shader

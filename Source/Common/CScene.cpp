@@ -1,6 +1,5 @@
 #include "CScene.h"
 
-#include <ios>
 #include <sstream>
 #include <stdexcept>
 #include <string>
@@ -13,12 +12,13 @@
 #include "../Window.h"
 #include "../Common/CLight.h"
 
-CScene::CScene(IEngine* engine, std::string fileName)
+CScene::CScene(IEngine* engine, const std::string& fileName)
 {
 
 	mEngine = engine;
 	mWindow = mEngine->GetWindow();
 	mFileName = fileName;
+	mCamera = std::make_unique<CCamera>();
 
 	//--------------------------------------------------------------------------------------
 	// Scene Geometry and Layout
@@ -36,26 +36,30 @@ CScene::CScene(IEngine* engine, std::string fileName)
 			mBackgroundColor = { 0.1f,0.1f,0.1f,1.0f };
 
 			mCamera = std::make_unique<CCamera>();
-			mCamera->SetPosition({ 0, 10.0f, -4.0f });
+			mCamera->SetPosition({ 0, 0, -40 });
+			
+			auto cube = mEngine->CreateObject("New Marquna Marble_vdinddyc_Surface", "Cube");
+			cube->SetPosition({ 20,10,0 });
 
-			auto ground = mEngine->CreateObject("Hills.x", "Ground", "GrassDiffuseSpecular.dds");
-			auto cube = mEngine->CreateObject("Cube.x", "Cube", "Mossy.png");
-			auto sky = mEngine->CreateSky("Stars.x", "sky", "Stars.jpg");
-			cube->SetPosition({ 0.0f,10.0f,20.0f });
+			//auto sphere = mEngine->CreateObject("Steel_sfcqbiec_Surface", "Sphere");
+
+			auto ground = mEngine->CreateObject("Ground", "Ground");
+
+			auto sky = mEngine->CreateSky("Stars.x", "sky", "lauter_waterfall.jpg");
 			sky->SetScale(1000);
 
-			auto light = mEngine->CreateSpotLight("Light.x", "PointLight", "Flare.jpg", { 1,1,1 }, 1000);
-			light->SetPosition({ 10.f,20.f,30.f });
-			light->SetRotation({ 90.f,0.f,0.f });
+			//mEngine->CreateObject("Roman Statue_tfprbilda_3D Asset","statue",CVector3(10,20,0));
 
-			auto l = mEngine->CreateLight("Light.x", "Light", "Flare.jpg", { 1,1,1 }, 1000);
-			l->SetPosition({ 10.f,20000.f,30.f });
+			auto light = mEngine->CreateSpotLight("Light.x", "PointLight", "Flare.jpg", { 1,1,1 }, 1000);
+			light->SetPosition({ 20,10.f,10.f });
+			light->SetRotation({ ToRadians(180),0,0});
+			
+			auto l = mEngine->CreateLight("Light.x", "Light", "Flare.jpg", { 1,1,1 }, 10000);
+			l->SetPosition({ 10.f,50.f,30.f });
 		}
 		else
 		{
-			CLevelImporter importer(engine);
-
-			importer.LoadScene(fileName, this);
+			CLevelImporter::LoadScene(fileName, mEngine);
 		}
 	}
 	catch (const std::exception& e)
@@ -72,6 +76,8 @@ void CScene::UpdateScene(float& frameTime)
 	{
 		mLockFPS = !mLockFPS;
 	}
+
+	mCamera->Control(frameTime);
 	
 
 	// Show frame time / FPS in the window title //
@@ -88,7 +94,7 @@ void CScene::UpdateScene(float& frameTime)
 		frameTimeMs.precision(2);
 		frameTimeMs << std::fixed << avgFrameTime * 1000;
 		const auto windowTitle = "DirectX - Game Engine Test " + frameTimeMs.str() +
-			"ms, FPS: " + std::to_string(static_cast<int>(1 / avgFrameTime + 0.5f));
+			"ms, CPU: " + std::to_string(static_cast<int>(1 / avgFrameTime + 0.5f));
 		SetWindowTextA(mEngine->GetWindow()->GetHandle(), windowTitle.c_str());
 		totalFrameTime = 0;
 		frameCount = 0;
@@ -97,6 +103,5 @@ void CScene::UpdateScene(float& frameTime)
 
 void CScene::Save(std::string fileName)
 {
-	CLevelImporter i(mEngine);
-	i.SaveScene(fileName, this);
+	CLevelImporter::SaveScene(fileName);
 }

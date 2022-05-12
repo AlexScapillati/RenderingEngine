@@ -1,15 +1,32 @@
 #pragma once
 
+#include <mutex>
+
+#include "dxgi1_5.h"
+
 #include "DX12Common.h"
 #include "imgui.h"
 #include "..\Engine.h"
 
+<<<<<<< HEAD
+#include "dxcapi.h"
+#include "DXR/ShaderBindingTableGenerator.h"
+#include "DXR/TopLevelASGenerator.h"
+#include "DXR/RaytracingPipelineGenerator.h"
+=======
 
 // https://www.3dgep.com/learning-directx-12-1/#GPU_Synchronization
+>>>>>>> parent of a9c1de14 (revert commit)
 
 
 namespace DX12
 {
+<<<<<<< HEAD
+	class CDX12PSO;
+
+	class CDX12Texture;
+=======
+>>>>>>> parent of a9c1de14 (revert commit)
 	class CDX12SkyPSO;
 	class CDX12DepthOnlyPSO;
 	class CDX12PBRPSO;
@@ -24,21 +41,24 @@ namespace DX12
 	{
 	public:
 
-		CDX12Engine()                               = delete;
-		CDX12Engine(const CDX12Engine&)             = delete;
-		CDX12Engine(const CDX12Engine&&)            = delete;
-		CDX12Engine& operator=(const CDX12Engine&)  = delete;
+		virtual ~CDX12Engine() override;
+
+		bool mRaytracing = false;
+
+		CDX12Engine() = delete;
+		CDX12Engine(const CDX12Engine&) = delete;
+		CDX12Engine(const CDX12Engine&&) = delete;
+		CDX12Engine& operator=(const CDX12Engine&) = delete;
 		CDX12Engine& operator=(const CDX12Engine&&) = delete;
 
 		CDX12Engine(HINSTANCE hInstance, int nCmdShow);
-
-		~CDX12Engine() override;
 
 		// Inherited via IEngine
 		bool Update() override;
 
 		// Inherited via IEngine
 		void Resize(UINT x, UINT y) override;
+
 		void CreatePipelineStateObjects();
 
 		void FinalizeFrame() override;
@@ -52,19 +72,19 @@ namespace DX12
 		ID3D12Device2* GetDevice() const;
 		ImTextureID    GetSceneTex() const;
 
-
 		//--------------------------
 		// DirectX 12 Variables
 		//--------------------------
 
 		static const uint32_t mNumFrames = 3;
 
-		ComPtr<ID3D12Device2> mDevice;
+		std::mutex mMutex{};
+
+		ComPtr<ID3D12Device5> mDevice;
 
 		ComPtr<IDXGISwapChain4> mSwapChain;
 
 		std::unique_ptr<CDX12RenderTarget> mBackBuffers[mNumFrames];
-		ComPtr<ID3D12Resource> mDepthStencils[mNumFrames];
 
 		CD3DX12_VIEWPORT mViewport;
 		CD3DX12_RECT mScissorRect;
@@ -76,9 +96,22 @@ namespace DX12
 		 * All command lists in DirectX 12 are deferred; that is, the commands in a command list -
 		 * are only run on the GPU after they have been executed on a command queue.
 		 */
-		ComPtr<ID3D12GraphicsCommandList2> mCommandList;
+
+	private:
+
+		ComPtr<ID3D12GraphicsCommandList4> mCommandList;
+
+
+	public:
+
+		auto GetCommandList() { return mCommandList.Get(); }
 
 		ComPtr<ID3D12CommandQueue> mCommandQueue;
+
+		ComPtr<ID3D12GraphicsCommandList4> mAmbientMapCommandLists[6];
+		ComPtr<ID3D12CommandAllocator> mAmbientMapCommandAllocators[6 * mNumFrames];
+
+		ID3D12GraphicsCommandList4* mCurrRecordingCommandList;
 
 		/*
 		 * The ID3D12CommandAllocator serves as the backing memory for recording the GPU commands into a command list.
@@ -102,8 +135,6 @@ namespace DX12
 		*/
 		std::unique_ptr<CDX12DescriptorHeap> mRTVDescriptorHeap;
 		std::unique_ptr<CDX12DescriptorHeap> mSRVDescriptorHeap;
-		std::unique_ptr<CDX12DescriptorHeap> mDSVDescriptorHeap;
-		std::unique_ptr<CDX12DescriptorHeap> mCBVDescriptorHeap;
 		std::unique_ptr<CDX12DescriptorHeap> mSamplerDescriptorHeap;
 
 
@@ -159,31 +190,46 @@ namespace DX12
 		// Constant Buffers
 		//-----------------------------------------
 
-		PerFrameConstants mPerFrameConstants;
-		PerFrameLights mPerFrameLights;
-		PerFramePointLights mPerFramePointLights;
-		PerFrameSpotLights mPerFrameSpotLights;
-		PerFrameDirLights mPerFrameDirLights;
+		PerFrameConstants mPerFrameConstants[mNumFrames];
+		PerFrameLights mPerFrameLights[mNumFrames];
+		PerFramePointLights mPerFramePointLights[mNumFrames];
+		PerFrameSpotLights mPerFrameSpotLights[mNumFrames];
+		PerFrameDirLights mPerFrameDirLights[mNumFrames];
 
-		std::unique_ptr<CDX12ConstantBuffer> mPerFrameConstantBuffer;
-		std::unique_ptr<CDX12ConstantBuffer> mPerFrameLightsConstantBuffer;
-		std::unique_ptr<CDX12ConstantBuffer> mPerFrameSpotLightsConstantBuffer;
-		std::unique_ptr<CDX12ConstantBuffer> mPerFrameDirLightsConstantBuffer;
-		std::unique_ptr<CDX12ConstantBuffer> mPerFramePointLightsConstantBuffer;
+		std::unique_ptr<CDX12ConstantBuffer> mPerFrameConstantBuffer[mNumFrames];
+		std::unique_ptr<CDX12ConstantBuffer> mPerFrameLightsConstantBuffer[mNumFrames];
+		std::unique_ptr<CDX12ConstantBuffer> mPerFrameSpotLightsConstantBuffer[mNumFrames];
+		std::unique_ptr<CDX12ConstantBuffer> mPerFrameDirLightsConstantBuffer[mNumFrames];
+		std::unique_ptr<CDX12ConstantBuffer> mPerFramePointLightsConstantBuffer[mNumFrames];
+		std::unique_ptr<CDX12ConstantBuffer> mCameraBuffer[mNumFrames];
+		std::unique_ptr<CDX12ConstantBuffer> mRTLightsBuffer[mNumFrames];
 
 		void CopyBuffers();
 
 		void UpdateLightsBuffers();
-
+		
 
 		//----------------------------------------
 		// Pipeline State Objects
 		//-----------------------------------------
 
+	private:
+
 		std::unique_ptr<CDX12PBRPSO> mPbrPso;
 		std::unique_ptr<CDX12SkyPSO> mSkyPso;
 		std::unique_ptr<CDX12DepthOnlyPSO> mDepthOnlyPso;
 		std::unique_ptr<CDX12DepthOnlyPSO> mDepthOnlyTangentPso;
+
+
+	public:
+
+		CDX12PSO* mCurrSetPso;
+
+		// This functions will avoid setting the same pso if already set
+		void SetPBRPSO();
+		void SetSkyPSO();
+		void SetDepthOnlyPSO();
+
 
 		//----------------------------------------
 		// Shaders
@@ -210,22 +256,22 @@ namespace DX12
 		void InitD3D();
 
 		void InitFrameDependentResources();
+
 		void SetConstantBuffers();
 
 		void LoadDefaultShaders();
 
-		void CheckRayTracingSupport() const;
-
 		void EnableDebugLayer() const;
 
 		void Flush();
+
+		void WaitForGpu() noexcept;
 
 		uint64_t Signal();
 
 		void MidFrame();
 
 		void InitializeFrame();
-
 
 		// Execute a command list.
 		// Returns the fence value to wait for for this command list.
@@ -236,14 +282,49 @@ namespace DX12
 			HANDLE                    fenceEvent,
 			std::chrono::milliseconds duration = std::chrono::milliseconds::max());
 
+		//----------------------------------------
+		// Ray-tracing 
+		//-----------------------------------------
+
+		void InitRaytracing();
+
+		void CheckRayTracingSupport() const;
+
+		void CreateRaytracingPipeline();
+		void CreateShaderBindingTable();
+
+		void RaytracingFrame();
+
+		std::unique_ptr<DXR::RayTracingPipelineGenerator>           mRayTracingPipeline;
+		std::unique_ptr<DXR::ShaderBindingTableGenerator>           mSbtHelper;
+		std::unique_ptr<DXR::TopLevelASGenerator>                   mTopLevelAsGenerator;
+		AccelerationStructureBuffers                                mTopLevelAsBuffers;
+		std::vector<std::pair<ComPtr<ID3D12Resource>, CMatrix4x4*>> mInstances;
+		ComPtr<IDxcBlob>                                            mRayGenLibrary;
+		ComPtr<IDxcBlob>                                            mHitLibrary;
+		ComPtr<IDxcBlob>                                            mMissLibrary;
+		ComPtr<ID3D12RootSignature>                                 mRayGenSignature;
+		ComPtr<ID3D12RootSignature>                                 mHitSignature;
+		ComPtr<ID3D12RootSignature>                                 mMissSignature;
+		ComPtr<ID3D12StateObject>                                   mRaytracingStateObject;
+		ComPtr<ID3D12StateObjectProperties>                         mRaytracingStateObjectProps;
+		ComPtr<ID3D12Resource>                                      mOutputResource;
+		UINT64                                                      mOutputSrvIndex;
+		std::unique_ptr<CDX12DescriptorHeap>                        mRTHeap;
+		ComPtr<ID3D12Resource>                                      mSbtStorage;
+
+		//----------------------------------------
+		// Override functions from IEngine
+		//-----------------------------------------
+
 		void			   CreateScene(std::string fileName) override;
-		CGameObject*       CreateObject(const std::string& mesh, const std::string& name, const std::string& diffuseMap, CVector3 position, CVector3 rotation, float scale) override;
-		CSky*              CreateSky(const std::string& mesh, const std::string& name, const std::string& diffuseMap, CVector3 position, CVector3 rotation, float scale) override;
-		CPlant*            CreatePlant(const std::string& id, const std::string& name, CVector3 position, CVector3 rotation, float scale) override;
-		CGameObject*       CreateObject(const std::string& dirPath, const std::string& name, CVector3 position, CVector3 rotation, float scale) override;
-		CLight*            CreateLight(const std::string& mesh, const std::string& name, const std::string& diffuseMap, const CVector3& colour, const float& strength, CVector3 position, CVector3 rotation, float scale) override;
-		CSpotLight*        CreateSpotLight(const std::string& mesh, const std::string& name, const std::string& diffuseMap, const CVector3& colour, const float& strength, CVector3 position, CVector3 rotation, float scale) override;
+		CGameObject* CreateObject(const std::string& mesh, const std::string& name, const std::string& diffuseMap, CVector3 position, CVector3 rotation, float scale) override;
+		CSky* CreateSky(const std::string& mesh, const std::string& name, const std::string& diffuseMap, CVector3 position, CVector3 rotation, float scale) override;
+		CPlant* CreatePlant(const std::string& id, const std::string& name, CVector3 position, CVector3 rotation, float scale) override;
+		CGameObject* CreateObject(const std::string& dirPath, const std::string& name, CVector3 position, CVector3 rotation, float scale) override;
+		CLight* CreateLight(const std::string& mesh, const std::string& name, const std::string& diffuseMap, const CVector3& colour, const float& strength, CVector3 position, CVector3 rotation, float scale) override;
+		CSpotLight* CreateSpotLight(const std::string& mesh, const std::string& name, const std::string& diffuseMap, const CVector3& colour, const float& strength, CVector3 position, CVector3 rotation, float scale) override;
 		CDirectionalLight* CreateDirectionalLight(const std::string& mesh, const std::string& name, const std::string& diffuseMap, const CVector3& colour, const float& strength, CVector3 position, CVector3 rotation, float scale) override;
-		CPointLight*       CreatePointLight(const std::string& mesh, const std::string& name, const std::string& diffuseMap, const CVector3& colour, const float& strength, CVector3 position, CVector3 rotation, float scale) override;
+		CPointLight* CreatePointLight(const std::string& mesh, const std::string& name, const std::string& diffuseMap, const CVector3& colour, const float& strength, CVector3 position, CVector3 rotation, float scale) override;
 	};
 }

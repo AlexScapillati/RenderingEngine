@@ -10,6 +10,7 @@
 #include "../DX11Scene.h"
 #include "../GraphicsHelpers.h"
 #include "../../Utility/HelperFunctions.h"
+#include "../../Common/CGameObjectManager.h"
 
 
 namespace DX11

@@ -38,6 +38,8 @@ public:
 	// WIP, This will handle all the scripts and update the model's behaviour (similar to unity)
 	static bool Update(float updateTime);
 
+	virtual void RenderToAmbientMap() = 0;
+
 	//-------------------------------------
 	// Common Usage
 	//-------------------------------------
@@ -110,22 +112,22 @@ protected:
 	std::vector<std::vector<std::string>> mLODs;
 
 	// Store the current LOD and mesh variation rendered
-	int mCurrentLOD{};
-	int mCurrentVar{};
+	int mCurrentLOD;
+	int mCurrentVar;
 
 	// Each model has a parallax depth value 
 	// For the models that have a displacement and a normal map this will modify the bumpyness of those textures
-	float mParallaxDepth{};
+	float mParallaxDepth = 0.06f;
 
 	// Each model has a roughness value. This because not every model will have a roguhness map. So we can change its roughness manually.
 	// If a model has a roughness map. This will not make any changes.
-	float mRoughness{};
-	float mMetalness{};
+	float mRoughness;
+	float mMetalness;
 
 	std::string mName;
 
 	// This value controls the model visibility. If it is false the model will not be rendered (not cast/make shadows)
-	bool mEnabled{};
+	bool mEnabled;
 
 	// World matrices for the model
 	// Now that meshes have multiple parts, we need multiple matrices. The root matrix (the first one) is the world matrix
@@ -137,7 +139,6 @@ class CSky : public virtual CGameObject
 {
 public:
 	virtual void Render(bool basicGeometry = false) override = 0;
-	virtual void LoadNewMesh(std::string newMesh)override = 0;
 };
 
 
@@ -145,6 +146,5 @@ class CPlant : public virtual CGameObject
 {
 public:
 	virtual void Render(bool basicGeometry = false) override = 0;
-	virtual void LoadNewMesh(std::string newMesh) override = 0;
 };
 

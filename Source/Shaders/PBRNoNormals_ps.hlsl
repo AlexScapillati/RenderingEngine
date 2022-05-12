@@ -168,12 +168,14 @@ float4 main(LightingPixelShaderInput input) : SV_Target
 	//// Lights ////
     
     // Simple Lights
+    [unroll(64)]
     for (int i = 0; i < gNumLights && gLights[i].enabled; ++i)
     {
         resDiffuse += CalculateLight(gLights[i].position, gLights[i].intensity, gLights[i].colour, resDiffuse, resSpecular, input.worldNormal, cameraDirection, input.worldPosition, gRoughness, albedo);
     }
     
 	// Spot lights
+    [unroll(64)]
     for (int j = 0; j < gNumSpotLights && gSpotLights[j].enabled; ++j)
     {
         const float3 lightDir = normalize(gSpotLights[j].pos - input.worldPosition);
@@ -214,6 +216,7 @@ float4 main(LightingPixelShaderInput input) : SV_Target
     }
 
     // Directional Lights
+    [unroll(64)]
     for (int k = 0; k < gNumDirLights && gDirLights[k].enabled; ++k)
     {
         const float3 lightDir = normalize(gDirLights[k].facing - input.worldPosition);
@@ -289,6 +292,7 @@ float4 main(LightingPixelShaderInput input) : SV_Target
     }
     
     //for each point light
+    [unroll(64)]
     for (int l = 0; l < gNumPointLights && gPointLights[l].enabled; ++l)
     {
         const float3 lightDir = normalize(gPointLights[l].pos - input.worldPosition);

@@ -41,12 +41,6 @@ namespace DX12
 		InitTextures();
 	}
 
-	void CDX12PointLight::SetRotation(CVector3 rotation, int node = 0) { CDX12GameObject::SetRotation(rotation, node); }
-
-	void CDX12PointLight::LoadNewMesh(std::string newMesh) { CDX12GameObject::LoadNewMesh(newMesh); }
-
-	void CDX12PointLight::Render(bool basicGeometry) { CDX12GameObject::Render(basicGeometry); }
-
 	void CDX12PointLight::InitTextures()
 	{
 		mVp = CD3DX12_VIEWPORT(0.f, 0.f, static_cast<float>(mShadowMapSize), static_cast<float>(mShadowMapSize));
@@ -85,47 +79,56 @@ namespace DX12
 
 			CDX12GameObject::SetRotation(rot * PI);
 
-			mShadowMaps[i]->Barrier(D3D12_RESOURCE_STATE_DEPTH_WRITE);
+			mShadowMaps[i]->Barrier( D3D12_RESOURCE_STATE_DEPTH_WRITE);
 
+<<<<<<< HEAD
+			mEngine->mCurrRecordingCommandList->RSSetViewports(1, &mVp);
+			mEngine->mCurrRecordingCommandList->RSSetScissorRects(1, &mScissorsRect);
+			mEngine->mCurrRecordingCommandList->OMSetRenderTargets(0, nullptr, false, &mShadowMaps[i]->mDsvHandle->mCpu);
+			mEngine->mCurrRecordingCommandList->ClearDepthStencilView(mShadowMaps[i]->mDsvHandle->mCpu, D3D12_CLEAR_FLAG_DEPTH, 1.f, 0, 0, nullptr);
+=======
 			mEngine->mCommandList->RSSetViewports(1, &mVp);
 			mEngine->mCommandList->RSSetScissorRects(1, &mScissorsRect);
 			mEngine->mCommandList->OMSetRenderTargets(0, nullptr, false, &mShadowMaps[i]->mDSVHandle.mCpu);
 			mEngine->mCommandList->ClearDepthStencilView(mShadowMaps[i]->mDSVHandle.mCpu, D3D12_CLEAR_FLAG_DEPTH, 1.f, 0, 0, nullptr);
+>>>>>>> parent of a9c1de14 (revert commit)
 
-			mEngine->mPerFrameConstants.viewMatrix = InverseAffine(WorldMatrix());
-			mEngine->mPerFrameConstants.projectionMatrix = MakeProjectionMatrix(1.0f, ToRadians(90.f));
-			mEngine->mPerFrameConstants.viewProjectionMatrix = mEngine->mPerFrameConstants.viewMatrix * mEngine->mPerFrameConstants.projectionMatrix;
+			auto j = mEngine->mCurrentBackBufferIndex;
 
-			mEngine->mPerFrameConstantBuffer->Copy(mEngine->mPerFrameConstants);
+			mEngine->mPerFrameConstants[j].viewMatrix = InverseAffine(WorldMatrix());
+			mEngine->mPerFrameConstants[j].projectionMatrix = MakeProjectionMatrix(1.0f, ToRadians(90));
+			mEngine->mPerFrameConstants[j].viewProjectionMatrix = mEngine->mPerFrameConstants[j].viewMatrix * mEngine->mPerFrameConstants[j].projectionMatrix;
 
+<<<<<<< HEAD
+			mEngine->mPerFrameConstantBuffer[j]->Copy(mEngine->mPerFrameConstants);
+
+=======
+>>>>>>> parent of a9c1de14 (revert commit)
 			for (const auto& o : mEngine->GetObjManager()->mObjects)
 			{
-				if (o->IsPbr())
-					mEngine->mDepthOnlyTangentPso->Set(mEngine->mCommandList.Get());
-				else
-					mEngine->mDepthOnlyPso->Set(mEngine->mCommandList.Get());
+				mEngine->SetDepthOnlyPSO();
 				o->Render(true);
 			}
 
-			mShadowMaps[i]->Barrier(D3D12_RESOURCE_STATE_GENERIC_READ);
+			mShadowMaps[i]->Barrier( D3D12_RESOURCE_STATE_GENERIC_READ);
 		}
 		
 		SetRotation(originalOrientation);
 
 		// unbind the shadow map form render target
-		mEngine->mCommandList->OMSetRenderTargets(0, nullptr, false, nullptr);
+		mEngine->mCurrRecordingCommandList->OMSetRenderTargets(0, nullptr, false, nullptr);
 
+<<<<<<< HEAD
+		return &mShadowMaps[0]->mSrvHandle->mGpu;
+=======
 		return &mShadowMaps[0]->mHandle.mGpu;
+>>>>>>> parent of a9c1de14 (revert commit)
 	}
 
 
 	void* CDX12PointLight::GetSRV()
 	{
-		return reinterpret_cast<ImTextureID>(mShadowMaps[0]->mHandle.mGpu.ptr);
+		return reinterpret_cast<ImTextureID>(mShadowMaps[0]->mSrvHandle->mGpu.ptr);
 	}
 
-
-	CDX12PointLight::~CDX12PointLight()
-	{
-	}
 }

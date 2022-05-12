@@ -42,7 +42,9 @@ namespace DX12
 		// Optionally decide to set depth only shaders
 		void               RenderMaterial() const;
 		std::vector<void*> GetTextureSRV() const;
-		auto& TextureFileNames() { return mMapsStr; }
+		auto&              TextureFileNames() { return mMapsStr; }
+
+		std::unique_ptr<CDX12Texture> mAlbedo, mDisplacement, mRoughness, mAo, mNormal, mMetalness;
 
 	private:
 
@@ -52,11 +54,10 @@ namespace DX12
 
 		bool mHasNormals;
 
-		std::unique_ptr<CDX12Texture> mAlbedo, mDisplacement, mRoughness, mAo, mNormal, mMetalness;
 		
 		void               LoadMaps(std::vector<std::string>& fileMaps);
 
-		std::unique_ptr<CDX12DescriptorHeap> mMapsDescriptorHeap;
+		CDX12DescriptorHeap* mMapsDescriptorHeap;
 		
 	};
 

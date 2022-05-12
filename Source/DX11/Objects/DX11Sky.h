@@ -125,7 +125,6 @@ namespace DX11
 			}
 
 			bool HasCubeMap() const { return mIsCubeMap; }
-			void LoadNewMesh(std::string newMesh) override { CDX11GameObject::LoadNewMesh(newMesh); }
 
 		private:
 	

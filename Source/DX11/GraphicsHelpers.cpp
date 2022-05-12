@@ -3,8 +3,8 @@
 //--------------------------------------------------------------------------------------
 
 #include "GraphicsHelpers.h"
-#include "DDSTextureLoader.h"
-#include "WICTextureLoader.h"
+#include "DDSTextureLoader\DDSTextureLoader11.h"
+#include "WICTextureLoader\WICTextureLoader11.h"
 #include "DirectXTex.h"
 #include "ScreenGrab.h"
 
@@ -26,6 +26,8 @@ namespace DX11
 		auto res = false;
 
 		filename = mMediaFolder + filename;
+
+		std::unique_lock l(mMutex);
 
 		// DDS files need a different function from other files
 		std::string dds = ".dds"; // So check the filename extension (case insensitive)

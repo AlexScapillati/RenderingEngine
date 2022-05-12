@@ -3,6 +3,7 @@
 #include "..\Engine.h"
 #include "DX11Common.h"
 #include <d3d11_1.h>
+#include <mutex>
 
 
 namespace DX11
@@ -34,6 +35,8 @@ class CDX11Gui;
 			// Data
 			//------------------------------------------------
 
+			std::mutex mMutex;
+		
 			// The main Direct3D (D3D) variables
 			ComPtr<ID3D11Device>        mD3DDevice  = nullptr; // D3D device for overall features
 			ComPtr<ID3D11DeviceContext> mD3DContext = nullptr; // D3D context for specific rendering tasks

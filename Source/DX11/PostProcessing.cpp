@@ -10,6 +10,7 @@
 #include "..\Common/Camera.h"
 #include "..\External\imgui\imgui.h"
 #include "Objects\DX11PointLight.h"
+#include "../Common/CGameObjectManager.h"
 
 //*******************************
 //**** Post-processing shader DirectX objects

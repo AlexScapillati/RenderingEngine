@@ -22,14 +22,12 @@ namespace DX12
 	{
 	}
 
-	void  CDX12DirectionalLight::SetRotation(CVector3 rotation, int node) { CDX12GameObject::SetRotation(rotation, node); }
-	void  CDX12DirectionalLight::LoadNewMesh(std::string newMesh) { CDX12GameObject::LoadNewMesh(newMesh); }
-	void  CDX12DirectionalLight::Render(bool basicGeometry) { CDX12GameObject::Render(basicGeometry); }
-	void  CDX12DirectionalLight::SetShadowMapSize(int s) { mShadowMapSize = s; }
-	void* CDX12DirectionalLight::RenderFromThis() { return nullptr; }
-
-	CDX12DirectionalLight::~CDX12DirectionalLight()
+	void CDX12DirectionalLight::SetShadowMapSize(int s)
 	{
 	}
-	
+
+	void* CDX12DirectionalLight::RenderFromThis()
+	{
+		return nullptr;
+	}
 }

@@ -1,29 +1,32 @@
 #pragma once
 
-#include <atlconv.h>
-#include <filesystem>
-#include <chrono>
+
 
 #include <d3d12.h>
+<<<<<<< HEAD
+#include <sstream>
+
+#include "d3dx12.h"
+=======
 #include "d3dx12.h"
 #include <d3dcompiler.h>
 #include <d3dcommon.h>
 #include <dxgidebug.h>
 #include <dxgi1_6.h>
+>>>>>>> parent of a9c1de14 (revert commit)
 
 #include "pix3.h"
-
-#include <stdexcept>
-#include <string>
-#include <wrl/client.h>
-#include <deque>
 
 #include "..\Math/CVector2.h"
 #include "..\Math/CVector3.h"
 #include "..\Math/CVector4.h"
 #include "..\Math/CMatrix4x4.h"
 
+<<<<<<< HEAD
+#include "comdef.h"
+=======
 #include "../External/DirectXTK12/Inc/CommonStates.h"
+>>>>>>> parent of a9c1de14 (revert commit)
 
 
 // The min/max macros conflict with like-named member functions.
@@ -37,9 +40,12 @@
 #undef max
 #endif
 
+
 namespace DX12
 {
 	using namespace Microsoft::WRL;
+
+	
 
 	struct CommandAllocatorEntry
 	{
@@ -47,8 +53,12 @@ namespace DX12
 		ComPtr<ID3D12CommandAllocator> commandAllocator;
 	};
 
-	using Resource = ComPtr<ID3D12Resource>;
-
+	struct AccelerationStructureBuffers
+	{
+		ComPtr<ID3D12Resource> pScratch; // Scratch memory for AS builder
+		ComPtr<ID3D12Resource> pResult; // Where the AS is
+		ComPtr<ID3D12Resource> pInstanceDesc; // Hold the matrices of the instances
+	};
 
 	// Assign a name to the object to aid with debugging.
 #if defined(_DEBUG) || defined(DBG)
@@ -80,14 +90,23 @@ namespace DX12
 #define NAME_D3D12_OBJECT_INDEXED(x, n) SetNameIndexed((x)[n].Get(), L#x, n)
 
 
-#define ThrowIfFailed(hr)  if(FAILED(hr)) throw std::exception()
+inline auto MessageHR(const std::string& fn, HRESULT hr)
+	{
+		char hr_msg[512];
+		FormatMessageA(FORMAT_MESSAGE_FROM_SYSTEM, nullptr, hr, 0, hr_msg, ARRAYSIZE(hr_msg), nullptr);
+		std::string error_msg(hr_msg);
+		MessageBox(NULL,std::wstring(error_msg.begin(), error_msg.end()).c_str(), std::wstring(fn.begin(),fn.end()).c_str(), MB_OK);
+		OutputDebugStringW(std::wstring(error_msg.begin(), error_msg.end()).c_str());
+	}
 
 	
+#define ThrowIfFailed(hr) {HRESULT hr_ = hr; if (FAILED(hr_)) MessageHR(#hr, hr_);}
 
 	struct SHandle
 	{
 		CD3DX12_CPU_DESCRIPTOR_HANDLE mCpu;
 		CD3DX12_GPU_DESCRIPTOR_HANDLE mGpu;
+		INT mIndexInDescriptor;
 	};
 
 
@@ -101,6 +120,18 @@ namespace DX12
 		CVector2 uv;
 	};
 
+	struct VertexPosNormal
+	{
+		CVector3 position;
+		CVector3 normal;
+	};
+
+	struct VertexPosCol
+	{
+		CVector3 position;
+		CVector4 colour;
+	};
+
 
 	struct PerModelConstants
 	{
@@ -109,16 +140,18 @@ namespace DX12
 		CVector3 objectColour;  // Allows each light model to be tinted to match the light colour they cast
 		float    parallaxDepth; // Used in the geometry shader to control how much the polygons are exploded outwards
 
-		float hasOpacityMap;
+		float useCustomValues;
 		float hasAoMap;
 		float hasRoughnessMap;
 		float hasAmbientMap;
 		float hasMetallnessMap;
+		float hasNormalMap;
+		float hasDisplacementMap;
 
 		float roughness;
 		float metalness;
 
-		float padding[37];
+		float padding[35];
 	};
 
 	constexpr auto s = sizeof(PerModelConstants);
@@ -132,7 +165,6 @@ namespace DX12
 	
 	struct PerFrameConstants
 	{
-
 		// These are the matrices used to position the camera
 		CMatrix4x4 cameraMatrix;
 		CMatrix4x4 viewMatrix;

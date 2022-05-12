@@ -9,7 +9,6 @@
 
 #include <intsafe.h>
 
-#include "CGameObjectManager.h"
 
 #include "..\Utility/ColourRGBA.h"
 #include <memory>
@@ -20,6 +19,8 @@
 #include "../Math/CVector2.h"
 #include "../Math/CVector3.h"
 
+class CGameObject;
+class IEngine;
 class CWindow;
 class CCamera;
 
@@ -30,7 +31,7 @@ class CScene
 		virtual ~CScene() = default;
 
 
-		CScene(IEngine* engine, std::string fileName);
+		CScene(IEngine* engine, const std::string& fileName);
 
 		virtual void RenderSceneFromCamera(CCamera* camera) = 0;
 
@@ -65,7 +66,7 @@ class CScene
 		auto  GetViewportX() const { return mViewportX; }
 		auto  GetViewportY() const { return mViewportY; }
 		CCamera*  GetCamera() const { return mCamera.get(); }
-		void SetCamera(CCamera* c) { mCamera.reset(c); }
+		void SetCamera(CCamera* c) { mCamera.reset(c);}
 		auto& GetLockFps() { return mLockFPS; }
 		auto& GetBackgroundCol() { return mBackgroundColor; }
 
@@ -77,7 +78,7 @@ class CScene
 		// Private Variables
 		//--------------------------------------------------------------------------------------
 		
-		std::unique_ptr<CCamera>            mCamera;
+		std::unique_ptr<CCamera>  mCamera;
 
 		// Lock FPS to monitor refresh rate, which will typically set it to 60fps. Press 'p' to toggle to full fps
 		bool         mLockFPS     = true;

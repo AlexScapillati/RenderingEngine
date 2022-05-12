@@ -22,12 +22,9 @@ namespace DX12
 								  const float&       height        = 1000,
 								  const float&       nearClip      = 0.001f,
 								  const float&       farClip       = 1000);
-
-			void  SetRotation(CVector3 rotation, int node) override;
-			void  LoadNewMesh(std::string newMesh) override;
-			void  Render(bool basicGeometry) override;
-			void  SetShadowMapSize(int s) override;
-			void* RenderFromThis() override;
-			~CDX12DirectionalLight() override;
+			
+			virtual ~CDX12DirectionalLight() = default;
+			void    SetShadowMapSize(int s) override;
+			void*   RenderFromThis() override;
 	};
 }

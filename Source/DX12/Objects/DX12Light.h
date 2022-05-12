@@ -7,7 +7,7 @@
 
 namespace DX12
 {
-	class CDX12Light : public CDX12GameObject, public CLight
+	class CDX12Light : virtual public CDX12GameObject, virtual public CLight
 	{
 		public:
 			CDX12Light(CDX12Engine*       engine,
@@ -22,7 +22,6 @@ namespace DX12
 
 			void SetRotation(CVector3 rotation,
 							 int      node) override;
-			void    LoadNewMesh(std::string newMesh) override;
 			void    Render(bool basicGeometry) override;
 			~ CDX12Light() override;
 	};

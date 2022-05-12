@@ -29,12 +29,11 @@ public:
 	CCamera(CVector3 position = {0,0,0}, CVector3 rotation = {0,0,0}, 
            float fov = PI/3, float aspectRatio = 16.0f / 9.0f, float nearClip = 0.1f, float farClip = 10000.0f);
 
-	~CCamera(){}
+	virtual ~CCamera() = default;
 
 
 	// Control the camera's position and rotation using keys provided
-	void Control( float frameTime, KeyCode turnUp, KeyCode turnDown, KeyCode turnLeft, KeyCode turnRight,  
-	              KeyCode moveForward, KeyCode moveBackward, KeyCode moveLeft, KeyCode moveRight);
+	void Control( float frameTime);
 
 	void ControlMouse(float frameTime, CVector2 delta, KeyCode moveForward, KeyCode moveBackward, KeyCode moveLeft, KeyCode moveRight);
 

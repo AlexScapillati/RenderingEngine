@@ -22,8 +22,7 @@ namespace DX12
 	 {
 		 CDX12GameObject::SetRotation(rotation, node);
 	 }
-
-	void CDX12Light::LoadNewMesh(std::string newMesh) { CDX12GameObject::LoadNewMesh(newMesh); }
+	 
 
 	void CDX12Light::Render(bool basicGeometry) { CDX12GameObject::Render(basicGeometry); }
 	 CDX12Light::~CDX12Light() = default;

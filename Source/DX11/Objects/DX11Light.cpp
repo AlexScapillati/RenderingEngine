@@ -71,8 +71,7 @@ namespace DX11
 			delete[] prevBlendFactor;
 		}
 	}
-
-	void CDX11Light::LoadNewMesh(std::string newMesh) { CDX11GameObject::LoadNewMesh(newMesh); }
+	
 	CDX11Light::~CDX11Light()
 	{
 	}
