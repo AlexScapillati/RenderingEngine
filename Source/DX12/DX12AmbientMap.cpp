@@ -43,7 +43,7 @@ namespace DX12
 		mEngine(e),
 		mSize(size)
 	{
-
+		mEnable = false;
 		mVp = CD3DX12_VIEWPORT(0.f, 0.f, static_cast<float>(mSize), static_cast<float>(mSize));
 		mScissorsRect = { 0,0,mSize,mSize };
 
@@ -190,6 +190,8 @@ namespace DX12
 		if (!mEnable) return nullptr;
 
 =======
+
+		if (!mEnable) return nullptr;
 
 		PIXBeginEvent(mEngine->mCommandList.Get(),0,L"AmbientMapRendering");
 >>>>>>> parent of 20e675b8 (lab)
