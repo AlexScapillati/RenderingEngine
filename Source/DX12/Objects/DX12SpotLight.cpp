@@ -7,7 +7,6 @@
 #include "../../Common/CGameObjectManager.h"
 #include "../../Common/CScene.h"
 
-
 namespace DX12
 {
 

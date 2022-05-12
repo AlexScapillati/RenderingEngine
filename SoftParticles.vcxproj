@@ -116,7 +116,6 @@
     </FxCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-<<<<<<< HEAD
     <ClCompile Include="Source\DX12\DXR\DXR.cpp" />
     <ClCompile Include="Source\DX12\DXR\DXR.h" />
     <ClCompile Include="Source\DX12\DX12AmbientMap.cpp" />
@@ -125,9 +124,6 @@
     <ClCompile Include="Source\DX12\DXR\RootSignatureGenerator.cpp" />
     <ClCompile Include="Source\DX12\DXR\ShaderBindingTableGenerator.cpp" />
     <ClCompile Include="Source\DX12\DXR\TopLevelASGenerator.cpp" />
-=======
-    <ClCompile Include="Source\DX12\DX12AmbientMap.cpp" />
->>>>>>> parent of a9c1de14 (revert commit)
     <ClCompile Include="Source\DX12\Objects\DX12DirectionalLight.cpp" />
     <ClCompile Include="Source\DX12\Objects\DX12PointLight.cpp" />
     <ClCompile Include="Source\Common\CGameObject.cpp" />
@@ -193,14 +189,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\DX12\DX12AmbientMap.h" />
-<<<<<<< HEAD
     <ClInclude Include="Source\DX12\DXR\BottomLevelASGenerator.h" />
     <ClInclude Include="Source\DX12\DXR\RaytracingPipelineGenerator.h" />
     <ClInclude Include="Source\DX12\DXR\RootSignatureGenerator.h" />
     <ClInclude Include="Source\DX12\DXR\ShaderBindingTableGenerator.h" />
     <ClInclude Include="Source\DX12\DXR\TopLevelASGenerator.h" />
-=======
->>>>>>> parent of a9c1de14 (revert commit)
     <ClInclude Include="Source\DX12\Objects\DX12DirectionalLight.h" />
     <ClInclude Include="Source\DX12\Objects\DX12PointLight.h" />
     <ClInclude Include="Source\Common\CLight.h" />

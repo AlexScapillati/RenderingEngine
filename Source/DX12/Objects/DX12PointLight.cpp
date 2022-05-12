@@ -81,17 +81,10 @@ namespace DX12
 
 			mShadowMaps[i]->Barrier( D3D12_RESOURCE_STATE_DEPTH_WRITE);
 
-<<<<<<< HEAD
 			mEngine->mCurrRecordingCommandList->RSSetViewports(1, &mVp);
 			mEngine->mCurrRecordingCommandList->RSSetScissorRects(1, &mScissorsRect);
 			mEngine->mCurrRecordingCommandList->OMSetRenderTargets(0, nullptr, false, &mShadowMaps[i]->mDsvHandle->mCpu);
 			mEngine->mCurrRecordingCommandList->ClearDepthStencilView(mShadowMaps[i]->mDsvHandle->mCpu, D3D12_CLEAR_FLAG_DEPTH, 1.f, 0, 0, nullptr);
-=======
-			mEngine->mCommandList->RSSetViewports(1, &mVp);
-			mEngine->mCommandList->RSSetScissorRects(1, &mScissorsRect);
-			mEngine->mCommandList->OMSetRenderTargets(0, nullptr, false, &mShadowMaps[i]->mDSVHandle.mCpu);
-			mEngine->mCommandList->ClearDepthStencilView(mShadowMaps[i]->mDSVHandle.mCpu, D3D12_CLEAR_FLAG_DEPTH, 1.f, 0, 0, nullptr);
->>>>>>> parent of a9c1de14 (revert commit)
 
 			auto j = mEngine->mCurrentBackBufferIndex;
 
@@ -99,11 +92,8 @@ namespace DX12
 			mEngine->mPerFrameConstants[j].projectionMatrix = MakeProjectionMatrix(1.0f, ToRadians(90));
 			mEngine->mPerFrameConstants[j].viewProjectionMatrix = mEngine->mPerFrameConstants[j].viewMatrix * mEngine->mPerFrameConstants[j].projectionMatrix;
 
-<<<<<<< HEAD
 			mEngine->mPerFrameConstantBuffer[j]->Copy(mEngine->mPerFrameConstants);
 
-=======
->>>>>>> parent of a9c1de14 (revert commit)
 			for (const auto& o : mEngine->GetObjManager()->mObjects)
 			{
 				mEngine->SetDepthOnlyPSO();
@@ -118,11 +108,7 @@ namespace DX12
 		// unbind the shadow map form render target
 		mEngine->mCurrRecordingCommandList->OMSetRenderTargets(0, nullptr, false, nullptr);
 
-<<<<<<< HEAD
 		return &mShadowMaps[0]->mSrvHandle->mGpu;
-=======
-		return &mShadowMaps[0]->mHandle.mGpu;
->>>>>>> parent of a9c1de14 (revert commit)
 	}
 
 

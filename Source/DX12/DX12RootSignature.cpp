@@ -1,6 +1,5 @@
 #include "DX12RootSignature.h"
 
-<<<<<<< HEAD
 #include "CommonStates.h"
 
 #include "DX12Engine.h"
@@ -19,15 +18,6 @@ namespace DX12
 
 		std::unique_lock l(engine->mMutex);
 
-=======
-#include "DX12Engine.h"
-
-namespace DX12
-{
-	CDX12RootSignature::CDX12RootSignature(CDX12Engine* engine, CD3DX12_VERSIONED_ROOT_SIGNATURE_DESC rootSignatureDesc) :
-		mEngine(engine)
-	{
->>>>>>> parent of a9c1de14 (revert commit)
 		//-----------------------------------
 		// Create a root signature.
 		D3D12_FEATURE_DATA_ROOT_SIGNATURE featureData = {};
@@ -102,11 +92,7 @@ namespace DX12
 		{
 			for (auto i = 0u; i < numConstantBuffers; ++i)
 			{
-<<<<<<< HEAD
 				rootParameters[i].InitAsDescriptorTable(1,&ranges[i]);
-=======
-				rootParameters[i].InitAsDescriptorTable(1, &ranges[i], D3D12_SHADER_VISIBILITY_ALL);
->>>>>>> parent of a9c1de14 (revert commit)
 			}
 
 			for (auto i = numConstantBuffers; i < totRanges; ++i)
@@ -115,10 +101,6 @@ namespace DX12
 			}
 		}
 
-<<<<<<< HEAD
-=======
-
->>>>>>> parent of a9c1de14 (revert commit)
 		D3D12_STATIC_SAMPLER_DESC samplers[] =
 		{
 			DirectX::CommonStates::StaticLinearWrap(0),
@@ -129,10 +111,7 @@ namespace DX12
 		rootSignatureDescription.Init_1_1(_countof(rootParameters), rootParameters, _countof(samplers), samplers, rootSignatureFlags);
 
 		mRootSignature = std::make_unique<CDX12RootSignature>(engine, rootSignatureDescription);
-<<<<<<< HEAD
 		
-=======
->>>>>>> parent of a9c1de14 (revert commit)
 	}
 	
 
@@ -173,11 +152,7 @@ namespace DX12
 		{
 			for (auto i = 0u; i < numConstantBuffers; ++i)
 			{
-<<<<<<< HEAD
 				rootParameters[i].InitAsDescriptorTable(1, &ranges[i]);
-=======
-				rootParameters[i].InitAsDescriptorTable(1, &ranges[i], D3D12_SHADER_VISIBILITY_ALL);
->>>>>>> parent of a9c1de14 (revert commit)
 			}
 
 			for (auto i = numConstantBuffers; i < totRanges; ++i)
@@ -186,7 +161,6 @@ namespace DX12
 			}
 		}
 
-<<<<<<< HEAD
 		static const D3D12_STATIC_SAMPLER_DESC s = {
 		 D3D12_FILTER_COMPARISON_MIN_MAG_MIP_POINT,
 		 D3D12_TEXTURE_ADDRESS_MODE_BORDER, // AddressU
@@ -205,12 +179,6 @@ namespace DX12
 
 		CD3DX12_VERSIONED_ROOT_SIGNATURE_DESC rootSignatureDescription;
 		rootSignatureDescription.Init_1_1(_countof(rootParameters), rootParameters, 1u, &s, rootSignatureFlags);
-=======
-		auto samplerDesc = DirectX::CommonStates::StaticAnisotropicBorder(0);
-
-		CD3DX12_VERSIONED_ROOT_SIGNATURE_DESC rootSignatureDescription;
-		rootSignatureDescription.Init_1_1(_countof(rootParameters), rootParameters, 1u, &samplerDesc, rootSignatureFlags);
->>>>>>> parent of a9c1de14 (revert commit)
 
 		mRootSignature = std::make_unique<CDX12RootSignature>(engine, rootSignatureDescription);
 	}
@@ -252,11 +220,7 @@ namespace DX12
 		{
 			for (auto i = 0u; i < numConstantBuffers; ++i)
 			{
-<<<<<<< HEAD
 				rootParameters[i].InitAsDescriptorTable(1, &ranges[i]);
-=======
-				rootParameters[i].InitAsDescriptorTable(1, &ranges[i], D3D12_SHADER_VISIBILITY_ALL);
->>>>>>> parent of a9c1de14 (revert commit)
 			}
 
 			for (auto i = numConstantBuffers; i < totRanges; ++i)

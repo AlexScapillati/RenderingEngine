@@ -1,6 +1,5 @@
 #include "DX12AmbientMap.h"
 
-<<<<<<< HEAD
 #include "DX12ConstantBuffer.h"
 #include "DX12Engine.h"
 #include "DX12PipelineObject.h"
@@ -31,36 +30,6 @@ namespace DX12
 			mRtvHandle[i] = mRtvHeap->Add();
 		}
 		
-=======
-#include "DX12Engine.h"
-#include "../Common/CGameObject.h"
-#include "../Common/CGameObjectManager.h"
-#include "DX12ConstantBuffer.h"
-
-namespace DX12
-{
-	CDX12AmbientMap::CDX12AmbientMap(CDX12Engine* e, int size, CDX12DescriptorHeap* rtvHeap, CDX12DescriptorHeap* srvHeap, CDX12DescriptorHeap* dsvHeap) :
-		mEngine(e),
-		mSize(size)
-	{
-		mEnable = false;
-		mVp = CD3DX12_VIEWPORT(0.f, 0.f, static_cast<float>(mSize), static_cast<float>(mSize));
-		mScissorsRect = { 0,0,mSize,mSize };
-
-		mSrvIndex = srvHeap->Top();
-		mSrvHandle = srvHeap->Add();
-
-		mDsvIndex = dsvHeap->Top();
-		mDsvHandle = dsvHeap->Add();
-
-		for (int i = 0; i < 6; ++i)
-		{
-			mRtvIndex[i] = rtvHeap->Top();
-			mRtvHandle[i] = rtvHeap->Add();
-		}
-
-
->>>>>>> parent of a9c1de14 (revert commit)
 		D3D12_RESOURCE_DESC desc{};
 		desc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
 		desc.Alignment = 0;
@@ -74,10 +43,7 @@ namespace DX12
 		desc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
 		desc.Flags = D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET;
 
-<<<<<<< HEAD
 
-=======
->>>>>>> parent of a9c1de14 (revert commit)
 		const float c[] = { 0.4f,0.6f,0.9f,1.0f };
 		CD3DX12_CLEAR_VALUE clearValue(desc.Format, c);
 
@@ -88,21 +54,12 @@ namespace DX12
 				&heapProperties,
 				D3D12_HEAP_FLAG_NONE,
 				&desc,
-<<<<<<< HEAD
 				D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE,
 				&clearValue,
 				IID_PPV_ARGS(mResource.GetAddressOf())));
 
 		mResource->SetName(L"AmbientMap");
 
-=======
-				D3D12_RESOURCE_STATE_GENERIC_READ,
-				&clearValue,
-				IID_PPV_ARGS(mResource.GetAddressOf())));
-
-
-		NAME_D3D12_OBJECT(mResource);
->>>>>>> parent of a9c1de14 (revert commit)
 
 		D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};
 		srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
@@ -112,11 +69,7 @@ namespace DX12
 		srvDesc.TextureCube.MostDetailedMip = 0;
 		srvDesc.TextureCube.ResourceMinLODClamp = 0.f;
 
-<<<<<<< HEAD
 		mEngine->mDevice->CreateShaderResourceView(mResource.Get(), &srvDesc, mSrvHeap->Get(mSrvHandle)->mCpu);
-=======
-		mEngine->mDevice->CreateShaderResourceView(mResource.Get(), &srvDesc, mSrvHandle.mCpu);
->>>>>>> parent of a9c1de14 (revert commit)
 
 		for (int i = 0; i < 6; ++i)
 		{
@@ -128,11 +81,7 @@ namespace DX12
 			rtvDesc.Texture2DArray.PlaneSlice = 0;
 			rtvDesc.Texture2DArray.FirstArraySlice = i;
 
-<<<<<<< HEAD
 			mEngine->mDevice->CreateRenderTargetView(mResource.Get(), &rtvDesc, mRtvHeap->Get(mRtvHandle[i])->mCpu);
-=======
-			mEngine->mDevice->CreateRenderTargetView(mResource.Get(), &rtvDesc, mRtvHandle[i].mCpu);
->>>>>>> parent of a9c1de14 (revert commit)
 		}
 
 		D3D12_RESOURCE_DESC dsvDesc{};
@@ -147,15 +96,9 @@ namespace DX12
 		dsvDesc.SampleDesc.Quality = 0;
 		dsvDesc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
 		dsvDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL;
-<<<<<<< HEAD
 
 
 		auto cl = CD3DX12_CLEAR_VALUE(dsvDesc.Format, 1.0f, 0);
-=======
-		
-
-		auto cl = CD3DX12_CLEAR_VALUE(dsvDesc.Format,1.0f,0);
->>>>>>> parent of a9c1de14 (revert commit)
 
 		ThrowIfFailed(
 			mEngine->mDevice->CreateCommittedResource(
@@ -166,7 +109,6 @@ namespace DX12
 				&cl,
 				IID_PPV_ARGS(mDepthBufferResource.GetAddressOf())));
 
-<<<<<<< HEAD
 		mEngine->mDevice->CreateDepthStencilView(mDepthBufferResource.Get(), nullptr, mDsvHeap->Get(mDsvHandle)->mCpu);
 
 		NAME_D3D12_OBJECT(mDepthBufferResource);
@@ -176,25 +118,12 @@ namespace DX12
 		{
 			mConstantBuffers[i] = std::make_unique<CDX12ConstantBuffer>(mEngine, mEngine->mSRVDescriptorHeap.get(), sizeof(PerFrameConstants));
 		}
-=======
-		mEngine->mDevice->CreateDepthStencilView(mDepthBufferResource.Get(), nullptr, mDsvHandle.mCpu);
-
-		NAME_D3D12_OBJECT(mDepthBufferResource);
->>>>>>> parent of a9c1de14 (revert commit)
 	}
 
 	void* CDX12AmbientMap::RenderFromThis(CMatrix4x4* mat)
 	{
-<<<<<<< HEAD
-<<<<<<< HEAD
 		if (!mEnable) return nullptr;
 
-=======
-
-		if (!mEnable) return nullptr;
-
-		PIXBeginEvent(mEngine->mCommandList.Get(),0,L"AmbientMapRendering");
->>>>>>> parent of 20e675b8 (lab)
 
 		// Reset all the other command allocators and command lists
 		for (size_t i = 0; i < ARRAYSIZE(mEngine->mAmbientMapCommandLists); ++i)
@@ -209,26 +138,6 @@ namespace DX12
 		mEngine->mCurrRecordingCommandList = commandList;
 
 		PIXBeginEvent(commandList, 0, L"AmbientMapRendering");
-=======
-
-		mEngine->mCommandList->RSSetViewports(1, &mVp);
-		mEngine->mCommandList->RSSetScissorRects(1, &mScissorsRect);
-
-		auto barrier = CD3DX12_RESOURCE_BARRIER::Transition(
-			mResource.Get(),
-			D3D12_RESOURCE_STATE_GENERIC_READ,
-			D3D12_RESOURCE_STATE_RENDER_TARGET);
-
-		mEngine->mCommandList->ResourceBarrier(1, &barrier);
-
-		barrier = CD3DX12_RESOURCE_BARRIER::Transition(
-			mDepthBufferResource.Get(),
-			D3D12_RESOURCE_STATE_DEPTH_READ,
-			D3D12_RESOURCE_STATE_DEPTH_WRITE);
-
-
-		mEngine->mCommandList->ResourceBarrier(1, &barrier);
->>>>>>> parent of a9c1de14 (revert commit)
 
 
 		float mSides[6][3] = {
@@ -242,18 +151,14 @@ namespace DX12
 		};
 
 
-<<<<<<< HEAD
 		PrepareToRender();
 
-=======
->>>>>>> parent of a9c1de14 (revert commit)
 		auto scale = mat->GetScale();
 		auto pos = mat->GetPosition();
 		auto originalMatrix = *mat;
 
 		for (int i = 0; i < 6; ++i)
 		{
-<<<<<<< HEAD
 			commandList = mEngine->mAmbientMapCommandLists[i].Get();
 			mEngine->mCurrRecordingCommandList = commandList;
 
@@ -350,57 +255,4 @@ namespace DX12
 
 		mEngine->mCurrRecordingCommandList->ResourceBarrier(v.size(), v.data());
 	}
-=======
-			CVector3 rotation = mSides[i];
-
-			// To put rotation angles into a matrix we need to build the matrix from scratch to make sure we retain existing scaling and position
-			*mat = MatrixScaling(scale) *
-				MatrixRotationZ(rotation.z) * MatrixRotationX(rotation.x) * MatrixRotationY(rotation.y) *
-				MatrixTranslation(pos);
-
-			const FLOAT clearColor[] = { 0.4f,0.6f,0.9f,1.0f };
-			mEngine->mCommandList->ClearRenderTargetView(mRtvHandle[i].mCpu, clearColor, 0, nullptr);
-			mEngine->mCommandList->ClearDepthStencilView(mDsvHandle.mCpu, D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
-
-			mEngine->mCommandList->OMSetRenderTargets(1, &mRtvHandle[i].mCpu, true, &mDsvHandle.mCpu);
-
-			mEngine->mPerFrameConstants.viewMatrix = InverseAffine(*mat);
-			mEngine->mPerFrameConstants.projectionMatrix = MakeProjectionMatrix(1.0f, ToRadians(90.f));
-			mEngine->mPerFrameConstants.viewProjectionMatrix = mEngine->mPerFrameConstants.viewMatrix * mEngine->mPerFrameConstants.projectionMatrix;
-
-			mEngine->mPerFrameConstantBuffer->Copy(mEngine->mPerFrameConstants);
-
-
-			mEngine->GetObjManager()->mSky->Render();
-
-			for(auto& o : mEngine->GetObjManager()->mObjects)
-			{
-				o->Render();
-			}
-		}
-
-		// restore original matrix
-		*mat = originalMatrix;
-
-		barrier = CD3DX12_RESOURCE_BARRIER::Transition(
-			mResource.Get(),
-			D3D12_RESOURCE_STATE_RENDER_TARGET,
-			D3D12_RESOURCE_STATE_GENERIC_READ);
-
-		mEngine->mCommandList->ResourceBarrier(1, &barrier);
-
-		barrier = CD3DX12_RESOURCE_BARRIER::Transition(
-			mDepthBufferResource.Get(),
-			D3D12_RESOURCE_STATE_DEPTH_WRITE,
-			D3D12_RESOURCE_STATE_DEPTH_READ);
-
-		mEngine->mCommandList->ResourceBarrier(1, &barrier);
-
-
-		return &mSrvHandle.mGpu;
-	}
-
-
-
->>>>>>> parent of a9c1de14 (revert commit)
 }

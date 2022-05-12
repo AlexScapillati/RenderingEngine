@@ -1,16 +1,5 @@
 #pragma once
 
-<<<<<<< HEAD
-=======
-<<<<<<< Updated upstream
-#include "DX12Engine.h"
-#include "../Common/CScene.h"
-#include "DX12PipelineObject.h"
-#include <vector>
-=======
-#include "../Common/CScene.h"
-
->>>>>>> parent of a9c1de14 (revert commit)
 #include <vector>
 
 #include "../Common/CScene.h"
@@ -38,52 +27,8 @@ namespace DX12
 		// Constructors
 		//--------------------------------------------------------------------------------------
 
-<<<<<<< HEAD
 		CDX12Scene(CDX12Engine* engine,
 			std::string  fileName);
-=======
-		// Returns the generated scene texture
-		void RenderSceneImpl(float& frameTime) ;
-
-
-		void RenderSceneFromCameraImpl(CCamera* camera) ;
-		
-
-		//--------------------------------------------------------------------------------------
-		// DirectX12
-		//--------------------------------------------------------------------------------------
-
-		void ResizeImpl(UINT newX, UINT newY);
-		void PostProcessingPassImpl();
-		void RenderToDepthMapImpl();
-		void DisplayPostProcessingEffectsImpl();
-		ImTextureID GetTextureSRVImpl() ;
-
-		std::unique_ptr<CDX12RenderTarget> mSceneTexture;
-		std::unique_ptr<CDX12DepthStencil> mDepthStencils[3];
-		std::unique_ptr<CDX12DescriptorHeap> mDSVDescriptorHeap;
-		std::unique_ptr<CDX12AmbientMap> mAmbientMap;
-
-<<<<<<< Updated upstream
-
-		//--------------------------------------------------------------------------------------
-		// Scene Data
-		//--------------------------------------------------------------------------------------
-=======
-		//--------------------------------------------------------------------------------------
-		// Scene Data
-		//--------------------------------------------------------------------------------------
-
-	private:
-
-		CDX12Engine* mEngine = nullptr;
->>>>>>> Stashed changes
-
-	private:
-
-		CDX12Engine* mEngine = nullptr;
-		std::vector<ImTextureID> mShadowMaps;
->>>>>>> parent of a9c1de14 (revert commit)
 
 		//--------------------------------------------------------------------------------------
 		// Initialization

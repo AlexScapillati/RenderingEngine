@@ -12,10 +12,7 @@ namespace DX12
 	public:
 
 		virtual ~CDX12RootSignature() = default;
-<<<<<<< HEAD
 		void     Set(ID3D12RootSignature* rootSignature);
-=======
->>>>>>> parent of a9c1de14 (revert commit)
 
 		CDX12RootSignature(CDX12Engine* engine, CD3DX12_VERSIONED_ROOT_SIGNATURE_DESC rootSignatureDesc);
 

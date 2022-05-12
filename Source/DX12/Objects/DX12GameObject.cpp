@@ -1,9 +1,6 @@
 #include "DX12GameObject.h"
 
-<<<<<<< HEAD
 #include "../DX12AmbientMap.h"
-=======
->>>>>>> parent of a9c1de14 (revert commit)
 #include "../../Utility/HelperFunctions.h"
 
 #include "../DX12Engine.h"

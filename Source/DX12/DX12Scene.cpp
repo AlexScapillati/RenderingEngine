@@ -2,19 +2,10 @@
 #include "DX12Engine.h"
 
 #include "DX12AmbientMap.h"
-<<<<<<< HEAD
-=======
-#include "DX12Engine.h"
->>>>>>> parent of a9c1de14 (revert commit)
 #include "DX12DescriptorHeap.h"
 #include "DX12PipelineObject.h"
 #include "DX12Texture.h"
-<<<<<<< HEAD
 
-=======
-#include "../Window.h"
-#include "../../Common/Camera.h"
->>>>>>> parent of a9c1de14 (revert commit)
 #include "Objects/DX12Light.h"
 
 #include "../Window.h"
@@ -30,15 +21,9 @@ namespace DX12
 		try
 		{
 			InitFrameDependentStuff();
-<<<<<<< HEAD
 			engine->InitRaytracing();
 
 			mAmbientMap = std::make_unique<CDX12AmbientMap>(mEngine, 1024, mEngine->mSRVDescriptorHeap.get());
-=======
-
-			mAmbientMap = std::make_unique<CDX12AmbientMap>(engine, 2048, mEngine->mRTVDescriptorHeap.get(), mEngine->mSRVDescriptorHeap.get(), mEngine->mDSVDescriptorHeap.get());
-
->>>>>>> parent of a9c1de14 (revert commit)
 		}
 		catch (const std::runtime_error& e) { throw std::runtime_error(e.what()); }
 	}
@@ -147,7 +132,6 @@ namespace DX12
 				mShadowMaps.push_back(l->RenderFromThis());
 			}
 
-<<<<<<< HEAD
 			PIXEndEvent(commandList);
 		}
 
@@ -179,40 +163,13 @@ namespace DX12
 
 		// Set back the current recording command list
 		mEngine->mCurrRecordingCommandList = commandList;
-=======
-			PIXEndEvent(mEngine->mCommandList.Get());
-		}
-
-		// Render the ambient map
-		{
-			CMatrix4x4 mat = MatrixIdentity();
-
-			auto ptr = mAmbientMap->RenderFromThis(&mat);
-			if(ptr)
-			{
-				mEngine->mSRVDescriptorHeap->Set();
-				auto handle = *static_cast<CD3DX12_GPU_DESCRIPTOR_HANDLE*>(ptr);
-				mEngine->mCommandList->SetGraphicsRootDescriptorTable(12, handle);
-			}
-		}
-
->>>>>>> parent of a9c1de14 (revert commit)
 
 		// Render scene to texture
 		{
 			const FLOAT clearColor[] = { 0.4f,0.6f,0.9f,1.0f };
-<<<<<<< HEAD
 			
 			const auto rtv = mSceneTexture->mRTVHandle->mCpu;
 			const auto dsv = mDSVDescriptorHeap->Get(mEngine->mCurrentBackBufferIndex)->mCpu;
-=======
-
-				mEngine->mSRVDescriptorHeap->Set();
-
-			const auto rtv = mSceneTexture->mRTVHandle.mCpu;
-
-			const auto dsv = mDSVDescriptorHeap->Get(mEngine->mCurrentBackBufferIndex).mCpu;
->>>>>>> parent of a9c1de14 (revert commit)
 
 			mSceneTexture->Barrier(D3D12_RESOURCE_STATE_RENDER_TARGET);
 			mDepthStencils[mEngine->mCurrentBackBufferIndex]->Barrier(D3D12_RESOURCE_STATE_DEPTH_WRITE);
@@ -259,24 +216,7 @@ namespace DX12
 		mEngine->UpdateLightsBuffers();
 
 		mEngine->CopyBuffers();
-<<<<<<< HEAD
 		
-=======
-
-		mEngine->mSRVDescriptorHeap->Set();
-
-		if (!mShadowMaps.empty())
-		{
-			if (void* ptr = mShadowMaps.front())
-			{
-				// Convert back from void* to handle*
-				auto handle = *static_cast<CD3DX12_GPU_DESCRIPTOR_HANDLE*>(ptr);
-				//mEngine->mCommandList->SetGraphicsRootDescriptorTable(13, handle);
-			}
-		}
-
-
->>>>>>> parent of a9c1de14 (revert commit)
 		mEngine->GetObjManager()->RenderAllObjects();
 
 		mShadowMaps.clear();

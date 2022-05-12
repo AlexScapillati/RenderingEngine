@@ -1,12 +1,9 @@
 #include "DX12PipelineObject.h"
 
-<<<<<<< HEAD
 #include <locale>
 
 #include "CommonStates.h"
 
-=======
->>>>>>> parent of a9c1de14 (revert commit)
 #include "DX12Shader.h"
 
 namespace DX12

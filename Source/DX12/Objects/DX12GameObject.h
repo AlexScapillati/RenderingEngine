@@ -9,11 +9,7 @@
 #include "../DX12Common.h"
 
 #include "../../Common/CGameObject.h"
-<<<<<<< HEAD
 #include "../DX12AmbientMap.h"
-=======
-
->>>>>>> parent of a9c1de14 (revert commit)
 #include "../CDX12Material.h"
 #include "../DX12Mesh.h"
 
@@ -21,11 +17,6 @@ enum KeyCode;
 
 namespace DX12
 {
-<<<<<<< HEAD
-=======
-	class CDX12AmbientMap;
-
->>>>>>> parent of a9c1de14 (revert commit)
 	class CDX12Engine;
 
 	class CDX12GameObject : virtual public CGameObject
@@ -92,10 +83,7 @@ namespace DX12
 		// The material
 		// It will hold all the textures and send them to the shader with RenderMaterial()
 		std::unique_ptr<CDX12Material> mMaterial;
-<<<<<<< HEAD
 		
-=======
->>>>>>> parent of a9c1de14 (revert commit)
 	};
 
 	class CDX12Plant : public CDX12GameObject, public CPlant

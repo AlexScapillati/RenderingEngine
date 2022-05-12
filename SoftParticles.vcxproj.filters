@@ -176,7 +176,6 @@
     <ClCompile Include="Source\DX12\DX12AmbientMap.cpp">
       <Filter>Engine\DX12\Objects</Filter>
     </ClCompile>
-<<<<<<< HEAD
     <ClCompile Include="Source\DX12\DXR\DXR.h">
       <Filter>Engine\DX12\Raytracing</Filter>
     </ClCompile>
@@ -198,8 +197,6 @@
     <ClCompile Include="Source\DX12\DXR\DXR.cpp">
       <Filter>Engine\DX12\Raytracing</Filter>
     </ClCompile>
-=======
->>>>>>> parent of a9c1de14 (revert commit)
   </ItemGroup>
   <ItemGroup>
     <Filter Include="External">
@@ -436,7 +433,6 @@
     <ClInclude Include="Source\DX12\DX12AmbientMap.h">
       <Filter>Engine\DX12</Filter>
     </ClInclude>
-<<<<<<< HEAD
     <ClInclude Include="Source\DX12\DXR\BottomLevelASGenerator.h">
       <Filter>Engine\DX12\Raytracing\Helpers</Filter>
     </ClInclude>
@@ -452,8 +448,6 @@
     <ClInclude Include="Source\DX12\DXR\TopLevelASGenerator.h">
       <Filter>Engine\DX12\Raytracing\Helpers</Filter>
     </ClInclude>
-=======
->>>>>>> parent of a9c1de14 (revert commit)
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Source\Shaders\DepthOnly_ps.hlsl">

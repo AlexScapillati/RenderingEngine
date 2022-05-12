@@ -42,11 +42,7 @@ class CGameObjectManager
 		CSky*			 mSky = nullptr;
 
 	private:
-<<<<<<< HEAD
 		IEngine*		 mEngine;
-=======
-
->>>>>>> parent of a9c1de14 (revert commit)
 		int              mMaxSize;
 		int              mMaxShadowMaps;
 	};

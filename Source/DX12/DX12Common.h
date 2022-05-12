@@ -3,17 +3,9 @@
 
 
 #include <d3d12.h>
-<<<<<<< HEAD
 #include <sstream>
 
 #include "d3dx12.h"
-=======
-#include "d3dx12.h"
-#include <d3dcompiler.h>
-#include <d3dcommon.h>
-#include <dxgidebug.h>
-#include <dxgi1_6.h>
->>>>>>> parent of a9c1de14 (revert commit)
 
 #include "pix3.h"
 
@@ -22,11 +14,7 @@
 #include "..\Math/CVector4.h"
 #include "..\Math/CMatrix4x4.h"
 
-<<<<<<< HEAD
 #include "comdef.h"
-=======
-#include "../External/DirectXTK12/Inc/CommonStates.h"
->>>>>>> parent of a9c1de14 (revert commit)
 
 
 // The min/max macros conflict with like-named member functions.

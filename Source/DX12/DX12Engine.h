@@ -8,25 +8,17 @@
 #include "imgui.h"
 #include "..\Engine.h"
 
-<<<<<<< HEAD
 #include "dxcapi.h"
 #include "DXR/ShaderBindingTableGenerator.h"
 #include "DXR/TopLevelASGenerator.h"
 #include "DXR/RaytracingPipelineGenerator.h"
-=======
-
-// https://www.3dgep.com/learning-directx-12-1/#GPU_Synchronization
->>>>>>> parent of a9c1de14 (revert commit)
 
 
 namespace DX12
 {
-<<<<<<< HEAD
 	class CDX12PSO;
 
 	class CDX12Texture;
-=======
->>>>>>> parent of a9c1de14 (revert commit)
 	class CDX12SkyPSO;
 	class CDX12DepthOnlyPSO;
 	class CDX12PBRPSO;
