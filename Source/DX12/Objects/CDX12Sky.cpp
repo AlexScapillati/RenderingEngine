@@ -1,9 +1,8 @@
 #include "CDX12Sky.h"
 
 #include "../DX12Engine.h"
-
-#include "../../Common/CScene.h"
-#include "../DX12PipelineObject.h"
+#include "../DX12Scene.h"
+#include "../../Common/Camera.h"
 
 namespace DX12
 {

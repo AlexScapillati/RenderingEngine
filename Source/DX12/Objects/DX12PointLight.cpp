@@ -33,8 +33,8 @@ namespace DX12
 		const CVector3& rotation,
 		float scale,
 		const int& shadowMapSize) :
-		CDX12GameObject(engine, mesh, name, diffuse, position, rotation, scale),
-		CPointLight(colour, strength, shadowMapSize),
+		CDX12Light(engine, mesh, name, diffuse, colour, strength, position, rotation, scale),
+		mShadowMapSize(shadowMapSize),
 		mVp(),
 		mScissorsRect()
 	{

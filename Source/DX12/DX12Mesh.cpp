@@ -227,7 +227,7 @@ namespace DX12
 			auto hProp = DXR::kUploadHeapProps;
 			auto buffer = CD3DX12_RESOURCE_DESC::Buffer(subMesh.vertexSize * subMesh.numVertices);
 
-			std::unique_lock l(mEngine->mMutex);
+			//std::unique_lock l(mEngine->mMutex);
 			ThrowIfFailed(mEngine->mDevice->CreateCommittedResource(
 				&hProp,
 				D3D12_HEAP_FLAG_NONE,

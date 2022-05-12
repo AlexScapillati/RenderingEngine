@@ -457,9 +457,7 @@ float4 PSMain(NormalMappingPixelShaderInput input) : SV_TARGET
 
 	// Get normalised vector to camera for parallax mapping and specular equation (this vector was calculated later in previous shaders)
     const float3 v = normalize(gCameraPosition - input.worldPosition);
-
-    if (0)
-    {
+    
 		// Calculate the bitangent with the cross product of the world normal and the world tangent
         float3 worldBitangent = normalize(cross(input.worldNormal, input.worldTangent));
 		// Then transform model-space camera vector into tangent space (texture coordinate space) to give the direction to offset texture
@@ -480,7 +478,7 @@ float4 PSMain(NormalMappingPixelShaderInput input) : SV_TARGET
         float3 tangentSpaceN = normalize(NormalMap.Sample(TexSampler, input.uv).xyz * 2.0f - 1.0f);
         tangentSpaceN.y = -tangentSpaceN.y; // All the normal maps have Y up, but to make a LHS with Z outwards and X rightwards, then Y should be down
         n  = mul(tangentSpaceN, tangentMatrix);
-    }
+    
     
 	///////////////////////
     // Texture Sampling

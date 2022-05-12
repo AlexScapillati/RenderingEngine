@@ -3,9 +3,8 @@
 #include "DX12ConstantBuffer.h"
 #include "DX12Engine.h"
 #include "DX12PipelineObject.h"
-#include "../Common/CGameObject.h"
-#include "../Common/CScene.h"
 #include "../Common/CGameObjectManager.h"
+#include "../Common/Camera.h"
 
 namespace DX12
 {
@@ -13,7 +12,7 @@ namespace DX12
 		mEngine(e),
 		mSize(size)
 	{
-		mEnable = true;
+		mEnable = false;
 		mVp = CD3DX12_VIEWPORT(0.f, 0.f, static_cast<float>(mSize), static_cast<float>(mSize));
 		mScissorsRect = { 0,0,mSize,mSize };
 

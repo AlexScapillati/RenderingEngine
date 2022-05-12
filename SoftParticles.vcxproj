@@ -101,6 +101,7 @@
       <AdditionalIncludeDirectories>Source\External\DirectXTex\;Source\External\imgui\FileBrowser;Source\External\tinyxml2;Source\External\assimp\include\;Source\External\thread-pool\;Source\External\imgui;Utility;Math;Source\External\DirectXTex\DirectXTex;Source\External\DirectXTK12\Inc\;Source\External\DirectXTK12\;Source\External\dxc\inc</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <DebugInformationFormat>OldStyle</DebugInformationFormat>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -126,17 +127,13 @@
     <ClCompile Include="Source\DX12\DXR\TopLevelASGenerator.cpp" />
     <ClCompile Include="Source\DX12\Objects\DX12DirectionalLight.cpp" />
     <ClCompile Include="Source\DX12\Objects\DX12PointLight.cpp" />
-    <ClCompile Include="Source\Common\CGameObject.cpp" />
     <ClCompile Include="Source\Common\CGameObjectManager.cpp" />
-    <ClCompile Include="Source\Common\CGui.cpp" />
-    <ClCompile Include="Source\Common\CScene.cpp" />
     <ClCompile Include="Source\DX12\DX12Shader.cpp" />
     <ClCompile Include="Source\DX12\DX12RootSignature.cpp" />
     <ClCompile Include="Source\DX12\DX12PipelineObject.cpp" />
     <ClCompile Include="Source\DX12\DX12DescriptorHeap.cpp" />
     <ClCompile Include="Source\DX12\DX12ConstantBuffer.cpp" />
     <ClCompile Include="Source\DX12\DX12Texture.cpp" />
-    <ClCompile Include="Source\DX11\Objects\DX11DirLight.cpp" />
     <ClCompile Include="Source\DX12\DX12Common.h" />
     <ClCompile Include="Source\DX12\DX12Material.cpp" />
     <ClCompile Include="Source\DX12\D3D12Helpers.h" />
@@ -146,21 +143,7 @@
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Source\DX12\DX12Scene.cpp" />
     <ClCompile Include="Source\Common\Camera.cpp" />
-    <ClCompile Include="Source\DX11\DX11Engine.cpp" />
-    <ClCompile Include="Source\DX11\DX11Gui.cpp" />
-    <ClCompile Include="Source\DX11\GraphicsHelpers.cpp" />
     <ClCompile Include="Source\Common\LevelImporter.cpp" />
-    <ClCompile Include="Source\DX11\DX11Material.cpp" />
-    <ClCompile Include="Source\DX11\DX11Mesh.cpp" />
-    <ClCompile Include="Source\DX11\Objects\DX11GameObject.cpp" />
-    <ClCompile Include="Source\DX11\Objects\DX11Light.cpp" />
-    <ClCompile Include="Source\DX11\Objects\DX11Plant.cpp" />
-    <ClCompile Include="Source\DX11\Objects\DX11PointLight.cpp" />
-    <ClCompile Include="Source\DX11\Objects\DX11SpotLight.cpp" />
-    <ClCompile Include="Source\DX11\PostProcessing.cpp" />
-    <ClCompile Include="Source\DX11\DX11Scene.cpp" />
-    <ClCompile Include="Source\DX11\Shader.cpp" />
-    <ClCompile Include="Source\DX11\State.cpp" />
     <ClCompile Include="Source\DX12\DX12Engine.cpp" />
     <ClCompile Include="Source\DX12\DX12Gui.cpp" />
     <ClCompile Include="Source\DX12\Objects\DX12Light.cpp" />
@@ -196,12 +179,7 @@
     <ClInclude Include="Source\DX12\DXR\TopLevelASGenerator.h" />
     <ClInclude Include="Source\DX12\Objects\DX12DirectionalLight.h" />
     <ClInclude Include="Source\DX12\Objects\DX12PointLight.h" />
-    <ClInclude Include="Source\Common\CLight.h" />
     <ClInclude Include="Source\Common.h" />
-    <ClInclude Include="Source\Common\CGui.h" />
-    <ClInclude Include="Source\Common\CPostProcess.h" />
-    <ClInclude Include="Source\Common\CScene.h" />
-    <ClInclude Include="Source\Common\CGameObject.h" />
     <ClInclude Include="Source\Common\CGameObjectManager.h" />
     <ClInclude Include="Source\DX12\DX12Shader.h" />
     <ClInclude Include="Source\DX12\DX12RootSignature.h" />
@@ -225,26 +203,10 @@
     <ClInclude Include="Source\DX12\Objects\DX12GameObject.h" />
     <ClInclude Include="Source\DX12\DX12Scene.h" />
     <ClInclude Include="Source\Common\Camera.h" />
-    <ClInclude Include="Source\DX11\DX11Common.h" />
-    <ClInclude Include="Source\DX11\DX11Engine.h" />
-    <ClInclude Include="Source\DX11\DX11Gui.h" />
-    <ClInclude Include="Source\DX11\GraphicsHelpers.h" />
     <ClInclude Include="Source\Common\LevelImporter.h" />
-    <ClInclude Include="Source\DX11\DX11Material.h" />
-    <ClInclude Include="Source\DX11\Mesh.h" />
-    <ClInclude Include="Source\DX11\Objects\DX11DirLight.h" />
-    <ClInclude Include="Source\DX11\Objects\DX11GameObject.h" />
-    <ClInclude Include="Source\DX11\Objects\DX11Light.h" />
-    <ClInclude Include="Source\DX11\Objects\DX11Plant.h" />
-    <ClInclude Include="Source\DX11\Objects\DX11PointLight.h" />
-    <ClInclude Include="Source\DX11\Objects\DX11Sky.h" />
-    <ClInclude Include="Source\DX11\Objects\DX11SpotLight.h" />
-    <ClInclude Include="Source\DX11\DX11Scene.h" />
     <ClInclude Include="Source\DX12\DX12Engine.h" />
     <ClInclude Include="Source\DX12\DX12Gui.h" />
-    <ClInclude Include="Source\Engine.h" />
     <ClInclude Include="Source\External\tinyxml2\tinyxml2.h" />
-    <ClInclude Include="Source\FactoryEngine.h" />
     <ClInclude Include="Source\Math\CMatrix4x4.h" />
     <ClInclude Include="Source\Math\CVector2.h" />
     <ClInclude Include="Source\Math\CVector3.h" />
@@ -262,7 +224,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="Source\Shaders\BasicTransform_vs.hlsl">
+    <None Include="Source\Shaders\BasicTransform_vs.hlsl">
       <TargetProfile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">vs_4_1</TargetProfile>
       <FileType>Document</FileType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
@@ -271,8 +233,8 @@
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(OutDir)/Source/Shaders/%(Filename).cso</ObjectFileOutput>
-    </FxCompile>
-    <FxCompile Include="Source\Shaders\DepthOnlyNormal_ps.hlsl">
+    </None>
+    <None Include="Source\Shaders\DepthOnlyNormal_ps.hlsl">
       <TargetProfile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">ps_4_0</TargetProfile>
       <FileType>Document</FileType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
@@ -281,8 +243,8 @@
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(OutDir)/Source/Shaders/%(Filename).cso</ObjectFileOutput>
-    </FxCompile>
-    <FxCompile Include="Source\Shaders\DepthOnly_ps.hlsl">
+    </None>
+    <None Include="Source\Shaders\DepthOnly_ps.hlsl">
       <TargetProfile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">ps_4_0</TargetProfile>
       <FileType>Document</FileType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
@@ -291,8 +253,8 @@
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(OutDir)/Source/Shaders/%(Filename).cso</ObjectFileOutput>
-    </FxCompile>
-    <FxCompile Include="Source\Shaders\PBRNoNormals_ps.hlsl">
+    </None>
+    <None Include="Source\Shaders\PBRNoNormals_ps.hlsl">
       <TargetProfile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">ps_4_0</TargetProfile>
       <FileType>Document</FileType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
@@ -301,8 +263,8 @@
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(OutDir)/Source/Shaders/%(Filename).cso</ObjectFileOutput>
-    </FxCompile>
-    <FxCompile Include="Source\Shaders\PBRNoNormals_vs.hlsl">
+    </None>
+    <None Include="Source\Shaders\PBRNoNormals_vs.hlsl">
       <TargetProfile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">vs_4_1</TargetProfile>
       <FileType>Document</FileType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
@@ -311,8 +273,8 @@
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(OutDir)/Source/Shaders/%(Filename).cso</ObjectFileOutput>
-    </FxCompile>
-    <FxCompile Include="Source\Shaders\PBR_ps.hlsl">
+    </None>
+    <None Include="Source\Shaders\PBR_ps.hlsl">
       <TargetProfile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">ps_4_0</TargetProfile>
       <FileType>Document</FileType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
@@ -321,8 +283,8 @@
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(OutDir)/Source/Shaders/%(Filename).cso</ObjectFileOutput>
-    </FxCompile>
-    <FxCompile Include="Source\Shaders\PBR_vs.hlsl">
+    </None>
+    <None Include="Source\Shaders\PBR_vs.hlsl">
       <TargetProfile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">vs_4_1</TargetProfile>
       <FileType>Document</FileType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
@@ -331,8 +293,8 @@
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(OutDir)/Source/Shaders/%(Filename).cso</ObjectFileOutput>
-    </FxCompile>
-    <FxCompile Include="Source\Shaders\Sky_ps.hlsl">
+    </None>
+    <None Include="Source\Shaders\Sky_ps.hlsl">
       <TargetProfile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">ps_4_0</TargetProfile>
       <FileType>Document</FileType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
@@ -341,8 +303,8 @@
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(OutDir)/Source/Shaders/%(Filename).cso</ObjectFileOutput>
-    </FxCompile>
-    <FxCompile Include="Source\Shaders\Sky_vs.hlsl">
+    </None>
+    <None Include="Source\Shaders\Sky_vs.hlsl">
       <TargetProfile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">vs_4_1</TargetProfile>
       <FileType>Document</FileType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
@@ -351,8 +313,8 @@
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(OutDir)/Source/Shaders/%(Filename).cso</ObjectFileOutput>
-    </FxCompile>
-    <FxCompile Include="Source\Shaders\TintedTexture_ps.hlsl">
+    </None>
+    <None Include="Source\Shaders\TintedTexture_ps.hlsl">
       <TargetProfile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">ps_4_0</TargetProfile>
       <FileType>Document</FileType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
@@ -361,7 +323,7 @@
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(OutDir)/Source/Shaders/%(Filename).cso</ObjectFileOutput>
-    </FxCompile>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <None Include="Source\Shaders\SimpleShader.hlsl">
