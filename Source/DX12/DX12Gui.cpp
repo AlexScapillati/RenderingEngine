@@ -1,6 +1,7 @@
 
 #include "DX12Gui.h"
 
+#include "DX12AmbientMap.h"
 #include "DX12DescriptorHeap.h"
 #include "DX12Engine.h"
 #include "DX12Scene.h"
@@ -730,8 +731,6 @@ namespace DX12
 					{
 						point->SetShadowMapSize((int)pow<int, int>(2, size));
 					}
-
-
 				}
 			}
 
@@ -799,9 +798,12 @@ namespace DX12
 
 	void CDX12Gui::DisplaySceneSettings(bool& b) const
 	{
+		auto scene = mEngine->GetScene();
+
 		if (ImGui::Begin("Scene Properties", &b))
 		{
-			ImGui::Checkbox("VSync", &mEngine->GetScene()->GetLockFps());
+			ImGui::Checkbox("VSync", &scene->GetLockFps());
+			ImGui::Checkbox("AmbientMap", &scene->mAmbientMap->mEnable);
 		}
 		ImGui::End();
 	}

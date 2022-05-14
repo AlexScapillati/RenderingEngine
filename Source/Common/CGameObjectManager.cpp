@@ -59,9 +59,6 @@ void CGameObjectManager::UpdateObjects(float updateTime) const
 
 void CGameObjectManager::RenderAllObjects() const
 {
-	// Firstly render the sky (if any)
-	if (mSky) mSky->Render();
-
 	// Render the objects
 	for (const auto it : mObjects)
 	{

@@ -43,8 +43,7 @@ namespace DX12
 		std::vector<SHandle> mHandles;
 
 	private:
-
-		std::mutex mMutex;
+		
 		CDX12Engine* mEngine;
 		D3D12_DESCRIPTOR_HEAP_DESC mDesc;
 		UINT mIncrementSize;

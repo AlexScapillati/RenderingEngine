@@ -61,7 +61,7 @@ namespace DX12
 
 	CDX12Texture::~CDX12Texture()
 	{
-		if (mSrvHeap) mSrvHeap->Remove(mSrvHandle->mIndexInDescriptor);
+		if (mSrvHeap && mSrvHandle) mSrvHeap->Remove(mSrvHandle->mIndexInDescriptor);
 	}
 
 	CDX12Texture::CDX12Texture(CDX12Engine* engine, const ComPtr<ID3D12Resource>& res) : CDX12Resource(engine, res) {}

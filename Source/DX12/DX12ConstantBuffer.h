@@ -29,8 +29,8 @@ namespace DX12
 			if (mCBVDataBegin)
 			{
 				memcpy(mCBVDataBegin, &data, mSize);
+				mResource->Unmap(0, nullptr);
 			}
-			mResource->Unmap(0, nullptr);
 		}
 
 		template <typename T, typename U>

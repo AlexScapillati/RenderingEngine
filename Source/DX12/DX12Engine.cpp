@@ -196,6 +196,9 @@ namespace DX12
 		// Reset the main command allocator and the command list
 		mCommandAllocators[mCurrentBackBufferIndex]->Reset();
 		ThrowIfFailed(mCommandList->Reset(mCommandAllocators[mCurrentBackBufferIndex].Get(), nullptr));
+
+
+
 	}
 
 	void CDX12Engine::FinalizeFrame()
@@ -234,8 +237,7 @@ namespace DX12
 
 		mCurrentBackBufferIndex = mSwapChain->GetCurrentBackBufferIndex();
 
-		Flush();
-
+		WaitForFenceValue(mFence.Get(), mFrameFenceValues[mCurrentBackBufferIndex], mFenceEvent);
 	}
 
 
