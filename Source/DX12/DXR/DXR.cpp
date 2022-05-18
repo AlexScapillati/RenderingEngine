@@ -12,9 +12,9 @@
 #include "../DX12DescriptorHeap.h"
 #include "../DX12Shader.h"
 #include "../DX12Texture.h"
+#include "../DX12Scene.h"
 #include "../../Window.h"
 #include "../../Common/CGameObjectManager.h"
-#include "../../Common/CScene.h"
 #include "../Objects/DX12GameObject.h"
 
 namespace DX12

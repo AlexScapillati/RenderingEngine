@@ -1,11 +1,10 @@
 #pragma once
 
-#include "DX12GameObject.h"
-#include "../../Common/CLight.h"
+#include "DX12Light.h"
 
 namespace DX12
 {
-	class CDX12DirectionalLight : public CDX12GameObject, public CDirectionalLight
+	class CDX12DirectionalLight : public CDX12Light
 	{
 		public:
 			CDX12DirectionalLight(CDX12Engine*       engine,
@@ -24,7 +23,25 @@ namespace DX12
 								  const float&       farClip       = 1000);
 			
 			virtual ~CDX12DirectionalLight() = default;
-			void    SetShadowMapSize(int s) override;
-			void*   RenderFromThis() override;
+			void    SetShadowMapSize(int s);
+			void*   RenderFromThis();
+
+
+			auto GetNearClip() const { return mNearClip; }
+			auto GetFarClip() const { return mFarClip; }
+			auto SetNearClip(float n) { mNearClip = n; }
+			auto SetFarClip(float n) { mFarClip = n; }
+			auto GetWidth() const { return mWidth; }
+			auto GetHeight() const { return mHeight; }
+			auto SetWidth(float n) { mWidth = n; }
+			auto SetHeight(float n) { mHeight = n; }
+			auto GetShadowMapSize() const { return mShadowMapSize; }
+
+	protected:
+		int   mShadowMapSize;
+		float mWidth;
+		float mHeight;
+		float mNearClip;
+		float mFarClip;
 	};
 }

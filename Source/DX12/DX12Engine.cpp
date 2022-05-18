@@ -20,6 +20,7 @@
 
 #include "dxgi1_6.h"
 #include "dxgidebug.h"
+#include "../Utility/Input.h"
 
 namespace DX12
 {
@@ -195,6 +196,9 @@ namespace DX12
 		// Reset the main command allocator and the command list
 		mCommandAllocators[mCurrentBackBufferIndex]->Reset();
 		ThrowIfFailed(mCommandList->Reset(mCommandAllocators[mCurrentBackBufferIndex].Get(), nullptr));
+
+
+
 	}
 
 	void CDX12Engine::FinalizeFrame()
@@ -233,8 +237,7 @@ namespace DX12
 
 		mCurrentBackBufferIndex = mSwapChain->GetCurrentBackBufferIndex();
 
-		Flush();
-
+		WaitForFenceValue(mFence.Get(), mFrameFenceValues[mCurrentBackBufferIndex], mFenceEvent);
 	}
 
 
@@ -408,102 +411,102 @@ namespace DX12
 	}
 
 
-	CGameObject* CDX12Engine::CreateObject(const std::string& mesh,
-		const std::string& name,
-		const std::string& diffuseMap,
-		CVector3           position,
-		CVector3           rotation,
-		float              scale)
+	CDX12GameObject* CDX12Engine::CreateObject(const std::string& mesh,
+	                                           const std::string& name,
+	                                           const std::string& diffuseMap,
+	                                           CVector3           position,
+	                                           CVector3           rotation,
+	                                           float              scale)
 	{
 		auto obj = new CDX12GameObject(this, mesh, name, diffuseMap, position, rotation, scale);
 		mObjManager->AddObject(obj);
 		return obj;
 	}
 
-	CSky* CDX12Engine::CreateSky(const std::string& mesh,
-		const std::string& name,
-		const std::string& diffuseMap,
-		CVector3           position,
-		CVector3           rotation,
-		float              scale)
+	CDX12Sky* CDX12Engine::CreateSky(const std::string& mesh,
+	                                 const std::string& name,
+	                                 const std::string& diffuseMap,
+	                                 CVector3           position,
+	                                 CVector3           rotation,
+	                                 float              scale)
 	{
 		auto s = new CDX12Sky(this, mesh, name, diffuseMap, position, rotation, scale);
 		mObjManager->AddSky(s);
 		return s;
 	}
 
-	CPlant* CDX12Engine::CreatePlant(const std::string& id,
-		const std::string& name,
-		CVector3           position,
-		CVector3           rotation,
-		float              scale)
+	CDX12Plant* CDX12Engine::CreatePlant(const std::string& id,
+	                                     const std::string& name,
+	                                     CVector3           position,
+	                                     CVector3           rotation,
+	                                     float              scale)
 	{
 		auto p = new CDX12Plant(this, id, name, position, rotation, scale);
 		mObjManager->AddPlant(p);
 		return p;
 	}
 
-	CGameObject* CDX12Engine::CreateObject(const std::string& dirPath,
-		const std::string& name,
-		CVector3           position,
-		CVector3           rotation,
-		float              scale)
+	CDX12GameObject* CDX12Engine::CreateObject(const std::string& dirPath,
+	                                           const std::string& name,
+	                                           CVector3           position,
+	                                           CVector3           rotation,
+	                                           float              scale)
 	{
 		auto o = new CDX12GameObject(this, dirPath, name, position, rotation, scale);
 		mObjManager->AddObject(o);
 		return o;
 	}
 
-	CLight* CDX12Engine::CreateLight(const std::string& mesh,
-		const std::string& name,
-		const std::string& diffuseMap,
-		const CVector3& colour,
-		const float& strength,
-		CVector3           position,
-		CVector3           rotation,
-		float              scale)
+	CDX12Light* CDX12Engine::CreateLight(const std::string& mesh,
+	                                     const std::string& name,
+	                                     const std::string& diffuseMap,
+	                                     const CVector3&    colour,
+	                                     const float&       strength,
+	                                     CVector3           position,
+	                                     CVector3           rotation,
+	                                     float              scale)
 	{
 		auto l = new CDX12Light(this, mesh, name, diffuseMap, colour, strength, position, rotation, scale);
 		mObjManager->AddLight(l);
 		return l;
 	}
 
-	CSpotLight* CDX12Engine::CreateSpotLight(const std::string& mesh,
-		const std::string& name,
-		const std::string& diffuseMap,
-		const CVector3& colour,
-		const float& strength,
-		CVector3           position,
-		CVector3           rotation,
-		float              scale)
+	CDX12SpotLight* CDX12Engine::CreateSpotLight(const std::string& mesh,
+	                                             const std::string& name,
+	                                             const std::string& diffuseMap,
+	                                             const CVector3&    colour,
+	                                             const float&       strength,
+	                                             CVector3           position,
+	                                             CVector3           rotation,
+	                                             float              scale)
 	{
 		auto s = new CDX12SpotLight(this, mesh, name, diffuseMap, colour, strength, position, rotation, scale);
 		mObjManager->AddSpotLight(s);
 		return s;
 	}
 
-	CDirectionalLight* CDX12Engine::CreateDirectionalLight(const std::string& mesh,
-		const std::string& name,
-		const std::string& diffuseMap,
-		const CVector3& colour,
-		const float& strength,
-		CVector3           position,
-		CVector3           rotation,
-		float              scale)
+	CDX12DirectionalLight* CDX12Engine::CreateDirectionalLight(const std::string& mesh,
+	                                                           const std::string& name,
+	                                                           const std::string& diffuseMap,
+	                                                           const CVector3&    colour,
+	                                                           const float&       strength,
+	                                                           CVector3           position,
+	                                                           CVector3           rotation,
+	                                                           float              scale)
 	{
 		auto d = new CDX12DirectionalLight(this, mesh, name, diffuseMap, colour, strength, position, rotation, scale);
 		mObjManager->AddDirLight(d);
 		return d;
 	}
 
-	CPointLight* CDX12Engine::CreatePointLight(const std::string& mesh,
-		const std::string& name,
-		const std::string& diffuseMap,
-		const CVector3& colour,
-		const float& strength,
-		CVector3           position,
-		CVector3           rotation,
-		float              scale)
+	CDX12PointLight* CDX12Engine::CreatePointLight(const std::string& mesh,
+	                                               const std::string& name,
+	                                               const std::string& diffuseMap,
+	                                               const CVector3&    colour,
+	                                               const float&       strength,
+	                                               CVector3           position,
+	                                               CVector3           rotation,
+	                                               float              scale)
 	{
 		auto p = new CDX12PointLight(this, mesh, name, diffuseMap, colour, strength, position, rotation, scale);
 		mObjManager->AddPointLight(p);

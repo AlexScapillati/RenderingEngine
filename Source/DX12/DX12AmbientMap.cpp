@@ -3,9 +3,9 @@
 #include "DX12ConstantBuffer.h"
 #include "DX12Engine.h"
 #include "DX12PipelineObject.h"
-#include "../Common/CGameObject.h"
-#include "../Common/CScene.h"
+#include "DX12Scene.h"
 #include "../Common/CGameObjectManager.h"
+#include "../Common/Camera.h"
 
 namespace DX12
 {
@@ -25,9 +25,9 @@ namespace DX12
 
 		mDsvHandle = mDsvHeap->Add();
 
-		for (int i = 0; i < 6; ++i)
+		for (unsigned int& i : mRtvHandle)
 		{
-			mRtvHandle[i] = mRtvHeap->Add();
+			i = mRtvHeap->Add();
 		}
 		
 		D3D12_RESOURCE_DESC desc{};
@@ -114,9 +114,9 @@ namespace DX12
 		NAME_D3D12_OBJECT(mDepthBufferResource);
 
 
-		for (int i = 0; i < 6; ++i)
+		for (auto& mConstantBuffer : mConstantBuffers)
 		{
-			mConstantBuffers[i] = std::make_unique<CDX12ConstantBuffer>(mEngine, mEngine->mSRVDescriptorHeap.get(), sizeof(PerFrameConstants));
+			mConstantBuffer = std::make_unique<CDX12ConstantBuffer>(mEngine, mEngine->mSRVDescriptorHeap.get(), sizeof(PerFrameConstants));
 		}
 	}
 
@@ -124,21 +124,21 @@ namespace DX12
 	{
 		if (!mEnable) return nullptr;
 
+		//// Reset all the other command allocators and command lists
+		//for (size_t i = 0; i < ARRAYSIZE(mEngine->mAmbientMapCommandLists); ++i)
+		//{
+		//	auto j = i + mEngine->mCurrentBackBufferIndex * CDX12Engine::mNumFrames;
+		//	auto commandAllocator = mEngine->mAmbientMapCommandAllocators[j].Get();
+		//	commandAllocator->Reset();
+		//	mEngine->mAmbientMapCommandLists[i]->Reset(commandAllocator, nullptr);
+		//}
 
-		// Reset all the other command allocators and command lists
-		for (size_t i = 0; i < ARRAYSIZE(mEngine->mAmbientMapCommandLists); ++i)
-		{
-			auto j = i + mEngine->mCurrentBackBufferIndex * CDX12Engine::mNumFrames;
-			auto commandAllocator = mEngine->mAmbientMapCommandAllocators[j].Get();
-			commandAllocator->Reset();
-			mEngine->mAmbientMapCommandLists[i]->Reset(commandAllocator, nullptr);
-		}
+		//auto commandList = mEngine->mAmbientMapCommandLists[0].Get();
+		//mEngine->mCurrRecordingCommandList = commandList;
 
-		auto commandList = mEngine->mAmbientMapCommandLists[0].Get();
-		mEngine->mCurrRecordingCommandList = commandList;
+		auto commandList = mEngine->GetCommandList();
 
 		PIXBeginEvent(commandList, 0, L"AmbientMapRendering");
-
 
 		float mSides[6][3] = {
 			// Starting from facing down the +ve Z direction, left handed rotations
@@ -159,8 +159,10 @@ namespace DX12
 
 		for (int i = 0; i < 6; ++i)
 		{
+			/*
 			commandList = mEngine->mAmbientMapCommandLists[i].Get();
 			mEngine->mCurrRecordingCommandList = commandList;
+			*/
 
 			auto rotation = CVector3(mSides[i]) * PI;
 
@@ -173,49 +175,49 @@ namespace DX12
 			constexpr FLOAT clearColor[] = { 0.4f,0.6f,0.9f,1.0f };
 
 			CCamera camera(pos, rotation, PI, 1);
-
-			mEngine->mCurrSetPso = nullptr;
-			mEngine->SetPBRPSO();
+			
+			mEngine->SetSkyPSO();
 
 			commandList->RSSetViewports(1, &mVp);
 			commandList->RSSetScissorRects(1, &mScissorsRect);
-			commandList->OMSetRenderTargets(1, &mRtvHeap->Get(mRtvHandle[i])->mCpu, false, &mDsvHeap->Get(mDsvHandle)->mCpu);
+			commandList->OMSetRenderTargets(1, &mRtvHeap->Get(mRtvHandle[i])->mCpu, true, &mDsvHeap->Get(mDsvHandle)->mCpu);
 			commandList->ClearDepthStencilView(mDsvHeap->Get(mDsvHandle)->mCpu, D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
 			commandList->ClearRenderTargetView(mRtvHeap->Get(mRtvHandle[i])->mCpu, clearColor, 0, nullptr);
 
 			// Set camera matrices in the constant buffer and send over to GPU
-			mEngine->mSRVDescriptorHeap->Set();
-
 			PerFrameConstants perFrameConstants;
 			perFrameConstants.cameraMatrix = camera.WorldMatrix();
 			perFrameConstants.viewMatrix = camera.ViewMatrix();
 			perFrameConstants.projectionMatrix = camera.ProjectionMatrix();
 			perFrameConstants.viewProjectionMatrix = camera.ViewProjectionMatrix();
 
+			mEngine->mSRVDescriptorHeap->Set();
 			mConstantBuffers[i]->Copy(perFrameConstants);
-			mConstantBuffers[i]->Set(2);
+			mConstantBuffers[i]->Set(1);
 
 			mEngine->GetObjManager()->mSky->Render();
 
-			for (auto object : mEngine->GetObjManager()->mObjects)
-			{
-				object->Render();
-			}
+			/*
+			mEngine->SetPBRPSO();
+			mEngine->mSRVDescriptorHeap->Set();
+			mConstantBuffers[i]->Set(2);
 
-			commandList->Close();
+			mEngine->GetObjManager()->RenderAllObjects();
+			*/
 
-			ID3D12CommandList* cm[] = { commandList };
-			mEngine->mCommandQueue->ExecuteCommandLists(1, cm);
-			mEngine->mCurrSetPso = nullptr;
+			//commandList->Close();
+
+			//ID3D12CommandList* cm[] = { commandList };
+			//mEngine->mCommandQueue->ExecuteCommandLists(1, cm);
+			//mEngine->mCurrSetPso = nullptr;
 		}
-
+		
+		PrepareToShow();
 
 		mEngine->mCurrRecordingCommandList = mEngine->GetCommandList();
 
 		// restore original matrix
 		*mat = originalMatrix;
-
-		PrepareToShow();
 
 		PIXEndEvent(mEngine->mCurrRecordingCommandList);
 

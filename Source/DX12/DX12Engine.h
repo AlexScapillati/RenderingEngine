@@ -6,13 +6,21 @@
 
 #include "DX12Common.h"
 #include "imgui.h"
-#include "..\Engine.h"
 
 #include "dxcapi.h"
+#include "../Utility/Timer.h"
+#include "DXR/RaytracingPipelineGenerator.h"
 #include "DXR/ShaderBindingTableGenerator.h"
 #include "DXR/TopLevelASGenerator.h"
-#include "DXR/RaytracingPipelineGenerator.h"
+#include "Objects/CDX12Sky.h"
+#include "Objects/DX12DirectionalLight.h"
+#include "Objects/DX12Light.h"
+#include "Objects/DX12PointLight.h"
+#include "Objects/DX12SpotLight.h"
 
+
+class CGameObjectManager;
+class CWindow;
 
 namespace DX12
 {
@@ -29,13 +37,35 @@ namespace DX12
 	class CDX12Gui;
 	class CDX12Shader;
 
-	class CDX12Engine final : public IEngine
+	class CDX12Engine
 	{
 	public:
 
-		virtual ~CDX12Engine() override;
+		virtual ~CDX12Engine();
+
+		CDX12Scene*         GetScene() { return mScene.get(); }
+		CGameObjectManager* GetObjManager() { return mObjManager.get(); }
+		std::string                 GetMediaFolder() { return mMediaFolder; }
 
 		bool mRaytracing = false;
+
+		Timer mTimer;
+
+		std::unique_ptr<CDX12Scene> mScene;
+
+		std::unique_ptr<CGameObjectManager> mObjManager;
+
+		std::unique_ptr<CDX12Gui> mGui;
+
+		std::unique_ptr<CWindow> mWindow;
+
+		std::string mMediaFolder;
+
+		std::string mShaderFolder;
+
+		std::string mPostProcessingFolder;
+
+		CWindow* GetWindow() { return mWindow.get(); }
 
 		CDX12Engine() = delete;
 		CDX12Engine(const CDX12Engine&) = delete;
@@ -46,14 +76,14 @@ namespace DX12
 		CDX12Engine(HINSTANCE hInstance, int nCmdShow);
 
 		// Inherited via IEngine
-		bool Update() override;
+		bool Update();
 
 		// Inherited via IEngine
-		void Resize(UINT x, UINT y) override;
+		void Resize(UINT x, UINT y);
 
 		void CreatePipelineStateObjects();
 
-		void FinalizeFrame() override;
+		void FinalizeFrame();
 		void Present();
 
 
@@ -199,7 +229,7 @@ namespace DX12
 		void CopyBuffers();
 
 		void UpdateLightsBuffers();
-		
+
 
 		//----------------------------------------
 		// Pipeline State Objects
@@ -305,18 +335,83 @@ namespace DX12
 		std::unique_ptr<CDX12DescriptorHeap>                        mRTHeap;
 		ComPtr<ID3D12Resource>                                      mSbtStorage;
 
+
 		//----------------------------------------
 		// Override functions from IEngine
 		//-----------------------------------------
 
-		void			   CreateScene(std::string fileName) override;
-		CGameObject* CreateObject(const std::string& mesh, const std::string& name, const std::string& diffuseMap, CVector3 position, CVector3 rotation, float scale) override;
-		CSky* CreateSky(const std::string& mesh, const std::string& name, const std::string& diffuseMap, CVector3 position, CVector3 rotation, float scale) override;
-		CPlant* CreatePlant(const std::string& id, const std::string& name, CVector3 position, CVector3 rotation, float scale) override;
-		CGameObject* CreateObject(const std::string& dirPath, const std::string& name, CVector3 position, CVector3 rotation, float scale) override;
-		CLight* CreateLight(const std::string& mesh, const std::string& name, const std::string& diffuseMap, const CVector3& colour, const float& strength, CVector3 position, CVector3 rotation, float scale) override;
-		CSpotLight* CreateSpotLight(const std::string& mesh, const std::string& name, const std::string& diffuseMap, const CVector3& colour, const float& strength, CVector3 position, CVector3 rotation, float scale) override;
-		CDirectionalLight* CreateDirectionalLight(const std::string& mesh, const std::string& name, const std::string& diffuseMap, const CVector3& colour, const float& strength, CVector3 position, CVector3 rotation, float scale) override;
-		CPointLight* CreatePointLight(const std::string& mesh, const std::string& name, const std::string& diffuseMap, const CVector3& colour, const float& strength, CVector3 position, CVector3 rotation, float scale) override;
+
+		void CreateScene(std::string fileName = "");
+
+		CDX12GameObject* CreateObject(
+			const std::string& mesh,
+			const std::string& name,
+			const std::string& diffuseMap,
+			CVector3           position = {0, 0, 0},
+			CVector3           rotation = {0, 0, 0},
+			float              scale    = 1);
+
+		CDX12Sky* CreateSky(
+			const std::string& mesh,
+			const std::string& name,
+			const std::string& diffuseMap,
+			CVector3           position = {0, 0, 0},
+			CVector3           rotation = {0, 0, 0},
+			float              scale    = 1);
+
+		CDX12Plant* CreatePlant(
+			const std::string& mesh,
+			const std::string& name,
+			CVector3           position = {0, 0, 0},
+			CVector3           rotation = {0, 0, 0},
+			float              scale    = 1);
+
+		CDX12GameObject* CreateObject(
+			const std::string& dirPath,
+			const std::string& name,
+			CVector3           position = {0, 0, 0},
+			CVector3           rotation = {0, 0, 0},
+			float              scale    = 1);
+
+		CDX12Light* CreateLight(
+			const std::string& mesh,
+			const std::string& name,
+			const std::string& diffuseMap,
+			const CVector3&    colour,
+			const float&       strength,
+			CVector3           position = {0, 0, 0},
+			CVector3           rotation = {0, 0, 0},
+			float              scale    = 1);
+
+		CDX12SpotLight* CreateSpotLight(
+			const std::string& mesh,
+			const std::string& name,
+			const std::string& diffuseMap,
+			const CVector3&    colour,
+			const float&       strength,
+			CVector3           position = {0, 0, 0},
+			CVector3           rotation = {0, 0, 0},
+			float              scale    = 1);
+
+		CDX12DirectionalLight* CreateDirectionalLight(
+			const std::string& mesh,
+			const std::string& name,
+			const std::string& diffuseMap,
+			const CVector3&    colour,
+			const float&       strength,
+			CVector3           position = {0, 0, 0},
+			CVector3           rotation = {0, 0, 0},
+			float              scale    = 1);
+
+		CDX12PointLight* CreatePointLight(
+			const std::string& mesh,
+			const std::string& name,
+			const std::string& diffuseMap,
+			const CVector3&    colour,
+			const float&       strength,
+			CVector3           position = {0, 0, 0},
+			CVector3           rotation = {0, 0, 0},
+			float              scale    = 1);
+
 	};
 }

@@ -1,15 +1,13 @@
 #include "DX12Texture.h"
 
-#include <atlconv.h>
-#include <utility>
 #include "DX12ConstantBuffer.h"
 #include "DX12DescriptorHeap.h"
 #include "DX12Engine.h"
 #include "ResourceUploadBatch.h"
 
 #include "../DirectXTK12/Inc/DDSTextureLoader.h"
-#include "../DirectXTK12/Inc/WICTextureLoader.h"
 #include "../DirectXTK12/Inc/DirectXHelpers.h"
+#include "../DirectXTK12/Inc/WICTextureLoader.h"
 
 namespace DX12
 {
@@ -63,7 +61,7 @@ namespace DX12
 
 	CDX12Texture::~CDX12Texture()
 	{
-		if (mSrvHeap) mSrvHeap->Remove(mSrvHandle->mIndexInDescriptor);
+		if (mSrvHeap && mSrvHandle) mSrvHeap->Remove(mSrvHandle->mIndexInDescriptor);
 	}
 
 	CDX12Texture::CDX12Texture(CDX12Engine* engine, const ComPtr<ID3D12Resource>& res) : CDX12Resource(engine, res) {}
@@ -104,7 +102,7 @@ namespace DX12
 			}))
 		{
 			if (FAILED(DirectX::CreateDDSTextureFromFileEx(
-				device, resourceUpload, ATL::CA2W(filename.c_str()), 0, resourceFlags, ddsFlags, textureResource.GetAddressOf())))
+				device, resourceUpload, std::wstring(filename.begin(),filename.end()).c_str(), 0, resourceFlags, ddsFlags, textureResource.GetAddressOf())))
 			{
 				throw std::runtime_error("Failed to load image: " + filename);
 			}
@@ -112,7 +110,7 @@ namespace DX12
 		else
 		{
 			if (FAILED(DirectX::CreateWICTextureFromFileEx(
-				device, resourceUpload, ATL::CA2W(filename.c_str()), 0, resourceFlags, wicFlags, textureResource.GetAddressOf())))
+				device, resourceUpload, std::wstring(filename.begin(), filename.end()).c_str(), 0, resourceFlags, wicFlags, textureResource.GetAddressOf())))
 			{
 				throw std::runtime_error("Failed to load image: " + filename);
 			}

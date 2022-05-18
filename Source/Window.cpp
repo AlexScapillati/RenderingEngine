@@ -2,6 +2,8 @@
 #include "Window.h"
 #include <intsafe.h>
 #include <stdexcept>
+#include <shellapi.h>
+#include <WinUser.h>
 
 
 UINT CWindow::GetWindowWidth()

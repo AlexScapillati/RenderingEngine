@@ -17,8 +17,8 @@ namespace DX12
 												 const float&       nearClip,
 												 const float&       farClip)
 		:
-		CDX12GameObject(engine, mesh, name, diffuse, position, rotation, scale),
-		CDirectionalLight(colour, strength, shadowMapSize, width, height, nearClip, farClip)
+		CDX12Light(engine, mesh, name, diffuse, colour, strength, position, rotation, scale),
+		mShadowMapSize(shadowMapSize), mWidth(width), mHeight(height), mNearClip(nearClip), mFarClip(farClip)
 	{
 	}
 

@@ -1,37 +1,72 @@
 
 #include "DX12Gui.h"
 
+#include "DX12AmbientMap.h"
+#include "DX12DescriptorHeap.h"
+#include "DX12Engine.h"
+#include "DX12Scene.h"
+#include "ImGuiFileBrowser.h"
+#include "ImGuizmo.h"
+#include "../Common.h"
 #include "../Window.h"
-
-#include "imgui.h"
+#include "../Common/Camera.h"
+#include "../Common/CGameObjectManager.h"
+#include "../DX12/Objects/CDX12Sky.h"
+#include "../DX12/Objects/DX12Light.h"
+#include "../Utility/Input.h"
 #include "backends/imgui_impl_dx12.h"
 #include "backends/imgui_impl_win32.h"
 
-#include "DX12DescriptorHeap.h"
-#include "ImGuizmo.h"
-#include "../Common/CScene.h"
-
-#include "DX12Engine.h"
-
 namespace DX12
 {
-	CDX12Gui::CDX12Gui(CDX12Engine* engine): CGui(engine)
+	std::string ChooseTexture(bool& selected, imgui_addons::ImGuiFileBrowser fileDialog)
 	{
+		if (fileDialog.showFileDialog("Select Texture", imgui_addons::ImGuiFileBrowser::DialogMode::OPEN, ImVec2(700, 310), ".jpg,.dds,.png"))
+		{
+			selected = false;
+			return fileDialog.selected_fn;
+		}
+		return {};
+	}
+
+	CDX12Gui::CDX12Gui(CDX12Engine* engine)
+	{
+
+		//initialize ImGui
+		IMGUI_CHECKVERSION();
+		ImGui::CreateContext();
+
+		ImGuiIO& io = ImGui::GetIO(); (void)io;
+		//io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;       // Enable Keyboard Controls
+		//io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable; // Enable Docking
+		//io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;       // Enable Multi-Viewport / Platform Windows //super broken
+
+		io.ConfigDockingWithShift = false;
+		io.ConfigWindowsMoveFromTitleBarOnly = true;
+		//io.Fonts->AddFontFromFileTTF("External\\imgui\\misc\\fonts\\Roboto-Light.ttf", 15);
+
+		// Setup Platform/Renderer bindings
+		// Setup Dear ImGui style
+		ImGui::StyleColorsDark();
+
 		mEngine = engine;
-	
+
 		// Calculate offset on the srvdescriptorheap to store imgui font texture
 		auto handle = mEngine->mSRVDescriptorHeap->Get(mEngine->mSRVDescriptorHeap->Add());
 
 		// Setup Platform/Renderer bindings
 		if (!ImGui_ImplDX12_Init(engine->GetDevice(),
-								CDX12Engine::mNumFrames,
-								DXGI_FORMAT_R8G8B8A8_UNORM,
-								mEngine->mSRVDescriptorHeap->mDescriptorHeap.Get(),
-								handle->mCpu,
-								handle->mGpu)
+			CDX12Engine::mNumFrames,
+			DXGI_FORMAT_R8G8B8A8_UNORM,
+			mEngine->mSRVDescriptorHeap->mDescriptorHeap.Get(),
+			handle->mCpu,
+			handle->mGpu)
 			||
-			!ImGui_ImplWin32_Init(engine->GetWindow()->GetHandle())) { throw std::runtime_error("Impossible initialize ImGui"); }
-		
+			!ImGui_ImplWin32_Init(engine->GetWindow()->GetHandle())) {
+			throw std::runtime_error("Impossible initialize ImGui");
+		}
+
 	}
 
 	void CDX12Gui::Begin()
@@ -42,7 +77,695 @@ namespace DX12
 		ImGui::NewFrame();
 		ImGuizmo::BeginFrame();
 	}
-	
+
+	void CDX12Gui::Show(float& frameTime)
+	{
+		if (ImGui::BeginMainMenuBar())
+		{
+			static bool                           open = false;
+			static bool                           save = false;
+			static bool                           themeWindow = false;
+			static bool                           sceneProperties = false;
+			static imgui_addons::ImGuiFileBrowser fileDialog;
+
+			if (ImGui::MenuItem("Open"))
+			{
+				open = true;
+			}
+
+			if (ImGui::MenuItem("Save"))
+			{
+				save = true;
+			}
+
+			if (ImGui::MenuItem("Theme"))
+			{
+				themeWindow = true;
+			}
+
+			if (ImGui::MenuItem("Scene Properties"))
+			{
+				sceneProperties = true;
+			}
+
+			if (sceneProperties)
+			{
+				DisplaySceneSettings(sceneProperties);
+			}
+
+			if (open)
+			{
+				ImGui::OpenPopup("OpenScene");
+			}
+
+			if (fileDialog.showFileDialog("OpenScene", imgui_addons::ImGuiFileBrowser::DialogMode::OPEN, ImVec2(700, 310), ".xml"))
+			{
+				delete mEngine->GetScene();
+
+				mEngine->CreateScene(fileDialog.selected_fn);
+
+				open = false;
+			}
+
+			if (save)
+			{
+				ImGui::OpenPopup("SaveScene");
+			}
+
+			if (fileDialog.showFileDialog("SaveScene", imgui_addons::ImGuiFileBrowser::DialogMode::SAVE, ImVec2(700, 310), ".xml"))
+			{
+				mEngine->GetScene()->Save(fileDialog.selected_fn);
+				save = false;
+			}
+
+			ImGui::EndMainMenuBar();
+		}
+
+		DisplayShadowMaps();
+
+		ImGui::SetNextWindowPos({ 0,0 });
+		ImGui::SetNextWindowSize({ (float)mEngine->GetWindow()->GetWindowWidth(),(float)mEngine->GetWindow()->GetWindowHeight() - 10 });
+
+		if (ImGui::Begin("Engine", nullptr, ImGuiWindowFlags_NoBringToFrontOnFocus))
+		{
+			if (ImGui::Begin("Viewport", nullptr,
+				ImGuiWindowFlags_NoScrollbar |
+				ImGuiWindowFlags_NoCollapse |
+				ImGuiWindowFlags_MenuBar))
+			{
+
+				ImGuizmo::SetDrawlist();
+
+				// Camera control 
+				if (ImGui::IsWindowFocused())
+				{
+					if (KeyHeld(Mouse_RButton))
+					{
+						ImVec2 mousePos = ImGui::GetCursorPos();
+
+						CVector2 delta = { ImGui::GetMouseDragDelta(1).x, ImGui::GetMouseDragDelta(1).y };
+
+						if (KeyHeld(Key_LShift))
+							MOVEMENT_SPEED = 100.0f;
+						else
+							MOVEMENT_SPEED = 50.0f;
+						/*
+									WIP When the mouse is on the borders of the window set its position the the opposite border
+
+									RECT winRect;
+
+									GetWindowRect(gHWnd, &winRect);
+
+									if (mousePos.x > winRect.right) SetCursorPos(winRect.left, mousePos.y);
+
+									else if (mousePos.x < winRect.left) SetCursorPos(winRect.right, mousePos.y);
+
+									else if (mousePos.y > winRect.bottom) SetCursorPos(mousePos.x, winRect.top);
+
+									else if (mousePos.y < winRect.top) SetCursorPos(mousePos.x, winRect.bottom);
+
+									else
+						*/
+
+						mEngine->GetScene()->GetCamera()->ControlMouse(frameTime, delta, Key_W, Key_S, Key_A, Key_D);
+
+						ImGui::ResetMouseDragDelta(1);
+					}
+				}
+
+				if (ImGui::BeginMenuBar())
+				{
+					ImGui::MenuItem("Maximize", "", &mViewportFullscreen);
+					ImGui::EndMenuBar();
+				}
+
+				//get the available region of the window
+				auto size = ImGui::GetContentRegionAvail();
+
+				if (mViewportFullscreen)
+				{
+					size = { (float)mEngine->GetWindow()->GetWindowWidth(), (float)mEngine->GetWindow()->GetWindowHeight() };
+					ImGui::SetWindowSize(size);
+				}
+
+				//compare it with the scene viewport
+				if ((size.x != mEngine->GetScene()->GetViewportX() || size.y != mEngine->GetScene()->GetViewportY()) && (size.x != 0 && size.y != 0))
+				{
+					//if they are different, resize the scene viewport
+					mEngine->GetScene()->Resize(UINT(size.x), UINT(size.y));
+				}
+
+				//render the scene image to ImGui
+				ImGui::Image(mEngine->GetScene()->GetTextureSRV(), size);
+
+				mViewportWindowPos.x = ImGui::GetWindowPos().x;
+				mViewportWindowPos.y = ImGui::GetWindowPos().y;
+
+			}
+			ImGui::End();
+		}
+		ImGui::End();
+
+		//render GUI
+		if (!mViewportFullscreen)
+			DisplayObjects();
+	}
+
+	void CDX12Gui::AddObjectsMenu() const
+	{
+		static imgui_addons::ImGuiFileBrowser fileDialog;
+		static bool                           addObj = false;
+
+		enum EAddType
+		{
+			None,
+			Simple,
+			Pbr,
+			Plant,
+			Sky,
+			SimpleLight,
+			SpotLight,
+			DirLight,
+			OmniLight
+		};
+
+		static EAddType addType = None;
+
+		if (ImGui::BeginMenuBar())
+		{
+			if (ImGui::BeginMenu("Add"))
+			{
+				if (ImGui::MenuItem("Simple Object"))
+				{
+					addType = Simple;
+				}
+				if (ImGui::MenuItem("Pbr Object"))
+				{
+					addType = Pbr;
+				}
+				if (ImGui::MenuItem("Plant"))
+				{
+					addType = Plant;
+				}
+				if (ImGui::MenuItem("Sky"))
+				{
+					addType = Sky;
+				}
+				if (ImGui::BeginMenu("Lights"))
+				{
+					if (ImGui::MenuItem("Simple Light"))
+					{
+						addType = SimpleLight;
+					}
+					if (ImGui::MenuItem("Spot Light"))
+					{
+						addType = SpotLight;
+					}
+					if (ImGui::MenuItem("Directional Light"))
+					{
+						addType = DirLight;
+					}
+					if (ImGui::MenuItem("Omnidirectional Light"))
+					{
+						addType = OmniLight;
+					}
+					ImGui::EndMenu();
+				}
+				ImGui::EndMenu();
+			}
+			ImGui::EndMenuBar();
+		}
+
+		static bool        selectMesh = false;
+		static std::string mesh;
+		static std::string tex;
+		static std::string name;
+		static bool        selectTexture = false;
+		static bool        selectNormal = false;
+		static bool        selectFolder = false;
+
+		if (addType != None)
+		{
+			//open a window
+			if (ImGui::Begin("Add Object"), &addObj, ImGuiWindowFlags_NoDocking)
+			{
+				//if the model is not pbr
+				if (addType != Pbr && addType != Plant)
+				{
+					//show a button that will open a file dialog to open a mesh
+					if (ImGui::Button("Add Mesh"))
+					{
+						selectMesh = true;
+					}
+
+					//show the mesh file name
+					if (!mesh.empty())
+					{
+						ImGui::SameLine();
+						ImGui::Text(mesh.c_str());
+					}
+
+					//show a button that will open a file dialog to open a texture
+					if (ImGui::Button("Add Texture"))
+					{
+						selectTexture = true;
+					}
+				}
+				else
+				{
+					//if the model is pbr just show a button for opening a file dialog to open a mesh file that contains the id of the model
+					if (ImGui::Button("Add ID"))
+					{
+						selectMesh = true;
+					}
+
+					// Show a butto to select a folder
+
+					if (ImGui::Button("Select folder"))
+					{
+						selectFolder = true;
+					}
+
+					//show the mesh file name
+					if (!mesh.empty())
+					{
+						ImGui::SameLine();
+						ImGui::Text(mesh.c_str());
+					}
+				}
+
+				//show the texture filename
+				if (!tex.empty())
+				{
+					ImGui::SameLine();
+					ImGui::Text(tex.c_str());
+				}
+
+				// colour button for the light objects
+				static CVector3 col = { 1,1,1 };
+				static float    strenght = 1000;
+
+				//if the model is a light (hence not a simple object or pbr)
+				if (addType == SimpleLight || addType == DirLight || addType == OmniLight || addType == SpotLight)
+				{
+					ImGui::ColorEdit3("LightColor", col.GetValuesArray());
+					ImGui::DragFloat("Strength", &strenght);
+				}
+
+				//show button that will add the object in the object manager
+				if (ImGui::Button("Add"))
+				{
+					addObj = false;
+
+					//get the actual name without the extension
+					const auto pos = mesh.find('.');
+
+					name = mesh.substr(0, pos);
+
+					//depending on the type create the corresponding object type
+
+					switch (addType)
+					{
+					case Simple:
+
+						if (!mesh.empty() && !tex.empty())
+						{
+							const auto newObj = mEngine->CreateObject(mesh, name, tex);
+
+							addObj = false;
+						}
+
+						break;
+
+					case Pbr:
+
+						if (!mesh.empty())
+						{
+							const auto newObj = mEngine->CreateObject(mesh, name);
+							addObj            = false;
+						}
+
+						break;
+					case Sky:
+
+						if (!mesh.empty() && !tex.empty())
+						{
+							const auto newObj = mEngine->CreateSky(mesh, name, tex);
+							addObj            = false;
+						}
+						break;
+					case Plant:
+
+						if (!mesh.empty())
+						{
+							const auto newObj = mEngine->CreatePlant(mesh, name);
+							
+
+							addObj = false;
+						}
+
+						break;
+
+					case SimpleLight:
+
+						if (!mesh.empty() & !tex.empty())
+						{
+							const auto newObj = mEngine->CreateLight(mesh, name, tex, col, strenght);
+
+							addObj = false;
+						}
+
+						break;
+
+					case SpotLight:
+
+						if (!mesh.empty() & !tex.empty())
+						{
+							const auto newObj = mEngine->CreateSpotLight(mesh, name, tex, col, strenght);
+
+							addObj = false;
+						}
+
+						break;
+
+					case DirLight:
+
+						if (!mesh.empty() & !tex.empty())
+						{
+							const auto newObj = mEngine->CreateDirectionalLight(mesh, name, tex, col, strenght);
+
+							addObj = false;
+						}
+
+						break;
+
+					case OmniLight:
+
+						if (!mesh.empty() & !tex.empty())
+						{
+							const auto newObj = mEngine->CreatePointLight(mesh, name, tex, col, strenght);
+							addObj            = false;
+						}
+
+						break;
+					}
+				}
+			}
+			ImGui::End();
+		}
+
+		//open file dialog code
+		if (selectMesh)
+		{
+			ImGui::OpenPopup("Select Mesh");
+		}
+		if (selectTexture)
+		{
+			ImGui::OpenPopup("Select Texture");
+		}
+		if (selectFolder)
+		{
+			ImGui::OpenPopup("Select Folder");
+		}
+
+		if (fileDialog.showFileDialog("Select Mesh", imgui_addons::ImGuiFileBrowser::DialogMode::OPEN, ImVec2(700, 310), ".x,.fbx"))
+		{
+			selectMesh = false;
+			mesh = fileDialog.selected_fn;
+		}
+
+		if (fileDialog.showFileDialog("Select Texture", imgui_addons::ImGuiFileBrowser::DialogMode::OPEN, ImVec2(700, 310), ".jpg,.dds,.png"))
+		{
+			selectTexture = false;
+			tex = fileDialog.selected_fn;
+		}
+
+		if (fileDialog.showFileDialog("Select Folder", imgui_addons::ImGuiFileBrowser::DialogMode::SELECT, ImVec2(700, 310)))
+		{
+			selectFolder = false;
+			mesh = fileDialog.selected_fn;
+		}
+	}
+
+	void CDX12Gui::DisplayPropertiesWindow() const
+	{
+		static auto mCurrentGizmoOperation = ImGuizmo::OPERATION::TRANSLATE;
+		static bool showBounds = false;
+		static bool bRename = false;
+		static bool show = mSelectedObj != nullptr;
+
+		if (ImGui::Begin("Properties", &show))
+		{
+			ImGui::Checkbox("Enabled", mSelectedObj->Enabled());
+
+			ImGuizmo::Enable(mSelectedObj->Enabled());
+
+			if (ImGui::Button("Rename"))
+			{
+				bRename = true;
+			}
+
+			if (bRename)
+			{
+				static char buffer[100] = { 0 };
+
+				ImGui::InputText("Name", buffer, IM_ARRAYSIZE(buffer));
+
+				if (ImGui::Button("OK"))
+				{
+					//set the name
+					mSelectedObj->SetName(buffer);
+
+					//hide the rename text input
+					bRename = false;
+				}
+			}
+
+			ImGui::Separator();
+
+			if (ImGui::Button("Duplicate Selected Obj"))
+			{
+				//WIP
+				try
+				{
+					if (auto light = dynamic_cast<CDX12Light*>(mSelectedObj))
+					{
+						if (dynamic_cast<CDX12SpotLight*>(mSelectedObj))
+						{
+							//TODO
+							auto o = mEngine->CreateSpotLight(mSelectedObj->MeshFileNames(), mSelectedObj->Name(), "", light->GetColour(), light->GetStrength());
+						}
+						else if (dynamic_cast<CDX12DirectionalLight*>(mSelectedObj))
+						{
+							auto obj = mEngine->CreateDirectionalLight(mSelectedObj->MeshFileNames(), mSelectedObj->Name(), "", light->GetColour(), light->GetStrength());
+						}
+						else if (dynamic_cast<CDX12PointLight*>(mSelectedObj))
+						{
+							auto obj = mEngine->CreatePointLight(mSelectedObj->MeshFileNames(), mSelectedObj->Name(), "", light->GetColour(), light->GetStrength());
+						}
+						else
+						{
+							auto obj = mEngine->CreateLight(mSelectedObj->MeshFileNames(), mSelectedObj->Name(), "", light->GetColour(), light->GetStrength());
+						}
+					}
+					else
+					{
+						if (auto plant = dynamic_cast<CDX12Plant*>(mSelectedObj))
+						{
+							auto obj = mEngine->CreatePlant(mSelectedObj->MeshFileNames(), mSelectedObj->Name());
+						}
+						else if (auto sky = dynamic_cast<CDX12Sky*>(mSelectedObj))
+						{
+							auto obj = mEngine->CreateSky(mSelectedObj->MeshFileNames(), mSelectedObj->Name(), "");
+						}
+						else
+						{
+							auto obj = mEngine->CreateObject(mSelectedObj->MeshFileNames(), mSelectedObj->Name(), "");
+						}
+					}
+				}
+				catch (std::exception& e)
+				{
+					throw std::runtime_error(e.what());
+				}
+			}
+
+
+			//display the transform component
+			ImGui::NewLine();
+			ImGui::Separator();
+			ImGui::Text("Transform");
+			ImGui::Separator();
+
+			if (ImGui::RadioButton("Translate", mCurrentGizmoOperation == ImGuizmo::TRANSLATE))
+				mCurrentGizmoOperation = ImGuizmo::TRANSLATE;
+			ImGui::SameLine();
+			if (ImGui::RadioButton("Rotate", mCurrentGizmoOperation == ImGuizmo::ROTATE))
+				mCurrentGizmoOperation = ImGuizmo::ROTATE;
+			ImGui::SameLine();
+			if (ImGui::RadioButton("Scale", mCurrentGizmoOperation == ImGuizmo::SCALE))
+				mCurrentGizmoOperation = ImGuizmo::SCALE;
+
+			static auto pos = mSelectedObj->Position();
+
+			//get the direct access to the position of the model and display it
+			if (ImGui::DragFloat3("Position", pos.GetValuesArray()))
+			{
+				mSelectedObj->SetPosition(pos);
+			}
+
+			//acquire the rotation array
+			static auto rot = ToDegrees(mSelectedObj->Rotation());
+			//display the rotation
+			if (ImGui::DragFloat3("Rotation", rot.GetValuesArray()))
+			{
+				//set the rotation
+				mSelectedObj->SetRotation(ToRadians(rot));
+			}
+
+			//display the scale array
+			static auto scale = mSelectedObj->Scale();
+
+			if (ImGui::DragFloat3("Scale", scale.GetValuesArray(), 0.1f, 0.01f, 1000.0f))
+			{
+				mSelectedObj->SetScale(scale);
+			}
+
+			ImGui::DragFloat("ParallaxDepth", &mSelectedObj->ParallaxDepth(), 0.00001f, 0.0f, .01f, "%.7f");
+
+			ImGui::DragFloat("Roughness", &mSelectedObj->Roughness(), 0.001f);
+			ImGui::DragFloat("Metalness", &mSelectedObj->Metalness(), 0.001f);
+
+
+			//----------------------------------------------------------------
+			// Object Specific settings
+			//----------------------------------------------------------------
+
+			if (const auto light = dynamic_cast<CDX12Light*>(mSelectedObj))
+			{
+				ImGui::Text("Specific settings");
+
+				//light colour edit
+				static bool colourPickerOpen = false;
+
+				if (ImGui::Button("Edit Colour"))
+				{
+					colourPickerOpen = !colourPickerOpen;
+				}
+
+				if (colourPickerOpen)
+				{
+					if (ImGui::Begin("ColourPicker", &colourPickerOpen))
+					{
+						ImGui::ColorPicker3("Colour", light->GetColour().GetValuesArray());
+					}
+					ImGui::End();
+				}
+
+				//modify strength
+				ImGui::DragFloat("Strength", &light->GetStrength(), 0.1f);
+
+				//if it is a spotlight let it modify few things
+				if (const auto spotLight = dynamic_cast<CDX12SpotLight*>(mSelectedObj))
+				{
+
+					//modify cone angle
+					ImGui::DragFloat("Cone Angle", &spotLight->GetConeAngle(), 1.0f, 0.0f, 180.0f);
+
+					//modify shadow map size
+					static int size = (int)std::log2(spotLight->GetShadowMapSize());
+					if (ImGui::DragInt("ShadowMapsSize", &size, 1, 1, 14))
+					{
+						spotLight->SetShadowMapsSize((int)pow<int, int>(2, size));
+					}
+
+					ImGui::Text("ShadowMap:");
+					ImGui::Image(spotLight->GetSRV(), { 128,128 });
+
+				}
+				else if (const auto dirLight = dynamic_cast<CDX12DirectionalLight*>(mSelectedObj))
+				{
+					//modify shadow map size
+					static int size = (int)std::log2(dirLight->GetShadowMapSize());
+					if (ImGui::DragInt("ShadowMapsSize", &size, 1, 1, 14))
+					{
+						dirLight->SetShadowMapSize((int)pow(2, size));
+					}
+
+					//modify near clip and far clip
+					static auto nearClip = dirLight->GetNearClip();
+					static auto farClip = dirLight->GetFarClip();
+
+					if (ImGui::DragFloat("NearClip", &nearClip, 0.01f, 0.0f, 10.0f))
+					{
+						dirLight->SetNearClip(nearClip);
+					}
+
+					if (ImGui::DragFloat("FarClip", &farClip, 10.0f))
+					{
+						dirLight->SetFarClip(farClip);
+					}
+
+					//modify the size of the matrix
+
+					static auto width = dirLight->GetWidth();
+					static auto height = dirLight->GetHeight();
+
+					if (ImGui::DragFloat("Height", &height, 10.0f, 1.0f))
+					{
+						dirLight->SetHeight(height);
+					}
+
+					if (ImGui::DragFloat("Width", &width, 10.0f, 1.0f))
+					{
+						dirLight->SetWidth(width);
+					}
+
+
+				}
+				else if (const auto point = dynamic_cast<CDX12PointLight*>(mSelectedObj))
+				{
+					//modify shadow map size
+					static int size = (int)std::log2(point->GetShadowMapSize());
+					if (ImGui::DragInt("ShadowMapsSize", &size, 1, 1, 12))
+					{
+						point->SetShadowMapSize((int)pow<int, int>(2, size));
+					}
+				}
+			}
+
+			if (mSelectedObj->GetMeshes().size() > 1)
+			{
+				// Show Variations (if any)
+				std::string previewValues = "";
+
+				// Populate the string with the preview values separated with \0
+				for (const auto& mesh : mSelectedObj->GetVariations())
+				{
+					previewValues += mesh + '\0';
+				}
+
+				// Show the combo selector
+				static int selected = 0;
+				if (ImGui::Combo("Mesh", &selected, previewValues.c_str()))
+				{
+					// If the user pressed load the new mesh
+					mSelectedObj->LoadNewMesh(mSelectedObj->GetMeshes().at(selected));
+				}
+
+			}
+		}
+		ImGui::End();
+
+		const auto pos = mViewportWindowPos;
+
+		ImGuizmo::Enable(true);
+		ImGuizmo::SetRect(pos.x, pos.y, mEngine->GetScene()->GetViewportSize().x, mEngine->GetScene()->GetViewportSize().y);
+		ImGuizmo::Manipulate(mEngine->GetScene()->GetCamera()->ViewMatrix().GetArray(), mEngine->GetScene()->GetCamera()->ProjectionMatrix().GetArray(),
+			mCurrentGizmoOperation, ImGuizmo::WORLD, mSelectedObj->WorldMatrix().GetArray());
+
+	}
+
 
 	void CDX12Gui::End()
 	{
@@ -51,7 +774,44 @@ namespace DX12
 		ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), mEngine->mCurrRecordingCommandList);
 		ImGui::UpdatePlatformWindows();
 	}
-	
+
+	void CDX12Gui::DisplayObjects()
+	{
+		if (ImGui::Begin("Objects", nullptr, ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_MenuBar))
+		{
+			AddObjectsMenu();
+			ImGui::Separator();
+			//display for each model a button
+			const auto objManager = mEngine->GetObjManager();
+			DisplayDeque(objManager->mObjects);
+			DisplayDeque(objManager->mLights);
+			DisplayDeque(objManager->mSpotLights);
+			DisplayDeque(objManager->mDirLights);
+			DisplayDeque(objManager->mPointLights);
+		}
+		ImGui::End();
+		if (mSelectedObj != nullptr)
+		{
+			DisplayPropertiesWindow();
+		}
+	}
+
+	void CDX12Gui::DisplaySceneSettings(bool& b) const
+	{
+		auto scene = mEngine->GetScene();
+
+		if (ImGui::Begin("Scene Properties", &b))
+		{
+			ImGui::Checkbox("VSync", &scene->GetLockFps());
+			ImGui::Checkbox("AmbientMap", &scene->mAmbientMap->mEnable);
+		}
+		ImGui::End();
+	}
+
+	void CDX12Gui::DisplayShadowMaps() const
+	{
+	}
+
 
 	CDX12Gui::~CDX12Gui()
 	{
