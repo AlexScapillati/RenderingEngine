@@ -1,8 +1,9 @@
 #include "CDX12Sky.h"
 
 #include "../DX12Engine.h"
-#include "../DX12Scene.h"
-#include "../../Common/Camera.h"
+
+#include "../../Common/CScene.h"
+#include "../DX12PipelineObject.h"
 
 namespace DX12
 {
@@ -12,18 +13,14 @@ namespace DX12
 		if (!mEnabled) return;
 
 		SetPosition(mEngine->GetScene()->GetCamera()->Position());
+
+		mMesh->mModelConstants.objectColour = { 1.f,1.f,1.f };
+
+		mEngine->SetSkyPSO();
+
 		mMaterial->RenderMaterial();
 
-		auto& cb = mMesh->ModelConstants();
-		cb.hasAoMap = mMaterial->mAo ? 1 : 0;
-		cb.hasNormalMap = mMaterial->mNormal ? 1 : 0;
-		cb.hasMetallnessMap = mMaterial->mMetalness ? 1 : 0;
-		cb.hasRoughnessMap = mMaterial->mRoughness ? 1 : 0;
-		cb.hasDisplacementMap = mMaterial->mDisplacement ? 1 : 0;
-		cb.roughness = mRoughness;
-		cb.metalness = mMetalness;
-		cb.parallaxDepth = mParallaxDepth;
-		cb.useCustomValues = 0;
+		mEngine->SetConstantBuffers();
 
 		// Render the mesh
 		mMesh->Render(mWorldMatrices);

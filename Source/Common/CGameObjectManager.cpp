@@ -1,50 +1,46 @@
 #include "CGameObjectManager.h"
 
-#include "../DX12/Objects/DX12Light.h"
-#include "../DX12/Objects/DX12SpotLight.h"
-#include "../DX12/Objects/DX12DirectionalLight.h"
-#include "../DX12/Objects/DX12PointLight.h"
-#include "../DX12/Objects/CDX12Sky.h"
+#include "CLight.h"
 
-CGameObjectManager::CGameObjectManager(DX12::CDX12Engine* engine)
+CGameObjectManager::CGameObjectManager(IEngine* engine)
 {
 	mEngine = engine;
 	mMaxSize = 100;
 	mMaxShadowMaps = 10;
 }
 
-void CGameObjectManager::AddObject(DX12::CDX12GameObject* obj)
+void CGameObjectManager::AddObject(CGameObject* obj)
 {
 	mObjects.push_back(obj);
 }
 
-void CGameObjectManager::AddLight(DX12::CDX12Light* obj)
+void CGameObjectManager::AddLight(CLight* obj)
 {
 	mLights.push_back(obj);
 }
 
-void CGameObjectManager::AddPointLight(DX12::CDX12PointLight* obj)
+void CGameObjectManager::AddPointLight(CPointLight* obj)
 {
 	mPointLights.push_back(obj);
 }
 
-void CGameObjectManager::AddSpotLight(DX12::CDX12SpotLight* obj)
+void CGameObjectManager::AddSpotLight(CSpotLight* obj)
 {
 	mSpotLights.push_back(obj);
 }
 
-void CGameObjectManager::AddDirLight(DX12::CDX12DirectionalLight* obj)
+void CGameObjectManager::AddDirLight(CDirectionalLight* obj)
 {
 	mDirLights.push_back(obj);
 }
 
-void CGameObjectManager::AddSky(DX12::CDX12Sky* obj)
+void CGameObjectManager::AddSky(CSky* obj)
 {
 	//delete mSky;
 	mSky = obj;
 }
 
-void CGameObjectManager::AddPlant(DX12::CDX12Plant* obj)
+void CGameObjectManager::AddPlant(CPlant* obj)
 {
 	mObjects.push_back(obj);
 }
@@ -55,10 +51,14 @@ void CGameObjectManager::UpdateObjects(float updateTime) const
 	{
 		o->Update(updateTime);
 	}
+
 }
 
 void CGameObjectManager::RenderAllObjects() const
 {
+	// Firstly render the sky (if any)
+	if (mSky) mSky->Render();
+
 	// Render the objects
 	for (const auto it : mObjects)
 	{

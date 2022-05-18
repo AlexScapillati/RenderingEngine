@@ -7,6 +7,7 @@
 *.o
 *.obj
 *.cso
+*.pdb
 
 # Precompiled Headers
 *.gch
@@ -16,8 +17,6 @@
 *.so
 *.dylib
 *.dll
-*.pdb
-*.pbd
 
 # Fortran module files
 *.mod
@@ -37,4 +36,3 @@
 Media/
 .vs/
 x64/
-*.pbd

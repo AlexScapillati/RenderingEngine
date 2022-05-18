@@ -7,7 +7,6 @@ namespace DX12
 	CDX12DescriptorHeap::~CDX12DescriptorHeap()
 	{
 		// Remove all the handles
-		ZeroMemory(this, sizeof(*this));
 	}
 
 	CDX12DescriptorHeap::CDX12DescriptorHeap(CDX12Engine* engine, D3D12_DESCRIPTOR_HEAP_DESC desc) :
@@ -69,6 +68,8 @@ namespace DX12
 
 	void CDX12DescriptorHeap::Remove(UINT pos)
 	{
+		// TODO
+		/*
 		if (pos < mHandles.size())
 		{
 			mHandles.erase(mHandles.begin() + pos);
@@ -78,6 +79,7 @@ namespace DX12
 				mHandles[i].mIndexInDescriptor = i;
 			}
 		}
+		*/
 	}
 
 	void CDX12DescriptorHeap::Set() const

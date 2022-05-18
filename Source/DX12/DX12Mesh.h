@@ -129,6 +129,6 @@ namespace DX12
 
 		std::unique_ptr<CDX12ConstantBuffer> mModelConstantBuffer;
 
-		PerModelConstants  mModelConstants;
+		PerModelConstants  mModelConstants{};
 	};
 }

@@ -2,9 +2,12 @@
 
 #include "DX12GameObject.h"
 
+#include "../../Common/CLight.h"
+
+
 namespace DX12
 {
-	class CDX12Light : public CDX12GameObject
+	class CDX12Light : virtual public CDX12GameObject, virtual public CLight
 	{
 		public:
 			CDX12Light(CDX12Engine*       engine,
@@ -18,17 +21,9 @@ namespace DX12
 					   float              scale    = 1.f);
 
 			void SetRotation(CVector3 rotation,
-							 int      node = 0) override;
-			void    Render(bool basicGeometry = false) override;
-
-		void      SetColour(CVector3 colour) { mColour = colour; }
-		void      SetStrength(float strength) { mStrength = strength; }
-		CVector3& GetColour() { return mColour; }
-		float&    GetStrength() { return mStrength; }
-
-	protected:
-		CVector3 mColour;
-		float    mStrength;
+							 int      node) override;
+			void    Render(bool basicGeometry) override;
+			~ CDX12Light() override;
 	};
 	
 	

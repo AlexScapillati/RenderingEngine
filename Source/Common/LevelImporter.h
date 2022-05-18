@@ -4,12 +4,10 @@
 
 #include <string>
 
-namespace DX12
-{
-	class CDX12Engine;
-}
-
+class CGameObject;
+class IEngine;
 class CVector3;
+class CScene;
 
 class CLevelImporter
 {
@@ -19,7 +17,7 @@ public:
 	// Scene Parser
 	//--------------------------------------------------------------------------------------
 
-	static bool LoadScene(const std::string& level, DX12::CDX12Engine* engine);
+	static bool LoadScene(const std::string& level, IEngine* engine);
 
 	static void SaveScene(std::string& fileName);
 
@@ -28,6 +26,8 @@ public:
 	void ParsePostProcessingEffects(tinyxml2::XMLElement* curr);
 	
 	void SavePostProcessingEffect(tinyxml2::XMLElement* curr);
+
+	void SavePositionRotationScale(tinyxml2::XMLElement* obj, CGameObject* it);
 
 	void SaveObjects(tinyxml2::XMLElement* el);
 

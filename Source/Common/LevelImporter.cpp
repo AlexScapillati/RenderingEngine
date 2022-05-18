@@ -3,22 +3,22 @@
 
 #include <stdexcept>
 
+#include "../Engine.h"
 #include "..\Common/Camera.h"
+#include "..\Common/CScene.h"
 
+#include "../Common/CLight.h"
+#include "../Common/CPostProcess.h"
+#include "../DX11/DX11Engine.h"
 #include "CGameObjectManager.h"
-
-#include "../DX12/DX12Engine.h"
-#include "../DX12/DX12Scene.h"
-#include "../DX12/Objects/CDX12Sky.h"
-#include "../DX12/Objects/DX12Light.h"
 
 #include <thread_pool.hpp>
 
+IEngine* mEngine;
 
-DX12::CDX12Engine* mEngine;
-
-bool CLevelImporter::LoadScene(const std::string& level, DX12::CDX12Engine* engine)
+bool CLevelImporter::LoadScene(const std::string& level, IEngine* engine)
 {
+
 	mEngine = engine;
 
 	tinyxml2::XMLDocument doc;
@@ -87,8 +87,8 @@ void  CLevelImporter::SaveScene(std::string& fileName /* ="" */)
 }
 
 
-void SavePositionRotationScale(tinyxml2::XMLElement*  obj,
-                               DX12::CDX12GameObject* it)
+void SavePositionRotationScale(tinyxml2::XMLElement* obj,
+	CGameObject* it)
 {
 	//save position, position and scale
 	auto childEl = obj->InsertNewChildElement("Position");
@@ -110,7 +110,7 @@ void  SaveObjects(tinyxml2::XMLElement* el)
 
 		const auto obj = el->InsertNewChildElement("Entity");
 
-		if (auto plant = dynamic_cast<DX12::CDX12Plant*>(sky))
+		if (auto plant = dynamic_cast<CPlant*>(sky))
 		{
 			obj->SetAttribute("Type", "Plant");
 		}
@@ -146,7 +146,7 @@ void  SaveObjects(tinyxml2::XMLElement* el)
 	{
 		const auto obj = el->InsertNewChildElement("Entity");
 
-		if (auto plant = dynamic_cast<DX12::CDX12Plant*>(it))
+		if (auto plant = dynamic_cast<CPlant*>(it))
 		{
 			obj->SetAttribute("Type", "Plant");
 		}
@@ -392,7 +392,7 @@ void  LoadObject(tinyxml2::XMLElement* currEntity)
 	}
 
 	// Create objects
-	DX12::CDX12GameObject* obj = nullptr;
+	CGameObject* obj = nullptr;
 
 	if(diffuse.empty() && ID.empty())
 	{
@@ -694,7 +694,8 @@ void  LoadSky(tinyxml2::XMLElement* currEntity)
 
 	// No ambient map for the sky object
 
-	mEngine->CreateSky(mesh, name, diffuse, pos, rot, scale);
+	CSky* obj = mEngine->CreateSky(mesh, name, diffuse, pos, rot, scale);
+
 }
 
 void  LoadCamera(tinyxml2::XMLElement* currEntity)
@@ -766,7 +767,8 @@ void  LoadPlant(tinyxml2::XMLElement* currEntity)
 
 	try
 	{
-		DX12::CDX12Plant* obj;
+
+		CPlant* obj;
 		if(!ID.empty())
 			obj = mEngine->CreatePlant(ID, name, pos, rot, scale);
 		else
@@ -783,11 +785,106 @@ void  LoadPlant(tinyxml2::XMLElement* currEntity)
 
 void  SavePostProcessingEffect(tinyxml2::XMLElement* curr)
 {
+
+
+	// Save the Type and mode for every effect
+	for (const auto& pp : mPostProcessingFilters)
+	{
+		const auto ppEl = curr->InsertNewChildElement("Effect");
+
+		// Cast the type string with the corresponding enum
+		ppEl->SetAttribute("Type", mPostProcessStrings[(int)pp.type].c_str());
+		ppEl->SetAttribute("Mode", mPostProcessModeStrings[(int)pp.mode].c_str());
+	}
+
+	// Save settings
+	// Create an array of floats
+	float settings[sizeof(DX11::PostProcessingConstants) / sizeof(float)];
+
+	// Copy the postprocessing constants struct in the array of floats with memcpy
+	memcpy(settings, &DX11::gPostProcessingConstants, sizeof(DX11::PostProcessingConstants));
+
+	// Insert the settings element
+	const auto settingsEl = curr->InsertNewChildElement("Settings");
+
+	// For every setting 
+	for (unsigned long long int i = 0; i < ARRAYSIZE(settings); ++i)
+	{
+		// create a different name for each setting
+		std::string name = "setting";
+		name.append(std::to_string(i));
+
+		// set the attribute 
+		settingsEl->SetAttribute(name.c_str(), settings[i]);
+	}
 }
 
 void  ParsePostProcessingEffects(tinyxml2::XMLElement* curr)
 {
 
+	auto currEffect = curr->FirstChildElement();
+
+	while (currEffect)
+	{
+		std::string item = currEffect->Name();
+
+		if (item == "Effect")
+		{
+			std::string typeValue;
+			std::string modeValue;
+
+			const auto type = currEffect->FindAttribute("Type");
+			if (type)
+			{
+				typeValue = type->Value();
+			}
+
+			const auto mode = currEffect->FindAttribute("Mode");
+			if (mode)
+				modeValue = mode->Value();
+
+			PostProcessFilter filter;
+
+
+			for (unsigned long long int i = 0; i < ARRAYSIZE(mPostProcessModeStrings); ++i)
+			{
+				if (modeValue._Equal(mPostProcessModeStrings[i]))
+				{
+					filter.mode = (PostProcessMode)i;
+				}
+			}
+
+			for (int i = 0; i < ARRAYSIZE(mPostProcessStrings); ++i)
+			{
+				if (typeValue._Equal(mPostProcessStrings[i]))
+				{
+					filter.type = (PostProcess)i;
+				}
+			}
+
+			mPostProcessingFilters.push_back(filter);
+		}
+		// After Loading all the effects
+		// Load the settings
+		else if (item == "Settings")
+		{
+			float values[sizeof(DX11::gPostProcessingConstants) / sizeof(float)];
+
+			for (unsigned long long int i = 0; i < sizeof(DX11::gPostProcessingConstants) / sizeof(float); ++i)
+			{
+				// get the different name for each setting
+				std::string name = "setting";
+				name.append(std::to_string(i));
+
+				const auto currSetting = currEffect->FindAttribute(name.c_str());
+
+				values[i] = currSetting->FloatValue();
+			}
+
+			memcpy(&DX11::gPostProcessingConstants, values, sizeof(values));
+		}
+		currEffect = currEffect->NextSiblingElement();
+	}
 }
 
 bool  ParseEntities(tinyxml2::XMLElement* entitiesEl)
@@ -838,6 +935,7 @@ bool  ParseEntities(tinyxml2::XMLElement* entitiesEl)
 				}
 				else if (typeValue == "Camera")
 				{
+					TPool.wait_for_tasks();
 					//LoadCamera(currEntity);
 				}
 			}

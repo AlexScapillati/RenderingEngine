@@ -125,7 +125,7 @@ inline auto MessageHR(const std::string& fn, HRESULT hr)
 	{
 		CMatrix4x4 worldMatrix;
 
-		CVector3 objectColour = CVector3{1,1,1};  // Allows each light model to be tinted to match the light colour they cast
+		CVector3 objectColour;  // Allows each light model to be tinted to match the light colour they cast
 		float    parallaxDepth; // Used in the geometry shader to control how much the polygons are exploded outwards
 
 		float useCustomValues;

@@ -5,6 +5,7 @@
 #include "../DX12DescriptorHeap.h"
 #include "../DX12PipelineObject.h"
 #include "../../Common/CGameObjectManager.h"
+#include "../../Common/CScene.h"
 
 namespace DX12
 {
@@ -20,9 +21,8 @@ namespace DX12
 		float scale,
 		const int& shadowMapSize,
 		const float& coneAngle) :
-		CDX12Light(engine, mesh, name, diffuse,colour,strength, position, rotation, scale),
-	mShadowMapSize(shadowMapSize),
-	mConeAngle(coneAngle)
+		CDX12GameObject(engine, mesh, name, diffuse, position, rotation, scale),
+		CSpotLight(colour, strength, shadowMapSize, coneAngle)
 	{
 		InitTextures();
 

@@ -1,12 +1,13 @@
 #pragma once
 
-#include "DX12Light.h"
+#include "DX12GameObject.h"
+#include "../../Common/CLight.h"
 
 namespace DX12
 {
 	class CDX12DepthStencil;
 
-	class CDX12PointLight : public CDX12Light
+	class CDX12PointLight : virtual public CDX12GameObject, virtual public CPointLight
 	{
 		public:
 			CDX12PointLight(CDX12Engine*       engine,
@@ -22,24 +23,9 @@ namespace DX12
 
 		
 			void  InitTextures();
-			void* RenderFromThis() ;
-			void* GetSRV() ;
-			void  SetShadowMapSize(int size) ;
-
-int GetShadowMapSize() const { return mShadowMapSize; }
-
-		float mSides[6][3] = {          // Starting from facing down the +ve Z direction, left handed rotations
-				{ 0.0f,	 0.5f,	0.0f},  // +ve X direction (values multiplied by PI)
-				{ 0.0f, -0.5f,	0.0f},  // -ve X direction
-				{-0.5f,	 0.0f,	0.0f},  // +ve Y direction
-				{ 0.5f,	 0.0f,	0.0f},  // -ve Y direction
-				{ 0.0f,	 0.0f,	0.0f},  // +ve Z direction
-				{ 0.0f,	 1.0f,  0.0f}   // -ve Z direction
-		};
-
-	protected:
-
-		int mShadowMapSize;
+			void* RenderFromThis() override;
+			void* GetSRV() override;
+			void  SetShadowMapSize(int size) override;
 
 
 		virtual ~CDX12PointLight() override = default;
