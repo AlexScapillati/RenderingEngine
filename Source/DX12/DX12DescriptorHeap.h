@@ -1,7 +1,4 @@
 #pragma once
-
-#include <mutex>
-
 #include "DX12Common.h"
 
 namespace DX12
@@ -17,10 +14,10 @@ namespace DX12
 
 		CDX12DescriptorHeap(CDX12Engine* engine, D3D12_DESCRIPTOR_HEAP_DESC desc);
 
-		explicit CDX12DescriptorHeap(CDX12Engine*                engine,
-									 D3D12_DESCRIPTOR_HEAP_TYPE  type  = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV,
-									 UINT                        count = 1,
-									 D3D12_DESCRIPTOR_HEAP_FLAGS flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE);
+		explicit CDX12DescriptorHeap(CDX12Engine* engine,
+			D3D12_DESCRIPTOR_HEAP_TYPE  type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV,
+			UINT                        count = 1,
+			D3D12_DESCRIPTOR_HEAP_FLAGS flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE);
 
 		CDX12DescriptorHeap() = delete;
 		CDX12DescriptorHeap(const CDX12DescriptorHeap&) = delete;
@@ -34,17 +31,19 @@ namespace DX12
 
 		uint32_t Add();
 
-		SHandle* Get(UINT pos);
+		SHandle Get(UINT pos);
 
 		void Remove(UINT pos);
 
 		void Set() const;
 
-		std::vector<SHandle> mHandles;
-
 	private:
 
-		std::mutex mMutex;
+		uint32_t mSize;
+
+		uint32_t  mNextFree;
+		std::vector<uint32_t> mFreeIndexes;
+
 		CDX12Engine* mEngine;
 		D3D12_DESCRIPTOR_HEAP_DESC mDesc;
 		UINT mIncrementSize;

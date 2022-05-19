@@ -57,8 +57,6 @@ namespace DX12
 
 	IDxcBlob* CompileShader(LPCWSTR fileName, std::vector<LPCWSTR>& args)
 	{
-
-
 		ComPtr<IDxcUtils> pUtils;
 		ComPtr<IDxcCompiler3>	pCompiler;
 		ComPtr<IDxcLibrary>		pLibrary;

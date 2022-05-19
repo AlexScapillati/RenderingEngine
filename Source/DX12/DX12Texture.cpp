@@ -1,15 +1,13 @@
 #include "DX12Texture.h"
 
-#include <atlconv.h>
-#include <utility>
 #include "DX12ConstantBuffer.h"
 #include "DX12DescriptorHeap.h"
 #include "DX12Engine.h"
 #include "ResourceUploadBatch.h"
 
 #include "../DirectXTK12/Inc/DDSTextureLoader.h"
-#include "../DirectXTK12/Inc/WICTextureLoader.h"
 #include "../DirectXTK12/Inc/DirectXHelpers.h"
+#include "../DirectXTK12/Inc/WICTextureLoader.h"
 
 namespace DX12
 {
@@ -41,21 +39,26 @@ namespace DX12
 
 	CDX12Texture::CDX12Texture(CDX12Engine* engine, CDX12DescriptorHeap* srvHeap) : CDX12Resource(engine)
 	{
-		mSrvHandle  = srvHeap->Get(srvHeap->Add());
+		mSrvHandle = srvHeap->Add();
 		mSrvHeap = srvHeap;
 	}
 
 	CDX12Texture::CDX12Texture(CDX12Engine* engine, std::string& filename, CDX12DescriptorHeap* srvHeap) : CDX12Resource(engine)
 	{
-		mSrvHandle = srvHeap->Get(srvHeap->Add());
+		mSrvHandle = srvHeap->Add();
 		mSrvHeap = srvHeap;
 
 		LoadTexture(filename);
+
+		mDesc = mResource->GetDesc();
+
+		// Needed for raytracing
+		mTextureRes = { mDesc.Width,mDesc.Height };
 	}
 
 	CDX12Texture::CDX12Texture(CDX12Engine* engine, D3D12_RESOURCE_DESC desc, CDX12DescriptorHeap* srvHeap) : CDX12Resource(engine)
 	{
-		mSrvHandle = srvHeap->Get(srvHeap->Add());
+		mSrvHandle = srvHeap->Add();
 		mSrvHeap = srvHeap;
 
 		CreateTexture(desc);
@@ -63,14 +66,22 @@ namespace DX12
 
 	CDX12Texture::~CDX12Texture()
 	{
-		if (mSrvHeap) mSrvHeap->Remove(mSrvHandle->mIndexInDescriptor);
+		if (mSrvHeap && mSrvHandle) mSrvHeap->Remove(mSrvHandle);
 	}
 
-	CDX12Texture::CDX12Texture(CDX12Engine* engine, const ComPtr<ID3D12Resource>& res) : CDX12Resource(engine, res) {}
+	CDX12Texture::CDX12Texture(CDX12Engine* engine, const ComPtr<ID3D12Resource>& res) : CDX12Resource(engine, res)
+	{
+	}
 
 	void CDX12Texture::Set(UINT rootParameterIndex)
 	{
-		mEngine->mCurrRecordingCommandList->SetGraphicsRootDescriptorTable(rootParameterIndex, mSrvHandle->mGpu);
+		auto handle = mSrvHeap->Get(mSrvHandle).mGpu;
+		mEngine->mCurrRecordingCommandList->SetGraphicsRootDescriptorTable(rootParameterIndex, handle);
+	}
+
+	SHandle CDX12Texture::GetHandle()
+	{
+		return mSrvHeap->Get(mSrvHandle);
 	}
 
 	void CDX12Texture::LoadTexture(std::string& filename)
@@ -104,7 +115,7 @@ namespace DX12
 			}))
 		{
 			if (FAILED(DirectX::CreateDDSTextureFromFileEx(
-				device, resourceUpload, ATL::CA2W(filename.c_str()), 0, resourceFlags, ddsFlags, textureResource.GetAddressOf())))
+				device, resourceUpload, std::wstring(filename.begin(), filename.end()).c_str(), 0, resourceFlags, ddsFlags, textureResource.GetAddressOf())))
 			{
 				throw std::runtime_error("Failed to load image: " + filename);
 			}
@@ -112,13 +123,13 @@ namespace DX12
 		else
 		{
 			if (FAILED(DirectX::CreateWICTextureFromFileEx(
-				device, resourceUpload, ATL::CA2W(filename.c_str()), 0, resourceFlags, wicFlags, textureResource.GetAddressOf())))
+				device, resourceUpload, std::wstring(filename.begin(), filename.end()).c_str(), 0, resourceFlags, wicFlags, textureResource.GetAddressOf())))
 			{
 				throw std::runtime_error("Failed to load image: " + filename);
 			}
 		}
 
-		DirectX::CreateShaderResourceView(device, textureResource.Get(), mSrvHandle->mCpu);
+		DirectX::CreateShaderResourceView(device, textureResource.Get(), mSrvHeap->Get(mSrvHandle).mCpu);
 
 		const auto uploadResourceFinished = resourceUpload.End(mEngine->mCommandQueue.Get());
 
@@ -151,7 +162,7 @@ namespace DX12
 
 		DirectX::CreateShaderResourceView(device,
 			mResource.Get(),
-			mSrvHandle->mCpu,
+			mSrvHeap->Get(mSrvHandle).mCpu,
 			desc.Dimension == D3D12_RESOURCE_DIMENSION_TEXTURE3D);
 
 		device->Release();
@@ -176,7 +187,7 @@ namespace DX12
 
 		DirectX::CreateShaderResourceView(device,
 			mResource.Get(),
-			mSrvHandle->mCpu,
+			mSrvHeap->Get(mSrvHandle).mCpu,
 			desc.Dimension == D3D12_RESOURCE_DIMENSION_TEXTURE3D);
 
 		device->Release();
@@ -187,11 +198,11 @@ namespace DX12
 		:
 		CDX12Texture(engine, std::move(r))
 	{
-		mRTVHandle = rtvHeap->Get(rtvHeap->Add());
+		mRTVHandle = rtvHeap->Add();
 		mRtvHeap = rtvHeap;
 
 		const auto device = mEngine->mDevice.Get();
-		device->CreateRenderTargetView(mResource.Get(), nullptr, mRTVHandle->mCpu);
+		device->CreateRenderTargetView(mResource.Get(), nullptr, mRtvHeap->Get(mRTVHandle).mCpu);
 		device->Release();
 	}
 
@@ -202,22 +213,22 @@ namespace DX12
 		:
 		CDX12Texture(engine, desc, srvHeap)
 	{
-		mRTVHandle = rtvHeap->Get(rtvHeap->Add());
+		mRTVHandle = rtvHeap->Add();
 		mRtvHeap = rtvHeap;
 
 		const auto device = mEngine->mDevice.Get();
-		device->CreateRenderTargetView(mResource.Get(), nullptr, mRTVHandle->mCpu);
+		device->CreateRenderTargetView(mResource.Get(), nullptr, mRtvHeap->Get(mRTVHandle).mCpu);
 		device->Release();
 	}
 
 	CDX12RenderTarget::~CDX12RenderTarget()
 	{
-		if (mRtvHeap) mRtvHeap->Remove(mRTVHandle->mIndexInDescriptor);
+		if (mRtvHeap) mRtvHeap->Remove(mRTVHandle);
 	}
 
 	CDX12DepthStencil::~CDX12DepthStencil()
 	{
-		if (mDsvHeap) mDsvHeap->Remove(mDsvHandle->mIndexInDescriptor);
+		if (mDsvHeap) mDsvHeap->Remove(mDsvHandle);
 	}
 
 	CDX12DepthStencil::CDX12DepthStencil(CDX12Engine* engine,
@@ -227,7 +238,7 @@ namespace DX12
 		:
 		CDX12Texture(engine, srvHeap)
 	{
-		mDsvHandle = dsvHeap->Get(dsvHeap->Add());
+		mDsvHandle = dsvHeap->Add();
 		mDsvHeap = dsvHeap;
 
 		D3D12_CLEAR_VALUE clearValue;
@@ -246,7 +257,7 @@ namespace DX12
 			&clearValue,
 			IID_PPV_ARGS(mResource.GetAddressOf()));
 
-		device->CreateDepthStencilView(mResource.Get(), nullptr, mDsvHandle->mCpu);
+		device->CreateDepthStencilView(mResource.Get(), nullptr, mDsvHeap->Get(mDsvHandle).mCpu);
 
 		device->Release();
 	}

@@ -31,23 +31,24 @@ namespace DX12
 			void SetConeAngle(float value) override;
 			void SetShadowMapsSize(int value) override;
 
+			uint32_t mSrvHandle;
 
-		private:
-
+	private:
 			void InitTextures();
 
-		std::unique_ptr<CDX12DescriptorHeap> mDSVDescHeap;
+			std::unique_ptr<CDX12DescriptorHeap> mDSVDescHeap;
+			CDX12DescriptorHeap* mSrvHeap;
 
-		ComPtr<ID3D12Resource> mShadowMapResource;
+			ComPtr<ID3D12Resource> mShadowMapResource;
 
-		SHandle* mSrvHandle;
-		SHandle* mDsvHandle;
+			uint32_t mDsvHandle;
 
-		ComPtr<ID3D12GraphicsCommandList4> mCommandList;
-		ComPtr<ID3D12CommandAllocator> mCommandAllocators[3];
 
-		CD3DX12_VIEWPORT mVp;
-		RECT mScissorsRect;
+			ComPtr<ID3D12GraphicsCommandList4> mCommandList;
+			ComPtr<ID3D12CommandAllocator> mCommandAllocators[3];
+
+			CD3DX12_VIEWPORT mVp;
+			RECT mScissorsRect;
 
 	};
 }

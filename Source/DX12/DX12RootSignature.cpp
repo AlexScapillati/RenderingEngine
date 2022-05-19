@@ -3,7 +3,6 @@
 #include "CommonStates.h"
 
 #include "DX12Engine.h"
-#include "DXR/RootSignatureGenerator.h"
 
 namespace DX12
 {
@@ -30,7 +29,7 @@ namespace DX12
 		// Serialize the root signature.
 		ComPtr<ID3DBlob> rootSignatureBlob;
 		ComPtr<ID3DBlob> errorBlob;
-		D3DX12SerializeVersionedRootSignature(&rootSignatureDesc, featureData.HighestVersion, &rootSignatureBlob, &errorBlob);
+		ThrowIfFailed(D3DX12SerializeVersionedRootSignature(&rootSignatureDesc, featureData.HighestVersion, &rootSignatureBlob, &errorBlob));
 
 		if (errorBlob)
 		{
@@ -60,46 +59,48 @@ namespace DX12
 			D3D12_ROOT_SIGNATURE_FLAG_DENY_DOMAIN_SHADER_ROOT_ACCESS |
 			D3D12_ROOT_SIGNATURE_FLAG_DENY_GEOMETRY_SHADER_ROOT_ACCESS;
 
-		constexpr auto numTextures = 6;
+		constexpr auto numTextures = 8;
 		constexpr auto numConstantBuffers = 6;
-		constexpr auto totRanges = numConstantBuffers + numTextures + 2;
 
 		// constant root parameters that are used by the vertex shader.
-		CD3DX12_DESCRIPTOR_RANGE1 ranges[totRanges] = {};
-		CD3DX12_ROOT_PARAMETER1   rootParameters[totRanges] = {};
+		CD3DX12_DESCRIPTOR_RANGE1 ranges[numTextures + numConstantBuffers] = {};
+		CD3DX12_ROOT_PARAMETER1   rootParameters[numTextures + numConstantBuffers] = {};
 
-		// Create descriptor ranges
-		{
-			auto i = 0u;
-			for (; i < numConstantBuffers; ++i)
-			{
-				ranges[i].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, i);
-			}
+		ranges[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 0);
+		ranges[1].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 1);
+		ranges[2].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 2);
+		ranges[3].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 3);
+		ranges[4].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 4);
+		ranges[5].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 5);
 
-			for (auto j = 0u; j < numTextures; ++j)
-			{
-				ranges[i].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, j);
-				i++;
-			}
-
-			ranges[i].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 6);
-
-			i++;
-			ranges[i].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 7);
-		}
+		ranges[6].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0);
+		ranges[7].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 1);
+		ranges[8].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 2);
+		ranges[9].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 3);
+		ranges[10].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 4);
+		ranges[11].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 5);
+		ranges[12].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 6);
+		ranges[13].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 7);
 
 		// Create root parameters
-		{
-			for (auto i = 0u; i < numConstantBuffers; ++i)
-			{
-				rootParameters[i].InitAsDescriptorTable(1,&ranges[i]);
-			}
+		// CB
+		rootParameters[0].InitAsDescriptorTable(1, &ranges[0]);
+		rootParameters[1].InitAsDescriptorTable(1, &ranges[1]);
+		rootParameters[2].InitAsDescriptorTable(1, &ranges[2]);
+		rootParameters[3].InitAsDescriptorTable(1, &ranges[3]);
+		rootParameters[4].InitAsDescriptorTable(1, &ranges[4]);
+		rootParameters[5].InitAsDescriptorTable(1, &ranges[5]);
 
-			for (auto i = numConstantBuffers; i < totRanges; ++i)
-			{
-				rootParameters[i].InitAsDescriptorTable(1, &ranges[i], D3D12_SHADER_VISIBILITY_PIXEL);
-			}
-		}
+		// SRV
+		rootParameters[6].InitAsDescriptorTable(1, &ranges[6], D3D12_SHADER_VISIBILITY_PIXEL);
+		rootParameters[7].InitAsDescriptorTable(1, &ranges[7], D3D12_SHADER_VISIBILITY_PIXEL);
+		rootParameters[8].InitAsDescriptorTable(1, &ranges[8], D3D12_SHADER_VISIBILITY_PIXEL);
+		rootParameters[9].InitAsDescriptorTable(1, &ranges[9], D3D12_SHADER_VISIBILITY_PIXEL);
+		rootParameters[10].InitAsDescriptorTable(1, &ranges[10], D3D12_SHADER_VISIBILITY_PIXEL);
+		rootParameters[11].InitAsDescriptorTable(1, &ranges[11], D3D12_SHADER_VISIBILITY_PIXEL);
+		rootParameters[12].InitAsDescriptorTable(1, &ranges[12], D3D12_SHADER_VISIBILITY_PIXEL);
+		rootParameters[13].InitAsDescriptorTable(1, &ranges[13], D3D12_SHADER_VISIBILITY_PIXEL);
+
 
 		D3D12_STATIC_SAMPLER_DESC samplers[] =
 		{
@@ -111,11 +112,58 @@ namespace DX12
 		rootSignatureDescription.Init_1_1(_countof(rootParameters), rootParameters, _countof(samplers), samplers, rootSignatureFlags);
 
 		mRootSignature = std::make_unique<CDX12RootSignature>(engine, rootSignatureDescription);
-		
+
 	}
-	
+
 
 	CDX12SkyRootSignature::CDX12SkyRootSignature(CDX12Engine* engine) : mEngine(engine)
+	{
+		// Allow input layout and deny unnecessary access to certain pipeline stages.
+		D3D12_ROOT_SIGNATURE_FLAGS rootSignatureFlags =
+			D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT |
+			D3D12_ROOT_SIGNATURE_FLAG_DENY_HULL_SHADER_ROOT_ACCESS |
+			D3D12_ROOT_SIGNATURE_FLAG_DENY_DOMAIN_SHADER_ROOT_ACCESS |
+			D3D12_ROOT_SIGNATURE_FLAG_DENY_GEOMETRY_SHADER_ROOT_ACCESS;
+
+		constexpr auto numTextures = 1;
+		constexpr auto numConstantBuffers = 6;
+
+		// constant root parameters that are used by the vertex shader.
+		CD3DX12_DESCRIPTOR_RANGE1 ranges[numTextures + numConstantBuffers] = {};
+		CD3DX12_ROOT_PARAMETER1   rootParameters[numTextures + numConstantBuffers] = {};
+
+		// Create descriptor ranges
+
+		ranges[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 0);
+		ranges[1].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 1);
+		ranges[2].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 2);
+		ranges[3].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 3);
+		ranges[4].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 4);
+		ranges[5].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 5);
+
+		ranges[6].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0);
+
+		// Create root parameters
+		// CB
+		rootParameters[0].InitAsDescriptorTable(1, &ranges[0]);
+		rootParameters[1].InitAsDescriptorTable(1, &ranges[1]);
+		rootParameters[2].InitAsDescriptorTable(1, &ranges[2]);
+		rootParameters[3].InitAsDescriptorTable(1, &ranges[3]);
+		rootParameters[4].InitAsDescriptorTable(1, &ranges[4]);
+		rootParameters[5].InitAsDescriptorTable(1, &ranges[5]);
+
+		// SRV
+		rootParameters[6].InitAsDescriptorTable(1, &ranges[6], D3D12_SHADER_VISIBILITY_PIXEL);
+
+		auto samplerDesc = DirectX::CommonStates::StaticPointClamp(0);
+
+		CD3DX12_VERSIONED_ROOT_SIGNATURE_DESC rootSignatureDescription;
+		rootSignatureDescription.Init_1_1(_countof(rootParameters), rootParameters, 1u, &samplerDesc, rootSignatureFlags);
+
+		mRootSignature = std::make_unique<CDX12RootSignature>(engine, rootSignatureDescription);
+	}
+
+	CDX12DepthOnlyRootSignature::CDX12DepthOnlyRootSignature(CDX12Engine* engine) : mEngine(engine)
 	{
 		// Allow input layout and deny unnecessary access to certain pipeline stages.
 		D3D12_ROOT_SIGNATURE_FLAGS rootSignatureFlags =
@@ -130,104 +178,32 @@ namespace DX12
 		constexpr auto totRanges = numConstantBuffers + numTextures;
 
 		// constant root parameters that are used by the vertex shader.
-		CD3DX12_DESCRIPTOR_RANGE1 ranges[totRanges] = {};
-		CD3DX12_ROOT_PARAMETER1   rootParameters[totRanges] = {};
+		CD3DX12_DESCRIPTOR_RANGE1 ranges[numTextures + numConstantBuffers] = {};
+		CD3DX12_ROOT_PARAMETER1   rootParameters[numTextures + numConstantBuffers] = {};
 
 		// Create descriptor ranges
-		{
-			auto i = 0u;
-			for (; i < numConstantBuffers; ++i)
-			{
-				ranges[i].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, i);
-			}
 
-			for (auto j = 0u; j < numTextures; ++j)
-			{
-				ranges[i].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, j);
-				++i;
-			}
-		}
+		ranges[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 0);
+		ranges[1].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 1);
+		ranges[2].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 2);
+		ranges[3].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 3);
+		ranges[4].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 4);
+		ranges[5].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 5);
+
+		ranges[6].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0);
 
 		// Create root parameters
-		{
-			for (auto i = 0u; i < numConstantBuffers; ++i)
-			{
-				rootParameters[i].InitAsDescriptorTable(1, &ranges[i]);
-			}
+		// CB
+		rootParameters[0].InitAsDescriptorTable(1, &ranges[0]);
+		rootParameters[1].InitAsDescriptorTable(1, &ranges[1]);
+		rootParameters[2].InitAsDescriptorTable(1, &ranges[2]);
+		rootParameters[3].InitAsDescriptorTable(1, &ranges[3]);
+		rootParameters[4].InitAsDescriptorTable(1, &ranges[4]);
+		rootParameters[5].InitAsDescriptorTable(1, &ranges[5]);
 
-			for (auto i = numConstantBuffers; i < totRanges; ++i)
-			{
-				rootParameters[i].InitAsDescriptorTable(1, &ranges[i], D3D12_SHADER_VISIBILITY_PIXEL);
-			}
-		}
+		// SRV
+		rootParameters[6].InitAsDescriptorTable(1, &ranges[6]);
 
-		static const D3D12_STATIC_SAMPLER_DESC s = {
-		 D3D12_FILTER_COMPARISON_MIN_MAG_MIP_POINT,
-		 D3D12_TEXTURE_ADDRESS_MODE_BORDER, // AddressU
-		 D3D12_TEXTURE_ADDRESS_MODE_BORDER, // AddressV
-		 D3D12_TEXTURE_ADDRESS_MODE_BORDER, // AddressW
-		 0, // MipLODBias
-		 D3D12_MAX_MAXANISOTROPY,
-		 D3D12_COMPARISON_FUNC_NEVER,
-		 D3D12_STATIC_BORDER_COLOR_OPAQUE_BLACK,
-		 0, // MinLOD
-		 FLT_MAX, // MaxLOD
-		 0, // ShaderRegister
-		 0, // RegisterSpace
-		 D3D12_SHADER_VISIBILITY_ALL,
-		};
-
-		CD3DX12_VERSIONED_ROOT_SIGNATURE_DESC rootSignatureDescription;
-		rootSignatureDescription.Init_1_1(_countof(rootParameters), rootParameters, 1u, &s, rootSignatureFlags);
-
-		mRootSignature = std::make_unique<CDX12RootSignature>(engine, rootSignatureDescription);
-	}
-
-	CDX12DepthOnlyRootSignature::CDX12DepthOnlyRootSignature(CDX12Engine* engine) : mEngine(engine)
-	{
-		// Allow input layout and deny unnecessary access to certain pipeline stages.
-		D3D12_ROOT_SIGNATURE_FLAGS rootSignatureFlags =
-				D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT |
-				D3D12_ROOT_SIGNATURE_FLAG_DENY_HULL_SHADER_ROOT_ACCESS |
-				D3D12_ROOT_SIGNATURE_FLAG_DENY_DOMAIN_SHADER_ROOT_ACCESS |
-				D3D12_ROOT_SIGNATURE_FLAG_DENY_GEOMETRY_SHADER_ROOT_ACCESS;
-
-
-		constexpr auto numTextures        = 1;
-		constexpr auto numConstantBuffers = 6;
-		constexpr auto totRanges          = numConstantBuffers + numTextures;
-
-		// constant root parameters that are used by the vertex shader.
-		CD3DX12_DESCRIPTOR_RANGE1 ranges[totRanges]         = {};
-		CD3DX12_ROOT_PARAMETER1   rootParameters[totRanges] = {};
-
-		// Create descriptor ranges
-		{
-			auto i = 0u;
-			for (; i < numConstantBuffers; ++i)
-			{
-				ranges[i].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, i);
-			}
-
-			for (auto j = 0u; j < numTextures; ++j)
-			{
-				ranges[i].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, j);
-				++i;
-			}
-		}
-
-		// Create root parameters
-		{
-			for (auto i = 0u; i < numConstantBuffers; ++i)
-			{
-				rootParameters[i].InitAsDescriptorTable(1, &ranges[i]);
-			}
-
-			for (auto i = numConstantBuffers; i < totRanges; ++i)
-			{
-				rootParameters[i].InitAsDescriptorTable(1, &ranges[i], D3D12_SHADER_VISIBILITY_PIXEL);
-			}
-		}
 
 		auto samplerDesc = DirectX::CommonStates::StaticPointClamp(0);
 

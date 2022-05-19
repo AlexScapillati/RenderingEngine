@@ -1,7 +1,8 @@
 #pragma once
 
-#include "DX12GameObject.h"
+#include "DX12Light.h"
 #include "../../Common/CLight.h"
+
 
 namespace DX12
 {
@@ -22,9 +23,10 @@ namespace DX12
 								  const float&       height        = 1000,
 								  const float&       nearClip      = 0.001f,
 								  const float&       farClip       = 1000);
-			
-			virtual ~CDX12DirectionalLight() = default;
-			void    SetShadowMapSize(int s) override;
-			void*   RenderFromThis() override;
+
+			~CDX12DirectionalLight() override = default;
+			void  SetShadowMapSize(int s) override;
+			void* RenderFromThis() override;
+
 	};
 }

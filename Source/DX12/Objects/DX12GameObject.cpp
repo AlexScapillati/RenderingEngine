@@ -6,9 +6,13 @@
 #include "../DX12Engine.h"
 
 #include "../DX12PipelineObject.h"
+#include "../Source/Utility/Input.h"
+#include "../../Common.h"
 
 namespace DX12
 {
+
+
 	CDX12GameObject::CDX12GameObject(CDX12GameObject& obj)
 		:CDX12GameObject(obj.mEngine, obj.MeshFileNames(), obj.Name(), obj.Position(), obj.Rotation(), obj.Scale().x)
 	{
@@ -185,7 +189,7 @@ namespace DX12
 
 		// geometry loaded, set its position...
 		SetPosition(position);
-		CGameObject::SetRotation(rotation);
+		SetRotation(rotation);
 		SetScale(scale);
 	}
 
@@ -225,8 +229,6 @@ namespace DX12
 		// Set the pipeline state object
 		if (!basicGeometry)
 		{
-			mEngine->SetPBRPSO();
-
 			// Render the material
 			mMaterial->RenderMaterial();
 
@@ -252,5 +254,8 @@ namespace DX12
 	}
 
 	void CDX12Plant::Render(bool basicGeometry) { CDX12GameObject::Render(basicGeometry); }
+
+
+
 
 }

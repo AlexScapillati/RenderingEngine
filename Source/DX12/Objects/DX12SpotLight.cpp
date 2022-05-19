@@ -5,7 +5,6 @@
 #include "../DX12DescriptorHeap.h"
 #include "../DX12PipelineObject.h"
 #include "../../Common/CGameObjectManager.h"
-#include "../../Common/CScene.h"
 
 namespace DX12
 {
@@ -41,20 +40,21 @@ namespace DX12
 	void CDX12SpotLight::InitTextures()
 	{
 
-		mVp           = CD3DX12_VIEWPORT(0.f, 0.f, static_cast<float>(mShadowMapSize), static_cast<float>(mShadowMapSize));
-		mScissorsRect = {0,0,mShadowMapSize,mShadowMapSize};
+		mVp = CD3DX12_VIEWPORT(0.f, 0.f, static_cast<float>(mShadowMapSize), static_cast<float>(mShadowMapSize));
+		mScissorsRect = { 0,0,mShadowMapSize,mShadowMapSize };
 
-		D3D12_DESCRIPTOR_HEAP_DESC dsvHeapDesc {};
+		D3D12_DESCRIPTOR_HEAP_DESC dsvHeapDesc{};
 
 		dsvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
 		dsvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
 		dsvHeapDesc.NumDescriptors = 1;
 
 		// Create Descriptor heap that will hold the texture
-		mDSVDescHeap = std::make_unique<CDX12DescriptorHeap>(mEngine,dsvHeapDesc);
+		mDSVDescHeap = std::make_unique<CDX12DescriptorHeap>(mEngine, dsvHeapDesc);
+		mSrvHeap = mEngine->mSRVDescriptorHeap.get();
 
-		mDsvHandle = mDSVDescHeap->Get(mDSVDescHeap->Add());
-		mSrvHandle = mEngine->mSRVDescriptorHeap->Get(mEngine->mSRVDescriptorHeap->Add());
+		mDsvHandle = mDSVDescHeap->Add();
+		mSrvHandle = mEngine->mSRVDescriptorHeap->Add();
 
 		auto heap = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
 
@@ -86,7 +86,7 @@ namespace DX12
 			D3D12_RESOURCE_STATE_GENERIC_READ,
 			&optClear,
 			IID_PPV_ARGS(mShadowMapResource.GetAddressOf())));
-		
+
 
 		// Create SRV to resource so we can sample the shadow map in a shader program.
 		D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
@@ -97,7 +97,7 @@ namespace DX12
 		srvDesc.Texture2D.MipLevels = 1;
 		srvDesc.Texture2D.ResourceMinLODClamp = 0.0f;
 		srvDesc.Texture2D.PlaneSlice = 0;
-		mEngine->mDevice->CreateShaderResourceView(mShadowMapResource.Get(), &srvDesc, mSrvHandle->mCpu);
+		mEngine->mDevice->CreateShaderResourceView(mShadowMapResource.Get(), &srvDesc, mSrvHeap->Get(mSrvHandle).mCpu);
 
 
 		// Create DSV to resource so we can render to the shadow map.
@@ -106,7 +106,7 @@ namespace DX12
 		dsvDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
 		dsvDesc.Format = DXGI_FORMAT_D32_FLOAT;
 		dsvDesc.Texture2D.MipSlice = 0;
-		mEngine->mDevice->CreateDepthStencilView(mShadowMapResource.Get(), &dsvDesc, mDsvHandle->mCpu);
+		mEngine->mDevice->CreateDepthStencilView(mShadowMapResource.Get(), &dsvDesc, mSrvHeap->Get(mDsvHandle).mCpu);
 	}
 
 	void* CDX12SpotLight::RenderFromThis()
@@ -118,16 +118,18 @@ namespace DX12
 		mCommandList->Reset(mCommandAllocators[mEngine->mCurrentBackBufferIndex].Get(), nullptr);
 
 		auto barrier = CD3DX12_RESOURCE_BARRIER::Transition(mShadowMapResource.Get(), D3D12_RESOURCE_STATE_GENERIC_READ, D3D12_RESOURCE_STATE_DEPTH_WRITE);
-		commandList->ResourceBarrier(1,&barrier);
+		commandList->ResourceBarrier(1, &barrier);
 
 		mEngine->mCurrSetPso = nullptr;
 		mEngine->SetDepthOnlyPSO();
 		mEngine->mSRVDescriptorHeap->Set();
 
+		auto handle = mDSVDescHeap->Get(mDsvHandle);
+
 		commandList->RSSetViewports(1, &mVp);
 		commandList->RSSetScissorRects(1, &mScissorsRect);
-		commandList->ClearDepthStencilView(mDsvHandle->mCpu,D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL,1.f,0,0,nullptr);
-		commandList->OMSetRenderTargets(0, nullptr, false,&mDsvHandle->mCpu);
+		commandList->ClearDepthStencilView(handle.mCpu, D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.f, 0, 0, nullptr);
+		commandList->OMSetRenderTargets(0, nullptr, false, &handle.mCpu);
 
 		auto i = mEngine->mCurrentBackBufferIndex;
 
@@ -137,7 +139,7 @@ namespace DX12
 
 		mEngine->mPerFrameConstantBuffer[i]->Copy(mEngine->mPerFrameConstants);
 
-		for(const auto& o : mEngine->GetObjManager()->mObjects)
+		for (const auto& o : mEngine->GetObjManager()->mObjects)
 		{
 			mEngine->mPerFrameConstantBuffer[i]->Set(1);
 			o->Render(true);
@@ -157,12 +159,13 @@ namespace DX12
 
 		mEngine->WaitForGpu();
 
-		return &mSrvHandle->mGpu;
+		//TODO::
+		return (void*)mSrvHeap->Get(mSrvHandle).mGpu.ptr;
 	}
 
 	void* CDX12SpotLight::GetSRV()
 	{
-		return reinterpret_cast<ImTextureID>(mSrvHandle->mGpu.ptr);
+		return reinterpret_cast<ImTextureID>(mSrvHeap->Get(mSrvHandle).mGpu.ptr);
 	}
 
 	CDX12SpotLight::~CDX12SpotLight()

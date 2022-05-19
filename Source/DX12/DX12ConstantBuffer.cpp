@@ -1,5 +1,6 @@
 #include "DX12ConstantBuffer.h"
 #include "DX12Engine.h"
+#include "DXR/DXR.h"
 
 UINT DX12::CDX12ConstantBuffer::Size()
 {
@@ -14,7 +15,9 @@ DX12::CDX12ConstantBuffer::CDX12ConstantBuffer(CDX12Engine* engine, CDX12Descrip
 
 	const auto prop = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
 
-	const auto buffer = CD3DX12_RESOURCE_DESC::Buffer(size);
+	mSize = ROUND_UP(size,256);
+
+	const auto buffer = CD3DX12_RESOURCE_DESC::Buffer(mSize);
 	
 	ThrowIfFailed(
 		mEngine->mDevice->CreateCommittedResource(
@@ -28,11 +31,11 @@ DX12::CDX12ConstantBuffer::CDX12ConstantBuffer(CDX12Engine* engine, CDX12Descrip
 	// Describe and create a constant buffer view.
 	D3D12_CONSTANT_BUFFER_VIEW_DESC cbvDesc = {};
 	cbvDesc.BufferLocation = mResource->GetGPUVirtualAddress();
-	cbvDesc.SizeInBytes = static_cast<UINT>(size);
+	cbvDesc.SizeInBytes = static_cast<UINT>(mSize);
 
-	mHandle = mCBVHeap->Get(mCBVHeap->Add());
+	mHandle = mCBVHeap->Add();
 
-	mEngine->mDevice->CreateConstantBufferView(&cbvDesc, mHandle->mCpu);
+	mEngine->mDevice->CreateConstantBufferView(&cbvDesc, mCBVHeap->Get(mHandle).mCpu);
 
 	// Map and initialize the constant buffer. 
 	const CD3DX12_RANGE readRange(0, 0); // We do not intend to read from this resource on the CPU.
@@ -43,5 +46,5 @@ DX12::CDX12ConstantBuffer::CDX12ConstantBuffer(CDX12Engine* engine, CDX12Descrip
 
 void DX12::CDX12ConstantBuffer::Set(UINT RootParameterIndex) const
 {
-	mEngine->mCurrRecordingCommandList->SetGraphicsRootDescriptorTable(RootParameterIndex, mHandle->mGpu);
+	mEngine->mCurrRecordingCommandList->SetGraphicsRootDescriptorTable(RootParameterIndex, mCBVHeap->Get(mHandle).mGpu);
 }

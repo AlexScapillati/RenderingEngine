@@ -29,8 +29,8 @@ namespace DX12
 			if (mCBVDataBegin)
 			{
 				memcpy(mCBVDataBegin, &data, mSize);
+				mResource->Unmap(0, nullptr);
 			}
-			mResource->Unmap(0, nullptr);
 		}
 
 		template <typename T, typename U>
@@ -47,6 +47,8 @@ namespace DX12
 
 		auto Resource() const { return mResource; }
 
+		uint32_t mHandle;
+
 	private:
 		CDX12Engine*           mEngine;
 		ComPtr<ID3D12Resource> mResource;
@@ -54,6 +56,5 @@ namespace DX12
 		size_t                 mSize;
 		CDX12DescriptorHeap*   mCBVHeap;
 
-		SHandle* mHandle;
 	};
 }

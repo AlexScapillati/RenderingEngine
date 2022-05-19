@@ -6,8 +6,10 @@
 
 namespace DX12
 {
-	class CDX12Sky final : virtual public CDX12GameObject, public CSky
+	class CDX12Sky : virtual public CDX12GameObject, public CSky
 	{
+		~CDX12Sky() override = default;
+
 		public:
 			explicit CDX12Sky(CDX12GameObject& cdx12GameObject)
 				: CDX12GameObject(cdx12GameObject)

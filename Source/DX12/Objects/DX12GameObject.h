@@ -7,9 +7,7 @@
 #pragma once
 
 #include "../DX12Common.h"
-
 #include "../../Common/CGameObject.h"
-#include "../DX12AmbientMap.h"
 #include "../CDX12Material.h"
 #include "../DX12Mesh.h"
 
@@ -22,6 +20,7 @@ namespace DX12
 	class CDX12GameObject : virtual public CGameObject
 	{
 	public:
+		~CDX12GameObject() override = default;
 
 		//-------------------------------------
 		// Construction / Usage
@@ -61,14 +60,13 @@ namespace DX12
 		CDX12Mesh*  Mesh() const;
 
 		// Delete the current mesh and load the given one. It will not delete the current if the filename is wrong
-		void LoadNewMesh(std::string newMesh) final;
+		void LoadNewMesh(std::string newMesh) override;
 
 		// Render the object
-		virtual void Render(bool basicGeometry = false) override;
+		void Render(bool basicGeometry = false) override;
 
-		void RenderToAmbientMap() final;
-
-
+		void RenderToAmbientMap() override;
+		
 		//-------------------------------------
 		// Private data / members
 		//-------------------------------------
@@ -86,7 +84,7 @@ namespace DX12
 		
 	};
 
-	class CDX12Plant : public CDX12GameObject, public CPlant
+	class CDX12Plant : public virtual CDX12GameObject, public virtual CPlant
 	{
 		public:
 		    CDX12Plant(CDX12GameObject& cdx12GameObject)

@@ -3,6 +3,7 @@
 #include "DX12DescriptorHeap.h"
 #include "CDX12Material.h"
 #include "DX12Engine.h"
+#include "DX12ConstantBuffer.h"
 
 namespace DX12
 {
@@ -25,6 +26,20 @@ namespace DX12
 		{
 			throw std::runtime_error(e.what());
 		}
+
+
+		std::pair<int, int> dims[6];
+
+		mMaterialCB = std::make_unique<CDX12ConstantBuffer>(mEngine, mMapsDescriptorHeap, sizeof(int) * 12);
+
+		if (mAlbedo)		dims[0] = { mAlbedo->mDesc.Width, mAlbedo->mDesc.Height };
+		if (mNormal)		dims[1] = { mNormal->mDesc.Width, mNormal->mDesc.Height };
+		if (mDisplacement)	dims[2] = { mDisplacement->mDesc.Width, mDisplacement->mDesc.Height };
+		if (mRoughness)		dims[3] = { mRoughness->mDesc.Width, mRoughness->mDesc.Height };
+		if (mMetalness)		dims[4] = { mMetalness->mDesc.Width, mMetalness->mDesc.Height };
+		if (mAo)			dims[5] = { mAo->mDesc.Width, mAo->mDesc.Height };
+
+		mMaterialCB->Copy(dims);
 	}
 
 	CDX12Material::CDX12Material(CDX12Material& m)
@@ -69,13 +84,12 @@ namespace DX12
 	{
 		std::vector<void*> r;
 
-		if (mAlbedo)		r.push_back((void*)(mAlbedo->mSrvHandle->mGpu.ptr));
-		if (mRoughness)		r.push_back((void*)(mRoughness->mSrvHandle->mGpu.ptr));
-		if (mAo)			r.push_back((void*)(mAo->mSrvHandle->mGpu.ptr));
-		if (mDisplacement)	r.push_back((void*)(mDisplacement->mSrvHandle->mGpu.ptr));
-		if (mNormal)		r.push_back((void*)(mNormal->mSrvHandle->mGpu.ptr));
-		if (mMetalness)		r.push_back((void*)(mMetalness->mSrvHandle->mGpu.ptr));
-
+		if (mAlbedo)		r.push_back((void*)(mAlbedo->mSrvHeap->Get(mAlbedo->mSrvHandle).mGpu.ptr));
+		if (mRoughness)		r.push_back((void*)(mRoughness->mSrvHeap->Get(mRoughness->mSrvHandle).mGpu.ptr));
+		if (mAo)			r.push_back((void*)(mAo->mSrvHeap->Get(mAo->mSrvHandle).mGpu.ptr));
+		if (mDisplacement)	r.push_back((void*)(mDisplacement->mSrvHeap->Get(mDisplacement->mSrvHandle).mGpu.ptr));
+		if (mNormal)		r.push_back((void*)(mNormal->mSrvHeap->Get(mNormal->mSrvHandle).mGpu.ptr));
+		if (mMetalness)		r.push_back((void*)(mMetalness->mSrvHeap->Get(mMetalness->mSrvHandle).mGpu.ptr));
 		return r;
 	}
 

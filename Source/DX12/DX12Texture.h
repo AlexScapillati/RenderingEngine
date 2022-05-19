@@ -4,6 +4,7 @@
 
 namespace DX12
 {
+	class CDX12ConstantBuffer;
 	class CDX12DescriptorHeap;
 	class CDX12Engine;
 
@@ -29,17 +30,25 @@ namespace DX12
 	class CDX12Texture : public CDX12Resource
 	{
 	public:
-			~CDX12Texture() override;
+
+		~CDX12Texture() override;
+
+		CDX12Texture(CDX12Engine* engine, const ComPtr<ID3D12Resource>& res);
 
 		CDX12Texture() = delete;
 		CDX12Texture(const CDX12Texture&) = delete;
 		CDX12Texture(const CDX12Texture&&) = delete;
-		CDX12Texture(CDX12Engine* engine, const ComPtr<ID3D12Resource>& res);
 		CDX12Texture& operator=(const CDX12Texture&) = delete;
 		CDX12Texture& operator=(const CDX12Texture&&) = delete;
 
-		SHandle*             mSrvHandle;
+		uint32_t             mSrvHandle;
 		CDX12DescriptorHeap* mSrvHeap;
+
+		D3D12_RESOURCE_DESC mDesc;
+
+		std::unique_ptr<CDX12ConstantBuffer> mResourceCB;
+
+		std::pair<int, int> mTextureRes;
 
 		// Leave the resource uninitialized (use carefully)
 		CDX12Texture(CDX12Engine* engine, CDX12DescriptorHeap* srvHeap);
@@ -49,6 +58,8 @@ namespace DX12
 		CDX12Texture(CDX12Engine* engine, D3D12_RESOURCE_DESC desc, CDX12DescriptorHeap* srvHeap);
 
 		void Set(UINT rootParameterIndex);
+
+		SHandle GetHandle();
 
 	protected:
 
@@ -76,7 +87,7 @@ namespace DX12
 			CDX12DescriptorHeap* rtvHeap);
 
 
-		SHandle* mRTVHandle;
+		uint32_t mRTVHandle;
 		CDX12DescriptorHeap* mRtvHeap;
 	};
 
@@ -92,7 +103,7 @@ namespace DX12
 			CDX12DescriptorHeap* srvHeap,
 			CDX12DescriptorHeap* dsvHeap);
 
-		SHandle*             mDsvHandle;
+		uint32_t             mDsvHandle;
 		CDX12DescriptorHeap* mDsvHeap;
 	};
 

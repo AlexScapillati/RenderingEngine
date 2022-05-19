@@ -1,13 +1,11 @@
 #pragma once
 
 #include "DX12GameObject.h"
-
 #include "../../Common/CLight.h"
-
 
 namespace DX12
 {
-	class CDX12Light : virtual public CDX12GameObject, virtual public CLight
+	class CDX12Light :virtual public CDX12GameObject, virtual public CLight
 	{
 		public:
 			CDX12Light(CDX12Engine*       engine,
@@ -21,9 +19,8 @@ namespace DX12
 					   float              scale    = 1.f);
 
 			void SetRotation(CVector3 rotation,
-							 int      node) override;
-			void    Render(bool basicGeometry) override;
-			~ CDX12Light() override;
+							 int      node = 0) override;
+			void    Render(bool basicGeometry = false) override;
 	};
 	
 	

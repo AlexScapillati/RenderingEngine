@@ -1,10 +1,14 @@
 #pragma once
 
-#include "DX12DescriptorHeap.h"
+#include <deque>
+
 #include "../Common/CGui.h"
+#include "DX12DescriptorHeap.h"
+#include "imgui.h"
 
 namespace DX12
 {
+	class CDX12GameObject;
 	class CDX12Engine;
 
 	class CDX12Gui final : public CGui
@@ -28,9 +32,7 @@ namespace DX12
 		~CDX12Gui() override;
 
 	private:
+
 		CDX12Engine* mEngine = nullptr;
-
-		std::unique_ptr<CDX12DescriptorHeap> mDescHeap;
-
 	};
 }

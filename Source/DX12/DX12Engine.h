@@ -1,18 +1,22 @@
 #pragma once
 
+#include "..\Engine.h"
 #include <mutex>
 
 #include "dxgi1_5.h"
 
 #include "DX12Common.h"
 #include "imgui.h"
-#include "..\Engine.h"
 
 #include "dxcapi.h"
+#include "../Utility/Timer.h"
+#include "DXR/RaytracingPipelineGenerator.h"
 #include "DXR/ShaderBindingTableGenerator.h"
 #include "DXR/TopLevelASGenerator.h"
-#include "DXR/RaytracingPipelineGenerator.h"
 
+
+class CGameObjectManager;
+class CWindow;
 
 namespace DX12
 {
@@ -25,17 +29,21 @@ namespace DX12
 	class CDX12RenderTarget;
 	class CDX12DescriptorHeap;
 	class CDX12ConstantBuffer;
-	class CDX12Scene;
 	class CDX12Gui;
 	class CDX12Shader;
 
 	class CDX12Engine final : public IEngine
 	{
 	public:
+		~CDX12Engine() override;
 
-		virtual ~CDX12Engine() override;
+		CScene*             GetScene() { return mScene.get(); }
+		CGameObjectManager* GetObjManager() { return mObjManager.get(); }
+		std::string         GetMediaFolder() { return mMediaFolder; }
 
 		bool mRaytracing = false;
+
+		CWindow* GetWindow() { return mWindow.get(); }
 
 		CDX12Engine() = delete;
 		CDX12Engine(const CDX12Engine&) = delete;
@@ -199,7 +207,7 @@ namespace DX12
 		void CopyBuffers();
 
 		void UpdateLightsBuffers();
-		
+
 
 		//----------------------------------------
 		// Pipeline State Objects
@@ -281,6 +289,7 @@ namespace DX12
 		void InitRaytracing();
 
 		void CheckRayTracingSupport() const;
+		void CreateRTFrameDependentResources();
 
 		void CreateRaytracingPipeline();
 		void CreateShaderBindingTable();
@@ -295,28 +304,96 @@ namespace DX12
 		ComPtr<IDxcBlob>                                            mRayGenLibrary;
 		ComPtr<IDxcBlob>                                            mHitLibrary;
 		ComPtr<IDxcBlob>                                            mMissLibrary;
+		ComPtr<IDxcBlob>                                            mShadowLibrary;
 		ComPtr<ID3D12RootSignature>                                 mRayGenSignature;
 		ComPtr<ID3D12RootSignature>                                 mHitSignature;
 		ComPtr<ID3D12RootSignature>                                 mMissSignature;
+		ComPtr<ID3D12RootSignature>                                 mShadowSignature;
 		ComPtr<ID3D12StateObject>                                   mRaytracingStateObject;
 		ComPtr<ID3D12StateObjectProperties>                         mRaytracingStateObjectProps;
 		ComPtr<ID3D12Resource>                                      mOutputResource;
-		UINT64                                                      mOutputSrvIndex;
-		std::unique_ptr<CDX12DescriptorHeap>                        mRTHeap;
+		CDX12DescriptorHeap*										mRTHeap;
 		ComPtr<ID3D12Resource>                                      mSbtStorage;
+		uint32_t													mOutputSrvIndex;
+		uint32_t													mTopASIndex;
+		D3D12_GPU_DESCRIPTOR_HANDLE									mPointSamplerHeapIndex;
 
 		//----------------------------------------
 		// Override functions from IEngine
 		//-----------------------------------------
 
-		void			   CreateScene(std::string fileName) override;
-		CGameObject* CreateObject(const std::string& mesh, const std::string& name, const std::string& diffuseMap, CVector3 position, CVector3 rotation, float scale) override;
-		CSky* CreateSky(const std::string& mesh, const std::string& name, const std::string& diffuseMap, CVector3 position, CVector3 rotation, float scale) override;
-		CPlant* CreatePlant(const std::string& id, const std::string& name, CVector3 position, CVector3 rotation, float scale) override;
-		CGameObject* CreateObject(const std::string& dirPath, const std::string& name, CVector3 position, CVector3 rotation, float scale) override;
-		CLight* CreateLight(const std::string& mesh, const std::string& name, const std::string& diffuseMap, const CVector3& colour, const float& strength, CVector3 position, CVector3 rotation, float scale) override;
-		CSpotLight* CreateSpotLight(const std::string& mesh, const std::string& name, const std::string& diffuseMap, const CVector3& colour, const float& strength, CVector3 position, CVector3 rotation, float scale) override;
-		CDirectionalLight* CreateDirectionalLight(const std::string& mesh, const std::string& name, const std::string& diffuseMap, const CVector3& colour, const float& strength, CVector3 position, CVector3 rotation, float scale) override;
-		CPointLight* CreatePointLight(const std::string& mesh, const std::string& name, const std::string& diffuseMap, const CVector3& colour, const float& strength, CVector3 position, CVector3 rotation, float scale) override;
+
+		void CreateScene(std::string fileName = "") override;
+
+		CGameObject* CreateObject(
+			const std::string& mesh,
+			const std::string& name,
+			const std::string& diffuseMap,
+			CVector3           position = {0, 0, 0},
+			CVector3           rotation = {0, 0, 0},
+			float              scale    = 1) override;
+
+		CSky* CreateSky(
+			const std::string& mesh,
+			const std::string& name,
+			const std::string& diffuseMap,
+			CVector3           position = {0, 0, 0},
+			CVector3           rotation = {0, 0, 0},
+			float              scale    = 1) override;
+
+		CPlant* CreatePlant(
+			const std::string& mesh,
+			const std::string& name,
+			CVector3           position = {0, 0, 0},
+			CVector3           rotation = {0, 0, 0},
+			float              scale    = 1) override;
+
+		CGameObject* CreateObject(
+			const std::string& dirPath,
+			const std::string& name,
+			CVector3           position = {0, 0, 0},
+			CVector3           rotation = {0, 0, 0},
+			float              scale    = 1) override;
+
+		CLight* CreateLight(
+			const std::string& mesh,
+			const std::string& name,
+			const std::string& diffuseMap,
+			const CVector3&    colour,
+			const float&       strength,
+			CVector3           position = {0, 0, 0},
+			CVector3           rotation = {0, 0, 0},
+			float              scale    = 1) override;
+
+		CSpotLight* CreateSpotLight(
+			const std::string& mesh,
+			const std::string& name,
+			const std::string& diffuseMap,
+			const CVector3&    colour,
+			const float&       strength,
+			CVector3           position = {0, 0, 0},
+			CVector3           rotation = {0, 0, 0},
+			float              scale    = 1) override;
+
+		CDirectionalLight* CreateDirectionalLight(
+			const std::string& mesh,
+			const std::string& name,
+			const std::string& diffuseMap,
+			const CVector3&    colour,
+			const float&       strength,
+			CVector3           position = {0, 0, 0},
+			CVector3           rotation = {0, 0, 0},
+			float              scale    = 1) override;
+
+		CPointLight* CreatePointLight(
+			const std::string& mesh,
+			const std::string& name,
+			const std::string& diffuseMap,
+			const CVector3&    colour,
+			const float&       strength,
+			CVector3           position = {0, 0, 0},
+			CVector3           rotation = {0, 0, 0},
+			float              scale    = 1) override;
+
 	};
 }

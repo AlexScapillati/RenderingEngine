@@ -1,6 +1,8 @@
 
 #include "DXR.h"
 
+#include <CommonStates.h>
+
 #include "BottomLevelASGenerator.h"
 #include "../DX12Engine.h"
 
@@ -12,9 +14,9 @@
 #include "../DX12DescriptorHeap.h"
 #include "../DX12Shader.h"
 #include "../DX12Texture.h"
+#include "../DX12Scene.h"
 #include "../../Window.h"
 #include "../../Common/CGameObjectManager.h"
-#include "../../Common/CScene.h"
 #include "../Objects/DX12GameObject.h"
 
 namespace DX12
@@ -42,16 +44,23 @@ namespace DX12
 	{
 		DXR::RootSignatureGenerator rsc;
 
-		rsc.AddRootParameter(D3D12_ROOT_PARAMETER_TYPE_SRV, 0); // Vertex buffer			
-		rsc.AddRootParameter(D3D12_ROOT_PARAMETER_TYPE_SRV, 1); // Index buffer
 
-		rsc.AddHeapRangesParameter(
-			{
-				{2,1,0,D3D12_DESCRIPTOR_RANGE_TYPE_SRV,2}    // Lights buffer
-			});
+		rsc.AddRootParameter(D3D12_ROOT_PARAMETER_TYPE_SRV);// Acceleration structure
+		rsc.AddRootParameter(D3D12_ROOT_PARAMETER_TYPE_SRV, 1); // Vertex buffer			
+		rsc.AddRootParameter(D3D12_ROOT_PARAMETER_TYPE_SRV, 2); // Index buffer
 
-		//rsc.AddRootParameter(D3D12_ROOT_PARAMETER_TYPE_SRV, 2);
+		rsc.AddRootParameter(D3D12_ROOT_PARAMETER_TYPE_CBV, 0); // Lights Buffer
+		rsc.AddRootParameter(D3D12_ROOT_PARAMETER_TYPE_CBV, 1); // Texture dimensions buffer
 
+		rsc.AddHeapRangesParameter({ { 3, 6, 0, D3D12_DESCRIPTOR_RANGE_TYPE_SRV ,0 } }); // Textures
+
+		return rsc.Generate(device, true, {});
+	}
+
+
+	ComPtr<ID3D12RootSignature> CreateShadowSignature(ID3D12Device* device)
+	{
+		DXR::RootSignatureGenerator rsc;
 		return rsc.Generate(device, true, {});
 	}
 
@@ -156,32 +165,32 @@ namespace DX12
 
 	void CreateAccelerationStructures(CDX12Engine* engine)
 	{
+
+		engine->mInstances = {};
+
 		AccelerationStructureBuffers bottomLevelBuffers;
 		uint32_t vertexSize = 0;
 
-		for (const auto& object : engine->GetObjManager()->mObjects)
-		{
-			if (const auto o = dynamic_cast<CDX12GameObject*>(object)) // Cheating
+		if (engine->GetObjManager())
+			for (const auto& object : engine->GetObjManager()->mObjects)
 			{
+				auto o = dynamic_cast<CDX12GameObject*>(object);
 
 				// Get the vertex and index buffers and put them in a vector
 				std::vector<std::pair<ComPtr<ID3D12Resource>, uint32_t>> vertexBuffers;
 				std::vector<std::pair<ComPtr<ID3D12Resource>, uint32_t>> indexBuffers;
-
 				for (const auto& subMesh : o->Mesh()->mSubMeshes)
 				{
 					vertexBuffers.emplace_back(subMesh.mVertexBuffer, subMesh.numVertices);
 					indexBuffers.emplace_back(subMesh.mIndexBuffer, subMesh.numIndices);
 
 					vertexSize = subMesh.vertexSize;
+
+					// Build the bottom AS from the Triangle vertex buffer
+					bottomLevelBuffers = CreateBottomLevelAS(engine, vertexBuffers, vertexSize, indexBuffers);
+					engine->mInstances.emplace_back(bottomLevelBuffers.pResult, &object->WorldMatrix());
 				}
-
-				// Build the bottom AS from the Triangle vertex buffer
-				bottomLevelBuffers = CreateBottomLevelAS(engine, vertexBuffers, vertexSize, indexBuffers);
-				engine->mInstances.emplace_back(bottomLevelBuffers.pResult, &object->WorldMatrix());
 			}
-		}
-
 
 		CreateTopLevelAS(engine->mInstances, engine);
 
@@ -195,6 +204,7 @@ namespace DX12
 		// Wait for GPU to finish executing command list
 		engine->Flush();
 	}
+
 
 	void CDX12Engine::CreateRaytracingPipeline()
 	{
@@ -213,6 +223,7 @@ namespace DX12
 		mRayGenLibrary = CompileShader(L"RayGen.hlsl", args);
 		mMissLibrary = CompileShader(L"Miss.hlsl", args);
 		mHitLibrary = CompileShader(L"Hit.hlsl", args);
+		mShadowLibrary = CompileShader(L"ShadowRay.hlsl", args);
 
 		// In a way similar to DLLs, each library is associated with a number of
 		// exported symbols. This
@@ -221,9 +232,8 @@ namespace DX12
 		// using the [shader("xxx")] syntax
 		mRayTracingPipeline->AddLibrary(mRayGenLibrary.Get(), { L"RayGen" });
 		mRayTracingPipeline->AddLibrary(mMissLibrary.Get(), { L"Miss" });
-		// #DXR Extra: PerInstance Data
 		mRayTracingPipeline->AddLibrary(mHitLibrary.Get(), { L"ClosestHit" });
-
+		mRayTracingPipeline->AddLibrary(mShadowLibrary.Get(), { L"ShadowClosestHit", L"ShadowMiss" });
 
 		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 		//	 As described at the beginning of this section, to each shader corresponds a root signature defining
@@ -234,7 +244,7 @@ namespace DX12
 		mRayGenSignature = CreateRayGenSignature(device);
 		mMissSignature = CreateMissSignature(device);
 		mHitSignature = CreateHitSignature(device);
-
+		mShadowSignature = CreateShadowSignature(device);
 
 
 		// 3 different shaders can be invoked to obtain an intersection: an
@@ -256,6 +266,9 @@ namespace DX12
 		// colors
 		mRayTracingPipeline->AddHitGroup(L"HitGroup", L"ClosestHit");
 
+		// Do the same with shadow hit group
+		mRayTracingPipeline->AddHitGroup(L"ShadowHitGroup", L"ShadowClosestHit");
+
 		//  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 		//	To be used, each shader needs to be associated to its root signature.A shaders imported from the DXIL
 		//	libraries needs to be associated with exactly one root signature.The shaders comprising the hit groups
@@ -271,6 +284,8 @@ namespace DX12
 		mRayTracingPipeline->AddRootSignatureAssociation(mRayGenSignature.Get(), { L"RayGen" });
 		mRayTracingPipeline->AddRootSignatureAssociation(mMissSignature.Get(), { L"Miss" });
 		mRayTracingPipeline->AddRootSignatureAssociation(mHitSignature.Get(), { L"HitGroup" });
+		mRayTracingPipeline->AddRootSignatureAssociation(mShadowSignature.Get(), { L"ShadowHitGroup" });
+
 
 		// The payload size defines the maximum size of the data carried by the rays,
 		// ie. the the data
@@ -290,7 +305,7 @@ namespace DX12
 		// then requires a trace depth of 1. Note that this recursion depth should be
 		// kept to a minimum for best performance. Path tracing algorithms can be
 		// easily flattened into a simple loop in the ray generation.
-		mRayTracingPipeline->SetMaxRecursionDepth(1);
+		mRayTracingPipeline->SetMaxRecursionDepth(2);
 
 		// Compile the pipeline for execution on the GPU
 		mRaytracingStateObject = mRayTracingPipeline->Generate();
@@ -300,22 +315,17 @@ namespace DX12
 		ThrowIfFailed(mRaytracingStateObject->QueryInterface(IID_PPV_ARGS(mRaytracingStateObjectProps.GetAddressOf())));
 	}
 
-	void CDX12Engine::InitRaytracing()
+	void CDX12Engine::CreateRTFrameDependentResources()
 	{
+		if (mOutputResource)
+		{
+			mSRVDescriptorHeap->Remove(mOutputSrvIndex);
+		}
 
-		InitializeFrame();
+		mOutputSrvIndex = mSRVDescriptorHeap->Add();
 
-		mTopLevelAsGenerator = std::make_unique<DXR::TopLevelASGenerator>();
-
-		CreateAccelerationStructures(this);
-
-		CreateRaytracingPipeline();
-
-		// Create a SRV/UAV/CBV descriptor heap. We need 3 entries -
-		// 1 UAV for the raytracing output
-		// 1 SRV for the TLAS
-		// 1 UAV for the CBuffer
-		mRTHeap = std::make_unique<CDX12DescriptorHeap>(this, D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, 4 * mNumFrames, D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE);
+		auto width = !GetScene() ? 1920 : GetScene()->GetViewportX();
+		auto height = !GetScene() ? 1080 : GetScene()->GetViewportY();
 
 		// Create the output texture
 
@@ -327,45 +337,50 @@ namespace DX12
 		// ourselves in the shader
 		resDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 		resDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
-		resDesc.Width = GetWindow()->GetWindowWidth();
-		resDesc.Height = GetWindow()->GetWindowHeight();
+		resDesc.Width = width;
+		resDesc.Height = height;
 		resDesc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
 		resDesc.MipLevels = 1;
 		resDesc.SampleDesc.Count = 1;
 
 		mDevice->CreateCommittedResource(&DXR::kDefaultHeapProps, D3D12_HEAP_FLAG_NONE, &resDesc, D3D12_RESOURCE_STATE_COPY_SOURCE, nullptr, IID_PPV_ARGS(mOutputResource.GetAddressOf()));
 
-		mOutputSrvIndex = mRTHeap->mHandles.size();
-		auto handle = mRTHeap->Get(mRTHeap->Add());
-
-		// Get the CPU handle of the output texture present in the RT heap
-		auto srvHandle = handle->mCpu;
-
 		D3D12_UNORDERED_ACCESS_VIEW_DESC uavDesc = {};
 		uavDesc.ViewDimension = D3D12_UAV_DIMENSION_TEXTURE2D;
-		mDevice->CreateUnorderedAccessView(mOutputResource.Get(), nullptr, &uavDesc, srvHandle);
+		mDevice->CreateUnorderedAccessView(mOutputResource.Get(), nullptr, &uavDesc, mSRVDescriptorHeap->Get(mOutputSrvIndex).mCpu);
+	}
 
-		mRTHeap->Add();
+	void CDX12Engine::InitRaytracing()
+	{
+		InitializeFrame();
+
+		mTopLevelAsGenerator = std::make_unique<DXR::TopLevelASGenerator>();
+
+		CreateAccelerationStructures(this);
+
+		CreateRaytracingPipeline();
+
+		CreateRTFrameDependentResources();
+
+		mTopASIndex = mSRVDescriptorHeap->Add();
 
 		// Add the Top Level AS SRV right after the raytracing output buffer
-		srvHandle.ptr += mDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-		D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc; srvDesc.Format = DXGI_FORMAT_UNKNOWN;
+		D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc;
+		srvDesc.Format = DXGI_FORMAT_UNKNOWN;
 		srvDesc.ViewDimension = D3D12_SRV_DIMENSION_RAYTRACING_ACCELERATION_STRUCTURE;
 		srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
 		srvDesc.RaytracingAccelerationStructure.Location = mTopLevelAsBuffers.pResult->GetGPUVirtualAddress();
 		// Write the acceleration structure view in the heap
-		mDevice->CreateShaderResourceView(nullptr, &srvDesc, srvHandle);
+		mDevice->CreateShaderResourceView(nullptr, &srvDesc, mSRVDescriptorHeap->Get(mTopASIndex).mCpu);
 
 		// #DXR Extra: Perspective Camera
 		// Add the constant buffer for the camera after the TLAS
-		srvHandle.ptr += mDevice->GetDescriptorHandleIncrementSize(
-			D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 
 		for (int i = 0; i < mNumFrames; ++i)
 		{
-			mCameraBuffer[i] = std::make_unique<CDX12ConstantBuffer>(this, mRTHeap.get(), 4 * sizeof(CMatrix4x4));
+			mCameraBuffer[i] = std::make_unique<CDX12ConstantBuffer>(this, mSRVDescriptorHeap.get(), 4 * sizeof(CMatrix4x4));
 
-			mRTLightsBuffer[i] = std::make_unique<CDX12ConstantBuffer>(this, mRTHeap.get(), sizeof(PerFrameLights));
+			mRTLightsBuffer[i] = std::make_unique<CDX12ConstantBuffer>(this, mSRVDescriptorHeap.get(), sizeof(PerFrameLights));
 			mRTLightsBuffer[i]->Copy(mPerFrameLights);
 			mRTLightsBuffer[i]->Resource()->SetName(L"RaytracingLightsBuffer");
 		}
@@ -381,11 +396,12 @@ namespace DX12
 		mSbtHelper = std::make_unique<DXR::ShaderBindingTableGenerator>();
 
 		mSbtHelper->Reset();
-		// The pointer to the beginning of the heap is the only parameter required by
-		// shaders without root parameters
-		D3D12_GPU_DESCRIPTOR_HANDLE srvUavHeapHandle = mRTHeap->mDescriptorHeap->GetGPUDescriptorHandleForHeapStart();
 
-		auto heapPointer = reinterpret_cast<void*>(srvUavHeapHandle.ptr);
+		std::vector<void*> inputData;
+
+		inputData.push_back((void*)mSRVDescriptorHeap->Get(mOutputSrvIndex).mGpu.ptr);
+		inputData.push_back((void*)mSRVDescriptorHeap->Get(mTopASIndex).mGpu.ptr);
+		inputData.push_back((void*)mSRVDescriptorHeap->Get(mCameraBuffer[mCurrentBackBufferIndex]->mHandle).mGpu.ptr);
 
 		/*
 			We can now add the various programs used in our example : according to its root signature, the ray generation shader needs to access
@@ -402,27 +418,40 @@ namespace DX12
 		 */
 
 		 // The ray generation only uses heap data
-		mSbtHelper->AddRayGenerationProgram(L"RayGen", { heapPointer });
+		mSbtHelper->AddRayGenerationProgram(L"RayGen", inputData);
 		// The miss and hit shaders do not access any external resources: instead they
 		// communicate their results through the ray payload
 		mSbtHelper->AddMissProgram(L"Miss", {});
 
-		std::vector<void*> inputData;
+		mSbtHelper->AddMissProgram(L"ShadowMiss", {});
+
+		inputData.clear();
 
 		for (const auto& object : GetObjManager()->mObjects)
 		{
-			if (const auto o = dynamic_cast<CDX12GameObject*>(object))
+			auto o = dynamic_cast<CDX12GameObject*>(object);
+			
+			const auto mat = o->Material();
+
+			for (const auto& subMesh : o->Mesh()->mSubMeshes)
 			{
-				for (const auto& subMesh : o->Mesh()->mSubMeshes)
-				{
-					inputData.push_back((void*)subMesh.mVertexBuffer->GetGPUVirtualAddress());
-					inputData.push_back((void*)subMesh.mIndexBuffer->GetGPUVirtualAddress());
-				}
+				// This has to follow the exact order of the root signature
+				inputData.push_back((void*)mSRVDescriptorHeap->Get(mTopASIndex).mGpu.ptr);
+				inputData.push_back((void*)subMesh.mVertexBuffer->GetGPUVirtualAddress());
+				inputData.push_back((void*)subMesh.mIndexBuffer->GetGPUVirtualAddress());
+
+				inputData.push_back((void*)mRTLightsBuffer[mCurrentBackBufferIndex]->Resource()->GetGPUVirtualAddress());
+				inputData.push_back((void*)mat->mMaterialCB->Resource()->GetGPUVirtualAddress());
+
+				inputData.push_back((void*)mat->mAlbedo->GetHandle().mGpu.ptr);
 			}
 		}
 
-		// Adding the triangle hit shader
+		// Adding the main hit shader
 		mSbtHelper->AddHitGroup(L"HitGroup", inputData);
+
+		// Adding the shadow hit group
+		mSbtHelper->AddHitGroup(L"ShadowHitGroup", {});
 
 		// Compute the size of the SBT given the number of shaders and their
 		// parameters
@@ -445,47 +474,37 @@ namespace DX12
 	void CDX12Engine::RaytracingFrame()
 	{
 
-		// Copy and set constant buffers
-
-		auto c = mScene->GetCamera();
-
-		CMatrix4x4 m[] =
-		{
-			c->ViewMatrix(),
-			c->ProjectionMatrix(),
-			Inverse(c->ViewMatrix()),
-			Inverse(c->ProjectionMatrix()),
-		};
-
-		mRTHeap->Set();
-
-		mCameraBuffer[mCurrentBackBufferIndex]->Copy(m);
-
 		CreateTopLevelAS(mInstances, this, true);
-
-		UpdateLightsBuffers();
-
-		mRTLightsBuffer[mCurrentBackBufferIndex]->Copy<PerFrameLights, sLight>(mPerFrameLights[mCurrentBackBufferIndex], mObjManager->mLights.size());
-
-		//mCommandList->SetGraphicsRootSignature(mHitSignature.Get());
-		//mRTLightsBuffer->Set(2);
-
-		//auto address = mRTLightsBuffer->Resource()->GetGPUVirtualAddress();
-		//mCommandList->SetGraphicsRootShaderResourceView(2, address);
-
-		// Transition the RT resources 
 
 		D3D12_RESOURCE_BARRIER barriers[] =
 		{
 			CD3DX12_RESOURCE_BARRIER::Transition(mOutputResource.Get(), D3D12_RESOURCE_STATE_COPY_SOURCE, D3D12_RESOURCE_STATE_UNORDERED_ACCESS),
-			CD3DX12_RESOURCE_BARRIER::Transition(mBackBuffers[mCurrentBackBufferIndex]->mResource.Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_COPY_DEST),
 			CD3DX12_RESOURCE_BARRIER::Transition(mOutputResource.Get(), D3D12_RESOURCE_STATE_UNORDERED_ACCESS, D3D12_RESOURCE_STATE_COPY_SOURCE),
-			CD3DX12_RESOURCE_BARRIER::Transition(mBackBuffers[mCurrentBackBufferIndex]->mResource.Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_RENDER_TARGET),
 		};
 
+		mCommandList->ResourceBarrier(1, &barriers[0]);
 
-		mCommandList->ResourceBarrier(1, barriers);
 
+		// Copy and set constant buffers
+		{
+			auto c = mScene->GetCamera();
+
+			CMatrix4x4 m[] =
+			{
+				c->ViewMatrix(),
+				c->ProjectionMatrix(),
+				Inverse(c->ViewMatrix()),
+				Inverse(c->ProjectionMatrix()),
+			};
+
+			mSRVDescriptorHeap->Set();
+
+			mCameraBuffer[mCurrentBackBufferIndex]->Copy(m);
+
+			UpdateLightsBuffers();
+
+			mRTLightsBuffer[mCurrentBackBufferIndex]->Copy<PerFrameLights, sLight>(mPerFrameLights[mCurrentBackBufferIndex], GetObjManager()->mLights.size());
+		}
 
 		// Setup the raytracing task
 		D3D12_DISPATCH_RAYS_DESC desc = {};
@@ -523,10 +542,15 @@ namespace DX12
 
 		mCommandList->DispatchRays(&desc);
 
-		mCommandList->ResourceBarrier(2, &barriers[1]);
+		mCommandList->ResourceBarrier(1, &barriers[1]);
 
-		mCommandList->CopyResource(mBackBuffers[mCurrentBackBufferIndex]->mResource.Get(), mOutputResource.Get());
+		auto scene = dynamic_cast<CDX12Scene*>(mScene.get());
 
-		mCommandList->ResourceBarrier(1, &barriers[3]);
+		auto prev = scene->mSceneTexture->mCurrentResourceState;
+		scene->mSceneTexture->Barrier(D3D12_RESOURCE_STATE_COPY_DEST);
+
+		mCommandList->CopyResource(scene->mSceneTexture->mResource.Get(), mOutputResource.Get());
+
+		scene->mSceneTexture->Barrier(prev);
 	}
 }

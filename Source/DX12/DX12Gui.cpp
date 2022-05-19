@@ -18,7 +18,7 @@ namespace DX12
 	CDX12Gui::CDX12Gui(CDX12Engine* engine): CGui(engine)
 	{
 		mEngine = engine;
-	
+
 		// Calculate offset on the srvdescriptorheap to store imgui font texture
 		auto handle = mEngine->mSRVDescriptorHeap->Get(mEngine->mSRVDescriptorHeap->Add());
 
@@ -27,8 +27,8 @@ namespace DX12
 								CDX12Engine::mNumFrames,
 								DXGI_FORMAT_R8G8B8A8_UNORM,
 								mEngine->mSRVDescriptorHeap->mDescriptorHeap.Get(),
-								handle->mCpu,
-								handle->mGpu)
+								handle.mCpu,
+								handle.mGpu)
 			||
 			!ImGui_ImplWin32_Init(engine->GetWindow()->GetHandle())) { throw std::runtime_error("Impossible initialize ImGui"); }
 		
@@ -42,7 +42,6 @@ namespace DX12
 		ImGui::NewFrame();
 		ImGuizmo::BeginFrame();
 	}
-	
 
 	void CDX12Gui::End()
 	{

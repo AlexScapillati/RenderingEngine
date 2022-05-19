@@ -6,6 +6,7 @@ namespace DX12
 	class CDX12Engine;
 	class CDX12DescriptorHeap;
 	class CDX12Texture;
+	class CDX12ConstantBuffer;
 
 	class CDX12Material
 	{
@@ -45,6 +46,9 @@ namespace DX12
 		auto&              TextureFileNames() { return mMapsStr; }
 
 		std::unique_ptr<CDX12Texture> mAlbedo, mDisplacement, mRoughness, mAo, mNormal, mMetalness;
+
+		// Used for raytracing
+		std::unique_ptr<CDX12ConstantBuffer> mMaterialCB;
 
 	private:
 

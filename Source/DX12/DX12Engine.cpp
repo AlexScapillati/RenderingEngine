@@ -18,8 +18,11 @@
 #include "Objects/DX12PointLight.h"
 #include "Objects/DX12SpotLight.h"
 
+#include "../Common/CScene.h"
 #include "dxgi1_6.h"
 #include "dxgidebug.h"
+#include "GFSDK_Aftermath_GpuCrashDump.h"
+#include "../Utility/Input.h"
 
 namespace DX12
 {
@@ -102,8 +105,7 @@ namespace DX12
 					InitializeFrame();
 					MidFrame();
 					RaytracingFrame();
-
-					mScene->RenderScene(frameTime);
+					
 					mScene->UpdateScene(frameTime);
 
 					mGui->Begin();
@@ -182,7 +184,8 @@ namespace DX12
 
 		const FLOAT clearColor[] = { 0.4f,0.6f,0.9f,1.0f };
 
-		auto rtv = mBackBuffers[mCurrentBackBufferIndex]->mRTVHandle->mCpu;
+		auto rtv = mBackBuffers[mCurrentBackBufferIndex]->mRtvHeap->Get(mBackBuffers[mCurrentBackBufferIndex]->mRTVHandle).mCpu;
+
 
 		mCurrRecordingCommandList->OMSetRenderTargets(1, &rtv, FALSE, nullptr);
 		mCurrRecordingCommandList->ClearRenderTargetView(rtv, clearColor, 0, nullptr);
@@ -195,6 +198,9 @@ namespace DX12
 		// Reset the main command allocator and the command list
 		mCommandAllocators[mCurrentBackBufferIndex]->Reset();
 		ThrowIfFailed(mCommandList->Reset(mCommandAllocators[mCurrentBackBufferIndex].Get(), nullptr));
+
+
+
 	}
 
 	void CDX12Engine::FinalizeFrame()
@@ -226,15 +232,47 @@ namespace DX12
 
 		const UINT syncInterval = mScene->GetLockFps() ? 1 : 0;
 		const UINT presentFlags = !mScene->GetLockFps() ? DXGI_PRESENT_ALLOW_TEARING : 0;
-		if (FAILED(mSwapChain->Present1(syncInterval, presentFlags, &parameters)))
+
+		auto hr = mSwapChain->Present1(syncInterval, presentFlags, &parameters);
+		if (FAILED(hr))
 		{
+			// DXGI_ERROR error notification is asynchronous to the NVIDIA display
+			// driver's GPU crash handling. Give the Nsight Aftermath GPU crash dump
+			// thread some time to do its work before terminating the process.
+			auto tdrTerminationTimeout = std::chrono::seconds(3);
+			auto tStart = std::chrono::steady_clock::now();
+			auto tElapsed = std::chrono::milliseconds::zero();
+
+			GFSDK_Aftermath_CrashDump_Status status = GFSDK_Aftermath_CrashDump_Status_Unknown;
+			GFSDK_Aftermath_GetCrashDumpStatus(&status);
+
+			while (status != GFSDK_Aftermath_CrashDump_Status_CollectingDataFailed &&
+				status != GFSDK_Aftermath_CrashDump_Status_Finished &&
+				tElapsed < tdrTerminationTimeout)
+			{
+				// Sleep 50ms and poll the status again until timeout or Aftermath finished processing the crash dump.
+				std::this_thread::sleep_for(std::chrono::milliseconds(50));
+				GFSDK_Aftermath_GetCrashDumpStatus(&status);
+
+				auto tEnd = std::chrono::steady_clock::now();
+				tElapsed = std::chrono::duration_cast<std::chrono::milliseconds>(tEnd - tStart);
+			}
+
+			if (status != GFSDK_Aftermath_CrashDump_Status_Finished)
+			{
+				std::stringstream err_msg;
+				err_msg << "Unexpected crash dump status: " << status;
+				MessageBoxA(NULL, err_msg.str().c_str(), "Aftermath Error", MB_OK);
+			}
+
+
 			throw std::runtime_error("Error presenting");
 		}
 
+
 		mCurrentBackBufferIndex = mSwapChain->GetCurrentBackBufferIndex();
 
-		Flush();
-
+		WaitForFenceValue(mFence.Get(), mFrameFenceValues[mCurrentBackBufferIndex], mFenceEvent);
 	}
 
 
@@ -409,11 +447,11 @@ namespace DX12
 
 
 	CGameObject* CDX12Engine::CreateObject(const std::string& mesh,
-		const std::string& name,
-		const std::string& diffuseMap,
-		CVector3           position,
-		CVector3           rotation,
-		float              scale)
+	                                           const std::string& name,
+	                                           const std::string& diffuseMap,
+	                                           CVector3           position,
+	                                           CVector3           rotation,
+	                                           float              scale)
 	{
 		auto obj = new CDX12GameObject(this, mesh, name, diffuseMap, position, rotation, scale);
 		mObjManager->AddObject(obj);
@@ -421,11 +459,11 @@ namespace DX12
 	}
 
 	CSky* CDX12Engine::CreateSky(const std::string& mesh,
-		const std::string& name,
-		const std::string& diffuseMap,
-		CVector3           position,
-		CVector3           rotation,
-		float              scale)
+	                                 const std::string& name,
+	                                 const std::string& diffuseMap,
+	                                 CVector3           position,
+	                                 CVector3           rotation,
+	                                 float              scale)
 	{
 		auto s = new CDX12Sky(this, mesh, name, diffuseMap, position, rotation, scale);
 		mObjManager->AddSky(s);
@@ -433,10 +471,10 @@ namespace DX12
 	}
 
 	CPlant* CDX12Engine::CreatePlant(const std::string& id,
-		const std::string& name,
-		CVector3           position,
-		CVector3           rotation,
-		float              scale)
+	                                 const std::string& name,
+	                                 CVector3           position,
+	                                 CVector3           rotation,
+	                                 float              scale)
 	{
 		auto p = new CDX12Plant(this, id, name, position, rotation, scale);
 		mObjManager->AddPlant(p);
@@ -444,10 +482,10 @@ namespace DX12
 	}
 
 	CGameObject* CDX12Engine::CreateObject(const std::string& dirPath,
-		const std::string& name,
-		CVector3           position,
-		CVector3           rotation,
-		float              scale)
+	                                       const std::string& name,
+	                                       CVector3           position,
+	                                       CVector3           rotation,
+	                                       float              scale)
 	{
 		auto o = new CDX12GameObject(this, dirPath, name, position, rotation, scale);
 		mObjManager->AddObject(o);
@@ -455,13 +493,13 @@ namespace DX12
 	}
 
 	CLight* CDX12Engine::CreateLight(const std::string& mesh,
-		const std::string& name,
-		const std::string& diffuseMap,
-		const CVector3& colour,
-		const float& strength,
-		CVector3           position,
-		CVector3           rotation,
-		float              scale)
+	                                 const std::string& name,
+	                                 const std::string& diffuseMap,
+	                                 const CVector3&    colour,
+	                                 const float&       strength,
+	                                 CVector3           position,
+	                                 CVector3           rotation,
+	                                 float              scale)
 	{
 		auto l = new CDX12Light(this, mesh, name, diffuseMap, colour, strength, position, rotation, scale);
 		mObjManager->AddLight(l);
@@ -469,13 +507,13 @@ namespace DX12
 	}
 
 	CSpotLight* CDX12Engine::CreateSpotLight(const std::string& mesh,
-		const std::string& name,
-		const std::string& diffuseMap,
-		const CVector3& colour,
-		const float& strength,
-		CVector3           position,
-		CVector3           rotation,
-		float              scale)
+	                                         const std::string& name,
+	                                         const std::string& diffuseMap,
+	                                         const CVector3&    colour,
+	                                         const float&       strength,
+	                                         CVector3           position,
+	                                         CVector3           rotation,
+	                                         float              scale)
 	{
 		auto s = new CDX12SpotLight(this, mesh, name, diffuseMap, colour, strength, position, rotation, scale);
 		mObjManager->AddSpotLight(s);
@@ -483,13 +521,13 @@ namespace DX12
 	}
 
 	CDirectionalLight* CDX12Engine::CreateDirectionalLight(const std::string& mesh,
-		const std::string& name,
-		const std::string& diffuseMap,
-		const CVector3& colour,
-		const float& strength,
-		CVector3           position,
-		CVector3           rotation,
-		float              scale)
+	                                                       const std::string& name,
+	                                                       const std::string& diffuseMap,
+	                                                       const CVector3&    colour,
+	                                                       const float&       strength,
+	                                                       CVector3           position,
+	                                                       CVector3           rotation,
+	                                                       float              scale)
 	{
 		auto d = new CDX12DirectionalLight(this, mesh, name, diffuseMap, colour, strength, position, rotation, scale);
 		mObjManager->AddDirLight(d);
@@ -497,13 +535,13 @@ namespace DX12
 	}
 
 	CPointLight* CDX12Engine::CreatePointLight(const std::string& mesh,
-		const std::string& name,
-		const std::string& diffuseMap,
-		const CVector3& colour,
-		const float& strength,
-		CVector3           position,
-		CVector3           rotation,
-		float              scale)
+	                                           const std::string& name,
+	                                           const std::string& diffuseMap,
+	                                           const CVector3&    colour,
+	                                           const float&       strength,
+	                                           CVector3           position,
+	                                           CVector3           rotation,
+	                                           float              scale)
 	{
 		auto p = new CDX12PointLight(this, mesh, name, diffuseMap, colour, strength, position, rotation, scale);
 		mObjManager->AddPointLight(p);
@@ -548,9 +586,10 @@ namespace DX12
 			{
 				ThrowIfFailed(mSwapChain->GetBuffer(i, IID_PPV_ARGS(&mBackBuffers[i]->mResource)));
 
+				auto rtv = mBackBuffers[mCurrentBackBufferIndex]->mRtvHeap->Get(mBackBuffers[mCurrentBackBufferIndex]->mRTVHandle).mCpu;
 				mDevice->CreateRenderTargetView(mBackBuffers[i]->mResource.Get(),
 					nullptr,
-					mBackBuffers[i]->mRTVHandle->mCpu);
+					rtv);
 
 				mBackBuffers[i]->mCurrentResourceState = D3D12_RESOURCE_STATE_RENDER_TARGET;
 			}
