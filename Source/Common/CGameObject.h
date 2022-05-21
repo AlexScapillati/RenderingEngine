@@ -101,6 +101,11 @@ public:
 	int                                   CurrentVariation() const;
 	void                                  SetLOD(int i);
 
+	// World matrices for the model
+	// Now that meshes have multiple parts, we need multiple matrices. The root matrix (the first one) is the world matrix
+	// for the entire model. The remaining matrices are relative to their parent part. The hierarchy is defined in the mesh (nodes)
+	std::vector<CMatrix4x4> mWorldMatrices;
+
 protected:
 
 	//the meshes that a model has (all the LODS that a model has)
@@ -129,10 +134,6 @@ protected:
 	// This value controls the model visibility. If it is false the model will not be rendered (not cast/make shadows)
 	bool mEnabled;
 
-	// World matrices for the model
-	// Now that meshes have multiple parts, we need multiple matrices. The root matrix (the first one) is the world matrix
-	// for the entire model. The remaining matrices are relative to their parent part. The hierarchy is defined in the mesh (nodes)
-	std::vector<CMatrix4x4> mWorldMatrices;
 };
 
 class CSky : public virtual CGameObject

@@ -272,9 +272,13 @@ namespace DX12
 			subMesh.indexBufferView.BufferLocation = subMesh.mIndexBuffer->GetGPUVirtualAddress();
 			subMesh.indexBufferView.SizeInBytes = sizeof(uint32_t) * subMesh.numIndices;
 			subMesh.indexBufferView.Format = DXGI_FORMAT_R32_UINT;
-		}
 
-		// Create the constant buffer.
+			// Create the mesh constant buffer
+			subMesh.matrixCB = std::make_unique<CDX12ConstantBuffer>(mEngine, mEngine->mSRVDescriptorHeap.get(), sizeof(CMatrix4x4));
+		}
+		
+
+		// Create the model constant buffer.
 		{
 			constexpr UINT constantBufferSize = sizeof(PerModelConstants); // CB size is required to be 256-byte aligned.
 

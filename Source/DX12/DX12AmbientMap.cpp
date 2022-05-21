@@ -184,22 +184,29 @@ namespace DX12
 			commandList->ClearDepthStencilView(mDsvHeap->Get(mDsvHandle).mCpu, D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, nullptr);
 			commandList->ClearRenderTargetView(mRtvHeap->Get(i).mCpu, clearColor, 0, nullptr);
 
+
+			mEngine->GetScene()->RenderSceneFromCamera(&camera);
+
+
 			// Set camera matrices in the constant buffer and send over to GPU
-			PerFrameConstants perFrameConstants;
-			perFrameConstants.cameraMatrix = camera.WorldMatrix();
-			perFrameConstants.viewMatrix = camera.ViewMatrix();
-			perFrameConstants.projectionMatrix = camera.ProjectionMatrix();
-			perFrameConstants.viewProjectionMatrix = camera.ViewProjectionMatrix();
+			//PerFrameConstants perFrameConstants;
+			//perFrameConstants.cameraMatrix = camera.WorldMatrix();
+			//perFrameConstants.viewMatrix = camera.ViewMatrix();
+			//perFrameConstants.projectionMatrix = camera.ProjectionMatrix();
+			//perFrameConstants.viewProjectionMatrix = camera.ViewProjectionMatrix();
 
-			mEngine->mSRVDescriptorHeap->Set();
-			mEngine->SetConstantBuffers();
+			//mEngine->mSRVDescriptorHeap->Set();
+			//mEngine->SetConstantBuffers();
 
-			mConstantBuffers[i]->Copy(perFrameConstants);
-			mConstantBuffers[i]->Set(1);
+			//mConstantBuffers[i]->Copy(perFrameConstants);
+			//mConstantBuffers[i]->Set(1);
 
-			auto sky = dynamic_cast<CDX12Sky*>(mEngine->GetObjManager()->mSky);
-			sky->Material()->mAlbedo->Set(6);
-			sky->Render();
+			//auto sky = dynamic_cast<CDX12Sky*>(mEngine->GetObjManager()->mSky);
+			//sky->Material()->mAlbedo->Set(6);
+			//sky->Render();
+
+
+
 
 			/*
 			mEngine->SetPBRPSO();

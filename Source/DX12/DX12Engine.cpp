@@ -79,7 +79,14 @@ namespace DX12
 		mTimer.Start();
 	}
 
-	CDX12Engine::~CDX12Engine() { Flush(); }
+	CDX12Engine::~CDX12Engine()
+	{
+		Flush();
+
+		mScene = nullptr;
+
+		Flush();
+	}
 
 	bool CDX12Engine::Update()
 	{
@@ -1001,7 +1008,7 @@ namespace DX12
 
 			//Describe and create a shader resource view (SRV) descriptor heap.
 
-			desc.NumDescriptors = 200;
+			desc.NumDescriptors = 1000;
 			desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
 			desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
 

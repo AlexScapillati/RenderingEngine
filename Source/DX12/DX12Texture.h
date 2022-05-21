@@ -46,8 +46,6 @@ namespace DX12
 
 		D3D12_RESOURCE_DESC mDesc;
 
-		std::unique_ptr<CDX12ConstantBuffer> mResourceCB;
-
 		std::pair<int, int> mTextureRes;
 
 		// Leave the resource uninitialized (use carefully)

@@ -205,7 +205,6 @@ namespace DX12
 			mEngine->mCurrRecordingCommandList->SetGraphicsRootDescriptorTable(13, handle);
 		}
 
-
 		mEngine->GetObjManager()->RenderAllObjects();
 
 		mShadowMaps.clear();

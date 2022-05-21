@@ -42,6 +42,9 @@ namespace DX12
 			ComPtr<ID3D12Resource> mVertexBuffer;
 			D3D12_VERTEX_BUFFER_VIEW mVertexBufferView;
 			std::unique_ptr<unsigned char[]> vertices;
+
+			std::unique_ptr<CDX12ConstantBuffer> matrixCB; // Constant buffer that holds the matrix of this object
+
 		};
 
 
@@ -60,6 +63,7 @@ namespace DX12
 
 			std::vector<unsigned int> childNodes; // Child nodes that are controlled by this node (indexes into the mNodes vector below)
 			std::vector<unsigned int> subMeshes;  // The geometry representing this node (indexes into the mSubMeshes vector below)
+
 		};
 
 

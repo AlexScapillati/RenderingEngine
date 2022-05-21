@@ -61,10 +61,10 @@ namespace DX12
 		void RenderToDepthMap() override;
 		void DisplayPostProcessingEffects() override;
 
+		std::unique_ptr<CDX12DescriptorHeap> mDSVDescriptorHeap;
 		std::unique_ptr<CDX12RenderTarget> mSceneTexture;
 		std::unique_ptr<CDX12DepthStencil> mDepthStencils[3];
 
-		std::unique_ptr<CDX12DescriptorHeap> mDSVDescriptorHeap;
 		std::unique_ptr<CDX12AmbientMap>     mAmbientMap;
 
 

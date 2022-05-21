@@ -32,11 +32,12 @@ float3 CalculateLight(const float3 lightPos, const float lightIntensity, const f
 	const float nDotV = max(dot(n, v), 0.001f);
     
     // Get light vector (normal towards light from pixel), attenuate light intensity at the same time
-    float3      l     = lightPos - worldPos;
+    float3 l = lightPos - worldPos;
 	const float rdist = 1.0f / length(l);
     l *= rdist;
 	const float  li = lightIntensity * rdist * rdist;
 	const float3 lc = colour;
+
 
     // Halfway vector (normal halfway between view and light vector)
 	const float3 h = normalize(l + v);

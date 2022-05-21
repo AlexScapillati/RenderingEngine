@@ -44,13 +44,12 @@ namespace DX12
 	{
 		DXR::RootSignatureGenerator rsc;
 
+		rsc.AddRootParameter(D3D12_ROOT_PARAMETER_TYPE_CBV, 0); // Lights Buffer
+		rsc.AddRootParameter(D3D12_ROOT_PARAMETER_TYPE_CBV, 1); // Texture dimensions buffer
 
 		rsc.AddRootParameter(D3D12_ROOT_PARAMETER_TYPE_SRV);// Acceleration structure
 		rsc.AddRootParameter(D3D12_ROOT_PARAMETER_TYPE_SRV, 1); // Vertex buffer			
 		rsc.AddRootParameter(D3D12_ROOT_PARAMETER_TYPE_SRV, 2); // Index buffer
-
-		rsc.AddRootParameter(D3D12_ROOT_PARAMETER_TYPE_CBV, 0); // Lights Buffer
-		rsc.AddRootParameter(D3D12_ROOT_PARAMETER_TYPE_CBV, 1); // Texture dimensions buffer
 
 		rsc.AddHeapRangesParameter({ { 3, 6, 0, D3D12_DESCRIPTOR_RANGE_TYPE_SRV ,0 } }); // Textures
 
@@ -68,7 +67,8 @@ namespace DX12
 		CDX12Engine* engine,
 		std::vector<std::pair<ComPtr<ID3D12Resource>, uint32_t>> vVertexBuffers,
 		uint32_t vertexSize,
-		std::vector<std::pair<ComPtr<ID3D12Resource>, uint32_t>> vIndexBuffers
+		std::vector<std::pair<ComPtr<ID3D12Resource>, uint32_t>> vIndexBuffers,
+		std::vector<ComPtr<ID3D12Resource>> vTransformMatrices
 	)
 	{
 		auto device = engine->mDevice.Get();
@@ -86,7 +86,7 @@ namespace DX12
 				vIndexBuffers[i].first.Get(),
 				0,
 				vIndexBuffers[i].second,
-				nullptr,
+				!vTransformMatrices.empty() ? vTransformMatrices[i].Get() : nullptr,
 				0,
 				true);
 		}
@@ -171,26 +171,32 @@ namespace DX12
 		AccelerationStructureBuffers bottomLevelBuffers;
 		uint32_t vertexSize = 0;
 
+		// Get the vertex and index buffers and put them in a vector
+		std::vector<ComPtr<ID3D12Resource>> vTransformMatrices;
+
 		if (engine->GetObjManager())
+		{
 			for (const auto& object : engine->GetObjManager()->mObjects)
 			{
 				auto o = dynamic_cast<CDX12GameObject*>(object);
 
-				// Get the vertex and index buffers and put them in a vector
-				std::vector<std::pair<ComPtr<ID3D12Resource>, uint32_t>> vertexBuffers;
-				std::vector<std::pair<ComPtr<ID3D12Resource>, uint32_t>> indexBuffers;
-				for (const auto& subMesh : o->Mesh()->mSubMeshes)
+				auto mesh = o->Mesh();
+				auto& subMeshes = mesh->mSubMeshes;
+				for (auto i = 0; i < subMeshes.size(); ++i)
 				{
-					vertexBuffers.emplace_back(subMesh.mVertexBuffer, subMesh.numVertices);
-					indexBuffers.emplace_back(subMesh.mIndexBuffer, subMesh.numIndices);
+					std::vector<std::pair<ComPtr<ID3D12Resource>, uint32_t>> vertexBuffers;
+					std::vector<std::pair<ComPtr<ID3D12Resource>, uint32_t>> indexBuffers;
 
-					vertexSize = subMesh.vertexSize;
+					vertexBuffers.emplace_back(subMeshes[i].mVertexBuffer, subMeshes[i].numVertices);
+					indexBuffers.emplace_back(subMeshes[i].mIndexBuffer, subMeshes[i].numIndices);
+					vertexSize = subMeshes[i].vertexSize;
 
 					// Build the bottom AS from the Triangle vertex buffer
-					bottomLevelBuffers = CreateBottomLevelAS(engine, vertexBuffers, vertexSize, indexBuffers);
-					engine->mInstances.emplace_back(bottomLevelBuffers.pResult, &object->WorldMatrix());
+					bottomLevelBuffers = CreateBottomLevelAS(engine, vertexBuffers, vertexSize, indexBuffers, vTransformMatrices);
+					engine->mInstances.emplace_back(bottomLevelBuffers.pResult, &o->WorldMatrix());
 				}
 			}
+		}
 
 		CreateTopLevelAS(engine->mInstances, engine);
 
@@ -232,7 +238,7 @@ namespace DX12
 		// using the [shader("xxx")] syntax
 		mRayTracingPipeline->AddLibrary(mRayGenLibrary.Get(), { L"RayGen" });
 		mRayTracingPipeline->AddLibrary(mMissLibrary.Get(), { L"Miss" });
-		mRayTracingPipeline->AddLibrary(mHitLibrary.Get(), { L"ClosestHit" });
+		mRayTracingPipeline->AddLibrary(mHitLibrary.Get(), { L"ClosestHit" , L"AnyHit"});
 		mRayTracingPipeline->AddLibrary(mShadowLibrary.Get(), { L"ShadowClosestHit", L"ShadowMiss" });
 
 		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -262,9 +268,8 @@ namespace DX12
 		// exported symbols are defined above the shaders can be simply referred to by
 		// name.
 
-		// Hit group for the triangles, with a shader simply interpolating vertex
-		// colors
-		mRayTracingPipeline->AddHitGroup(L"HitGroup", L"ClosestHit");
+		// Primary hit group
+		mRayTracingPipeline->AddHitGroup(L"HitGroup", L"ClosestHit", L"AnyHit");
 
 		// Do the same with shadow hit group
 		mRayTracingPipeline->AddHitGroup(L"ShadowHitGroup", L"ShadowClosestHit");
@@ -430,20 +435,20 @@ namespace DX12
 		for (const auto& object : GetObjManager()->mObjects)
 		{
 			auto o = dynamic_cast<CDX12GameObject*>(object);
-			
+
 			const auto mat = o->Material();
 
 			for (const auto& subMesh : o->Mesh()->mSubMeshes)
 			{
+				inputData.push_back((void*)mRTLightsBuffer[mCurrentBackBufferIndex]->Resource()->GetGPUVirtualAddress());
+				inputData.push_back((void*)mat->mMaterialCB->Resource()->GetGPUVirtualAddress());
+
 				// This has to follow the exact order of the root signature
 				inputData.push_back((void*)mSRVDescriptorHeap->Get(mTopASIndex).mGpu.ptr);
 				inputData.push_back((void*)subMesh.mVertexBuffer->GetGPUVirtualAddress());
 				inputData.push_back((void*)subMesh.mIndexBuffer->GetGPUVirtualAddress());
 
-				inputData.push_back((void*)mRTLightsBuffer[mCurrentBackBufferIndex]->Resource()->GetGPUVirtualAddress());
-				inputData.push_back((void*)mat->mMaterialCB->Resource()->GetGPUVirtualAddress());
-
-				inputData.push_back((void*)mat->mAlbedo->GetHandle().mGpu.ptr);
+				inputData.push_back((void*)mat->mAlbedo->GetHandle().mGpu.ptr); 
 			}
 		}
 

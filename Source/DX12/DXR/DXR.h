@@ -73,7 +73,7 @@ namespace DX12
 		CDX12Engine * engine,
 		std::vector<std::pair<ComPtr<ID3D12Resource>, uint32_t>> vVertexBuffers,
 		uint32_t vertexSize,
-		std::vector<std::pair<ComPtr<ID3D12Resource>, uint32_t>> vIndexBuffers = {}
+		std::vector<std::pair<ComPtr<ID3D12Resource>, uint32_t>> vIndexBuffers
 		);
 
 	/// Create the main acceleration structure that holds

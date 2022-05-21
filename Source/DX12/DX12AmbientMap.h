@@ -26,14 +26,15 @@ namespace DX12
 			CDX12Engine*           mEngine;
 			ComPtr<ID3D12Resource> mResource;
 
+			std::unique_ptr<CDX12DescriptorHeap> mDsvHeap;
+			std::unique_ptr<CDX12DescriptorHeap> mRtvHeap;
+
 			std::unique_ptr<CDX12ConstantBuffer> mConstantBuffers[6];
 
 			ComPtr<ID3D12Resource>               mDepthBufferResource;
 			uint32_t                             mSrvHandle;
 			uint32_t                             mRtvHandle[6];
 			uint32_t                             mDsvHandle;
-			std::unique_ptr<CDX12DescriptorHeap> mDsvHeap;
-			std::unique_ptr<CDX12DescriptorHeap> mRtvHeap;
 			CDX12DescriptorHeap*                 mSrvHeap;
 			CD3DX12_VIEWPORT                     mVp;
 			RECT                                 mScissorsRect;

@@ -20,6 +20,8 @@ struct Attributes
     float2 bary;
 };
 
+
+
 [shader("miss")]
 void Miss(inout HitInfo payload : SV_RayPayload)
 {

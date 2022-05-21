@@ -84,7 +84,6 @@ namespace DX12
 
 		ComPtr<IDXGISwapChain4> mSwapChain;
 
-		std::unique_ptr<CDX12RenderTarget> mBackBuffers[mNumFrames];
 
 		CD3DX12_VIEWPORT mViewport;
 		CD3DX12_RECT mScissorRect;
@@ -137,6 +136,7 @@ namespace DX12
 		std::unique_ptr<CDX12DescriptorHeap> mSRVDescriptorHeap;
 		std::unique_ptr<CDX12DescriptorHeap> mSamplerDescriptorHeap;
 
+		std::unique_ptr<CDX12RenderTarget> mBackBuffers[mNumFrames];
 
 		/*
 		 * The index holding the current back buffer that will need to be presented is stored here

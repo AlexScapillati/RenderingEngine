@@ -46,7 +46,7 @@ struct sLight
 
 cbuffer gLightsBuffer : register(b0)
 {
-    sLight gLights[64];
+    sLight gLights[63];
 }
 
 cbuffer TextureCoordinates : register(b1)
@@ -86,30 +86,31 @@ float3 HitAttribute(float3 vertexAttribute[3], Attributes attr)
         attr.bary.y * (vertexAttribute[2] - vertexAttribute[0]);
 }
 
-// Normal mapping - sample normal map at given position and UV for a surface of given normal and tangent.
-// Optionally uses parallax mapping, in which case UV is updated
-float3 SampleNormal(float3 position,
-                    float3 normal,
-                    float3 tangent,
-                    inout int2 UV)
-{
-	// Calculate inverse tangent matrix
-    float3 biTangent = cross(normal, tangent);
-    const float3x3 invTangentMatrix = float3x3(tangent, biTangent, normal);
-    
-	// Extract normal from map and shift to -1 to 1 range
-    float3 textureNormal = 2.0f * NormalMap.Load(int3(UV, 0)).rgb - 1.0f;
-    textureNormal.y = -textureNormal.y;
 
-    float3x3 gWorldMatrix =
-    {
-        1, 0, 0,
-        0, 1, 1,
-        position
-    };
+[shader("anyhit")]
+void AnyHit(inout HitInfo payload, Attributes attrib)
+{
+    float3 barycentrics = float3(1.f - attrib.bary.x - attrib.bary.y, attrib.bary.x, attrib.bary.y);
+
+    uint vertId = 3 * PrimitiveIndex();
+   
     
-	// Convert normal from tangent space to world space
-    return normalize(mul(mul(textureNormal, invTangentMatrix), (float3x3) gWorldMatrix));
+    float3 n = Vertices[indices[vertId + 0]].normal * barycentrics.x +
+				Vertices[indices[vertId + 1]].normal * barycentrics.y +
+				Vertices[indices[vertId + 2]].normal * barycentrics.z;
+
+    
+    float2 uv = Vertices[indices[vertId + 0]].uv * barycentrics.x +
+				Vertices[indices[vertId + 1]].uv * barycentrics.y +
+				Vertices[indices[vertId + 2]].uv * barycentrics.z;
+    
+    int2 coord = floor(uv * gAlbedoDims);
+    float alpha = AlbedoMap.Load(int3(coord, 0)).a;
+
+    if (alpha < .5f)
+        IgnoreHit();
+    else
+        AcceptHitAndEndSearch();
 }
 
 
@@ -222,11 +223,6 @@ void ClosestHit(inout HitInfo payload, Attributes attrib)
     float3 barycentrics = float3(1.f - attrib.bary.x - attrib.bary.y, attrib.bary.x, attrib.bary.y);
 
     uint vertId = 3 * PrimitiveIndex();
-
-    float3 position = Vertices[indices[vertId + 0]].position * barycentrics.x +
-                      Vertices[indices[vertId + 1]].position * barycentrics.y +
-                      Vertices[indices[vertId + 2]].position * barycentrics.z;
-   
     
     float3 n = Vertices[indices[vertId + 0]].normal * barycentrics.x +
 				Vertices[indices[vertId + 1]].normal * barycentrics.y +
@@ -241,7 +237,9 @@ void ClosestHit(inout HitInfo payload, Attributes attrib)
     float3 worldTangent = Vertices[indices[vertId + 0]].tangent * barycentrics.x +
                           Vertices[indices[vertId + 1]].tangent * barycentrics.y +
                           Vertices[indices[vertId + 2]].tangent * barycentrics.z;
-                    
+
+    n = normalize(mul((float3x3) ObjectToWorld3x4(), n));
+
     float3 v = normalize(-WorldRayDirection());
 
     RayDesc ray;
@@ -281,7 +279,7 @@ void ClosestHit(inout HitInfo payload, Attributes attrib)
     float3 specularColour = lerp(float3(0.04f, 0.04f, 0.04f), albedo, metalness);
     const float nDotV = max(dot(n, v), 0.001f);
     float3 fresnel = specularColour + (1.0f - specularColour) * pow(max(1.0f - nDotV, 0.0f), 5.0f);
-    float3 diffuse = ao * albedo * IBLPayload.colorAndDistance.rgb + (1 - roughness) * fresnel;
+    float3 diffuse = ao * albedo * IBLPayload.colorAndDistance.rgb + (1 - roughness) * fresnel * IBLPayload.colorAndDistance.rgb;
     float3 specular = specularColour;
 
     
@@ -289,9 +287,14 @@ void ClosestHit(inout HitInfo payload, Attributes attrib)
     for (int i = 0; i < 1; ++i)
     {
         float3 lightPos = gLights[i].position;
-        float3 li = gLights[i].intensity;
+
+        // Get light vector (normal towards light from pixel), attenuate light intensity at the same time
+        float3 l = lightPos - HitWorldPosition();
+        const float rdist = 1.0f / length(l);
+        l *= rdist;
+
+        float3 li = gLights[i].intensity * rdist * rdist;
         float3 lc = gLights[i].colour;
-        float3 l = normalize(lightPos - HitWorldPosition());
 
         // Before complex calculations, shoot ray for shadows
         float shadow = ShootShadowRay(l);

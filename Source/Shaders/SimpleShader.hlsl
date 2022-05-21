@@ -260,7 +260,7 @@ float3 CalculateLight(const float3 lightPos,
 	const float nDotV = max(dot(n, v), 0.001f);
 
 	// Get light vector (normal towards light from pixel), attenuate light intensity at the same time
-	float3      l     = lightPos - worldPos;
+    float3 l = lightPos - worldPos;
 	const float rdist = 1.0f / length(l);
 	l *= rdist;
 	const float  li = lightIntensity * rdist * rdist;
