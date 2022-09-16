@@ -28,7 +28,7 @@ namespace DX12
 		}
 
 
-		std::pair<int, int> dims[6];
+		std::pair<UINT64, UINT64> dims[6];
 
 		mMaterialCB = std::make_unique<CDX12ConstantBuffer>(mEngine, mMapsDescriptorHeap, sizeof(int) * 12);
 

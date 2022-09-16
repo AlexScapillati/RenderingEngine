@@ -4,15 +4,19 @@
 
 #include <d3d12.h>
 #include <sstream>
+#include <mutex>
 
 #include "d3dx12.h"
 
 #include "pix3.h"
+#include "dxgi1_5.h"
 
 #include "..\Math/CVector2.h"
 #include "..\Math/CVector3.h"
 #include "..\Math/CVector4.h"
 #include "..\Math/CMatrix4x4.h"
+
+#include "../Utility/Timer.h"
 
 #include "comdef.h"
 
@@ -86,6 +90,12 @@ inline auto MessageHR(const std::string& fn, HRESULT hr)
 		MessageBox(NULL,std::wstring(error_msg.begin(), error_msg.end()).c_str(), std::wstring(fn.begin(),fn.end()).c_str(), MB_OK);
 		OutputDebugStringW(std::wstring(error_msg.begin(), error_msg.end()).c_str());
 	}
+
+
+// Helper to compute aligned buffer sizes
+#ifndef ROUND_UP
+#define ROUND_UP(v, powerOf2Alignment) (((v) + (powerOf2Alignment)-1) & ~((powerOf2Alignment)-1))
+#endif
 
 	
 #define ThrowIfFailed(hr) {HRESULT hr_ = hr; if (FAILED(hr_)) MessageHR(#hr, hr_);}

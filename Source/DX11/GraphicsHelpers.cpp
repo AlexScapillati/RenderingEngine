@@ -23,7 +23,7 @@ namespace DX11
 	bool CDX11Engine::LoadTexture(std::string filename, ID3D11Resource** texture, ID3D11ShaderResourceView** textureSRV)
 	{
 
-		auto res = false;
+		HRESULT res = false;
 
 		filename = mMediaFolder + filename;
 
@@ -34,14 +34,14 @@ namespace DX11
 		if (filename.size() >= 4 &&
 			std::equal(dds.rbegin(), dds.rend(), filename.rbegin(), [](unsigned char a, unsigned char b) { return std::tolower(a) == std::tolower(b); }))
 		{
-			res = SUCCEEDED(DirectX::CreateDDSTextureFromFile(mD3DDevice.Get(), CA2CT(filename.c_str()), texture, textureSRV));
+			res = DirectX::CreateDDSTextureFromFile(mD3DDevice.Get(), std::wstring(filename.begin(), filename.end()).c_str(), texture, textureSRV);
 		}
 		else
 		{
-			res = SUCCEEDED(DirectX::CreateWICTextureFromFile(mD3DDevice.Get(), mD3DContext.Get(), CA2CT(filename.c_str()), texture, textureSRV));
+			res = DirectX::CreateWICTextureFromFile(mD3DDevice.Get(), mD3DContext.Get(), std::wstring(filename.begin(), filename.end()).c_str(), texture, textureSRV);
 		}
 
-		return res;
+		return SUCCEEDED(res);
 	}
 
 	CVector3 GetTextureDimentions(ID3D11Resource* texture)

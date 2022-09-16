@@ -49,10 +49,8 @@ buffer needs to be kept until the command list execution is finished.
 
 #include <stdexcept>
 
-// Helper to compute aligned buffer sizes
-#ifndef ROUND_UP
-#define ROUND_UP(v, powerOf2Alignment) (((v) + (powerOf2Alignment)-1) & ~((powerOf2Alignment)-1))
-#endif
+#include "../DX12Common.h"
+
 
 namespace DX12
 {

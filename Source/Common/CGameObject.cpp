@@ -123,7 +123,7 @@ bool*                                 CGameObject::Enabled() { return &mEnabled;
 float&                                CGameObject::Roughness() { return mRoughness; }
 float&                                CGameObject::Metalness() { return mMetalness; }
 void                                  CGameObject::SetRoughness(float r) { mRoughness = r; }
-std::vector<std::string>&             CGameObject::GetVariations() { return mLODs[mCurrentLOD]; }
+std::vector<std::string>&             CGameObject::GetVariations() { if(!mLODs.empty()) return mLODs[mCurrentLOD]; }
 int                                   CGameObject::CurrentLOD() const { return mCurrentLOD; }
 std::vector<std::vector<std::string>> CGameObject::LODs() const { return mLODs; }
 int                                   CGameObject::CurrentVariation() const { return mCurrentVar; }

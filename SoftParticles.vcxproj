@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="packages\Microsoft.Direct3D.D3D12.1.606.4\build\native\Microsoft.Direct3D.D3D12.props" Condition="Exists('packages\Microsoft.Direct3D.D3D12.1.606.4\build\native\Microsoft.Direct3D.D3D12.props')" />
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|x64">
       <Configuration>Debug</Configuration>
@@ -22,21 +23,19 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
     <WholeProgramOptimization>false</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
-  <ImportGroup Label="ExtensionSettings">
-    <Import Project="$(VCTargetsPath)\BuildCustomizations\hlsl.props" />
-  </ImportGroup>
+  <ImportGroup Label="ExtensionSettings" />
   <ImportGroup Label="Shared">
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -53,7 +52,7 @@
     <LibraryPath>$(ProjectDir)Source\External\NVIDIA_Nsight_Aftermath\lib;$(ProjectDir)Source\External\assimp\bin\;$(ProjectDir)Source\External\assimp\lib\;$(ProjectDir)bin\;$(LibraryPath);$(ProjectDir)Source\External\DirectXTex\DirectXTex\Bin\Desktop_2019\$(Platform)\$(Configuration);$(ProjectDir)Source\External\DirectXTK\$(Configuration);$(ProjectDir)Source\External\dxc\lib\x64\;$(ProjectDir)Source\External\dxc\bin\x64\;$(ProjectDir)Source\External\DirectXTK12\Bin\Desktop_2019_Win10\$(Platform)\$(Configuration);%(AdditionalDependencies)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <LinkIncremental>true</LinkIncremental>
+    <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)\</OutDir>
     <IncludePath>$(IncludePath)</IncludePath>
     <LibraryPath>$(ProjectDir)Source\External\NVIDIA_Nsight_Aftermath\lib;$(ProjectDir)Source\External\assimp\bin\;$(ProjectDir)Source\External\assimp\lib\;$(ProjectDir)bin\;$(LibraryPath);$(ProjectDir)Source\External\DirectXTex\DirectXTex\Bin\Desktop_2019\$(Platform)\$(Configuration);$(ProjectDir)Source\External\DirectXTK\$(Configuration);$(ProjectDir)Source\External\dxc\lib\x64\;$(ProjectDir)Source\External\dxc\bin\x64\;$(ProjectDir)Source\External\DirectXTK12\Bin\Desktop_2019_Win10\$(Platform)\$(Configuration);%(AdditionalDependencies)</LibraryPath>
@@ -61,7 +60,7 @@
   <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" />
   <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Release|x64'" />
   <PropertyGroup Label="Vcpkg">
-    <VcpkgEnabled>false</VcpkgEnabled>
+    <VcpkgEnabled>true</VcpkgEnabled>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -71,7 +70,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS;NOMINMAX</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>Source\External\DirectXTex\;Source\External\imgui\FileBrowser;Source\External\tinyxml2;Source\External\assimp\include\;Source\External\thread-pool\;D:\GameEngine\Source\External\NVIDIA_Nsight_Aftermath\include;Source\External\imgui;Utility;Math;Source\External\DirectXTex\DirectXTex;Source\External\DirectXTK12\Inc\;Source\External\DirectXTK12\;Source\External\assimp\include;Source\External\dxc\inc</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>Source\External\DirectXTex\;Source\External\imgui\FileBrowser;Source\External\tinyxml2;Source\External\assimp\include\;Source\External\thread-pool\;D:\GameEngine\Source\External\NVIDIA_Nsight_Aftermath\include;Source\External\imgui;Utility;Math;Source\External\DirectXTex\DirectXTex;Source\External\DirectXTK12\Inc\;Source\External\DirectXTK12\;Source\External\assimp\include;Source\External\dxc\inc\</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <WholeProgramOptimization>false</WholeProgramOptimization>
       <DisableSpecificWarnings>4250</DisableSpecificWarnings>
@@ -395,9 +394,9 @@
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
-    <Import Project="$(VCTargetsPath)\BuildCustomizations\hlsl.targets" />
     <Import Project="packages\directxtex_desktop_win10.2022.3.24.1\build\native\directxtex_desktop_win10.targets" Condition="Exists('packages\directxtex_desktop_win10.2022.3.24.1\build\native\directxtex_desktop_win10.targets')" />
     <Import Project="packages\WinPixEventRuntime.1.0.220124001\build\WinPixEventRuntime.targets" Condition="Exists('packages\WinPixEventRuntime.1.0.220124001\build\WinPixEventRuntime.targets')" />
+    <Import Project="packages\Microsoft.Direct3D.D3D12.1.606.4\build\native\Microsoft.Direct3D.D3D12.targets" Condition="Exists('packages\Microsoft.Direct3D.D3D12.1.606.4\build\native\Microsoft.Direct3D.D3D12.targets')" />
   </ImportGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
@@ -405,5 +404,7 @@
     </PropertyGroup>
     <Error Condition="!Exists('packages\directxtex_desktop_win10.2022.3.24.1\build\native\directxtex_desktop_win10.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\directxtex_desktop_win10.2022.3.24.1\build\native\directxtex_desktop_win10.targets'))" />
     <Error Condition="!Exists('packages\WinPixEventRuntime.1.0.220124001\build\WinPixEventRuntime.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\WinPixEventRuntime.1.0.220124001\build\WinPixEventRuntime.targets'))" />
+    <Error Condition="!Exists('packages\Microsoft.Direct3D.D3D12.1.606.4\build\native\Microsoft.Direct3D.D3D12.props')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Microsoft.Direct3D.D3D12.1.606.4\build\native\Microsoft.Direct3D.D3D12.props'))" />
+    <Error Condition="!Exists('packages\Microsoft.Direct3D.D3D12.1.606.4\build\native\Microsoft.Direct3D.D3D12.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Microsoft.Direct3D.D3D12.1.606.4\build\native\Microsoft.Direct3D.D3D12.targets'))" />
   </Target>
 </Project>

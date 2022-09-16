@@ -1,6 +1,5 @@
 #include "DX12ConstantBuffer.h"
 #include "DX12Engine.h"
-#include "DXR/DXR.h"
 
 UINT DX12::CDX12ConstantBuffer::Size()
 {

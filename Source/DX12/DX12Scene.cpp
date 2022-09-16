@@ -222,6 +222,8 @@ namespace DX12
 		mViewportX = newX;
 		mViewportY = newY;
 
+		return;
+
 		mEngine->FinalizeFrame();
 
 		mEngine->Flush();

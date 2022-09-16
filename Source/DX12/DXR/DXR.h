@@ -1,13 +1,11 @@
 
 #pragma once
 
-#include "../DX12Common.h"
-#include "../DX12Engine.h"
-
-#include "dxcapi.h"
-
 #include <fstream>
 #include <sstream>
+
+#include "../DX12Common.h"
+#include "../DX12Engine.h"
 
 namespace DX12
 {
@@ -40,9 +38,6 @@ namespace DX12
 			return pBuffer;
 		}
 
-#ifndef ROUND_UP
-#define ROUND_UP(v, powerOf2Alignment) (((v) + (powerOf2Alignment)-1) & ~((powerOf2Alignment)-1))
-#endif
 
 		// Specifies a heap used for uploading. This heap type has CPU access optimized
 		// for uploading to the GPU.
@@ -63,6 +58,8 @@ namespace DX12
 	ComPtr<ID3D12RootSignature>CreateMissSignature(ID3D12Device* device);
 
 	ComPtr<ID3D12RootSignature> CreateHitSignature(ID3D12Device* device);
+
+	ComPtr<ID3D12RootSignature> CreateShadowSignature(ID3D12Device* device);
 
 	/// Create the acceleration structure of an instance
 	///

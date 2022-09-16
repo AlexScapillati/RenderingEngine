@@ -46,7 +46,7 @@ namespace DX12
 
 		D3D12_RESOURCE_DESC mDesc;
 
-		std::pair<int, int> mTextureRes;
+		std::pair<UINT64, UINT64> mTextureRes;
 
 		// Leave the resource uninitialized (use carefully)
 		CDX12Texture(CDX12Engine* engine, CDX12DescriptorHeap* srvHeap);

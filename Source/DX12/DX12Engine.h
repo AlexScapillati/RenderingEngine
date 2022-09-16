@@ -1,15 +1,11 @@
 #pragma once
 
 #include "..\Engine.h"
-#include <mutex>
 
-#include "dxgi1_5.h"
 
 #include "DX12Common.h"
 #include "imgui.h"
 
-#include "dxcapi.h"
-#include "../Utility/Timer.h"
 #include "DXR/RaytracingPipelineGenerator.h"
 #include "DXR/ShaderBindingTableGenerator.h"
 #include "DXR/TopLevelASGenerator.h"
@@ -41,7 +37,7 @@ namespace DX12
 		CGameObjectManager* GetObjManager() { return mObjManager.get(); }
 		std::string         GetMediaFolder() { return mMediaFolder; }
 
-		bool mRaytracing = false;
+		bool mRaytracing = true;
 
 		CWindow* GetWindow() { return mWindow.get(); }
 

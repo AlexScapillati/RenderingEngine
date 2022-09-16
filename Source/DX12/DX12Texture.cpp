@@ -99,7 +99,7 @@ namespace DX12
 		const auto resourceFlags = D3D12_RESOURCE_FLAG_NONE;
 
 		const bool isSrgb = 0;
-		filename.find("Albedo") != std::string::npos;
+		//filename.find("Albedo") != std::string::npos;
 
 		auto ddsFlags = (isSrgb ? DirectX::DDS_LOADER_FORCE_SRGB : DirectX::DDS_LOADER_DEFAULT) | DirectX::DDS_LOADER_MIP_AUTOGEN;
 		auto wicFlags = (isSrgb ? DirectX::WIC_LOADER_FORCE_SRGB : DirectX::WIC_LOADER_DEFAULT) | DirectX::WIC_LOADER_MIP_AUTOGEN;

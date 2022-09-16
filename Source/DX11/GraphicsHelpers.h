@@ -5,7 +5,6 @@
 
 #pragma once
 
-#include <atlbase.h> // C-string to unicode conversion function CA2CT
 #include <d3d11.h>
 #include "DX11Engine.h"
 

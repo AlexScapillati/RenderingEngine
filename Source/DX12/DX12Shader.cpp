@@ -3,8 +3,9 @@
 #include <filesystem>
 #include <functional>
 #include <thread_pool.hpp>
+#include <fstream>
 
-#include "DXR/DXR.h"
+#include "dxcapi.h"
 
 namespace DX12
 {
